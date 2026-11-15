@@ -267,6 +267,55 @@ public class GeoLayers : MonoBehaviour
     // Los textos del zip traen "<150 µm" y similares: que no se lean como etiquetas.
     static string Plain(string s) => string.IsNullOrEmpty(s) || s.IndexOf('<') < 0 ? s : "<noparse>" + s + "</noparse>";
 
+    // ---------- Acceso a los datos (navegación) ----------
+
+    /// <summary>Rectángulo de los mapas en unidades Unity (esquina SO y tamaño).</summary>
+    public Rect RegionRect => new Rect(rectMin.x, rectMin.y, 1f / rectInvSize.x, 1f / rectInvSize.y);
+
+    /// <summary>Clases de la capa por píxel (fila 0 = sur, Data.region.ancho × alto), o null. No modificar.</summary>
+    public byte[] IndexData(int layer) => Index(layer);
+
+    /// <summary>Índice termofísico por píxel (0..65535, fila 0 = sur), o null si no hay textura.</summary>
+    public ushort[] ThermoData(out int w, out int h)
+    {
+        ThermoAt(new Vector3(rectMin.x, 0f, rectMin.y));   // carga perezosa
+        w = thermoW; h = thermoH;
+        return thermoData;
+    }
+
+    /// <summary>Añade una capa generada en ejecución (p. ej. Transitabilidad) con su mapa de clases
+    /// en la rejilla de la región. Si ya existe una con ese id, la sustituye. Devuelve su índice.</summary>
+    public int AddRuntimeLayer(GeoLayerDef def, byte[] classes)
+    {
+        var r = Data.region;
+        if (classes == null || classes.Length != r.ancho * r.alto)
+        {
+            Debug.LogError($"[Geo] la capa '{def.id}' no tiene {r.ancho}×{r.alto} píxeles");
+            return -1;
+        }
+        int i = LayerIndex(def.id);
+        if (i < 0)
+        {
+            i = LayerCount;
+            var capas = Data.capas;
+            Array.Resize(ref capas, i + 1);
+            Data.capas = capas;
+            Array.Resize(ref indexData, i + 1);
+            Array.Resize(ref colorTex, i + 1);
+        }
+        else
+        {
+            Data.capas[i] = def;
+            if (colorTex[i]) Destroy(colorTex[i]);
+            colorTex[i] = null;
+        }
+        Data.capas[i] = def;
+        indexData[i] = classes;
+        if (Current == i) { Current = -1; Set(i); }
+        else Changed?.Invoke();
+        return i;
+    }
+
     // ---------- Datos y textura de color ----------
 
     byte[] Index(int layer)

@@ -169,3 +169,6 @@ Packages/packages-lock.json linguist-generated
 
 # Exceptions for .asset files such as lightning pre-baking
 LightingData.asset     binary
+
+# Malla de navegación horneada (GZip, ~10 MB)
+Assets/Gale/Data/Nav/*.bytes lfs

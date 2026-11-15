@@ -66,6 +66,23 @@ public class ChaseCamera : MonoBehaviour
         if (RenderSettings.fog) RenderSettings.fogDensity = on ? aerialFogDensity : chaseFogDensity;
     }
 
+    /// <summary>Vista aérea encuadrando esos límites (la ruta planificada): foco en el centro y altura para que quepan.</summary>
+    public void FrameBounds(Bounds b)
+    {
+        if (!Aerial) SetAerial(true);
+        aerialFocus = new Vector3(b.center.x, b.center.y, b.center.z);
+        float extent = Mathf.Max(b.size.x, b.size.z);
+        float fov = cam ? cam.fieldOfView : 60f;
+        aerialHeight = Mathf.Clamp(extent * 0.6f / Mathf.Tan(fov * 0.5f * Mathf.Deg2Rad) + 20f, aerialMinHeight, aerialMaxHeight);
+    }
+
+    /// <summary>Vista aérea centrada en un punto, sin cambiar la altura.</summary>
+    public void FocusOn(Vector3 p)
+    {
+        if (!Aerial) SetAerial(true);
+        aerialFocus = p;
+    }
+
     void LateUpdate()
     {
         var k = GaleInput.Controls;

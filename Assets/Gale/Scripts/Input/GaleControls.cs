@@ -1268,6 +1268,76 @@ public partial class @GaleControls: IInputActionCollection2, IDisposable
                     ""interactions"": """",
                     ""initialStateCheck"": false,
                     ""priority"": 0
+                },
+                {
+                    ""name"": ""RouteCancel"",
+                    ""type"": ""Button"",
+                    ""id"": ""85617422-5323-5c9f-bc0d-af4b52f7b6b8"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false,
+                    ""priority"": 0
+                },
+                {
+                    ""name"": ""RemovePoint"",
+                    ""type"": ""Button"",
+                    ""id"": ""367e6d3b-5193-5c33-ad11-bb20e52ed9ea"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false,
+                    ""priority"": 0
+                },
+                {
+                    ""name"": ""RouteConfirm"",
+                    ""type"": ""Button"",
+                    ""id"": ""9412afb9-7caa-5ffa-bc12-b62619a9fd89"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false,
+                    ""priority"": 0
+                },
+                {
+                    ""name"": ""Undo"",
+                    ""type"": ""Button"",
+                    ""id"": ""371e83c1-bc7f-59cd-84d6-28d97b7791b8"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false,
+                    ""priority"": 0
+                },
+                {
+                    ""name"": ""Redo"",
+                    ""type"": ""Button"",
+                    ""id"": ""9650b6c1-512d-5db3-8114-62f136c8ed09"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false,
+                    ""priority"": 0
+                },
+                {
+                    ""name"": ""CycleProfile"",
+                    ""type"": ""Button"",
+                    ""id"": ""889c0701-dbbb-5f03-9fdc-b54026562839"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false,
+                    ""priority"": 0
+                },
+                {
+                    ""name"": ""ViewAerial"",
+                    ""type"": ""Button"",
+                    ""id"": ""17e2308e-aee7-5456-bf18-4c593cb520ac"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false,
+                    ""priority"": 0
                 }
             ],
             ""bindings"": [
@@ -1752,6 +1822,138 @@ public partial class @GaleControls: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""groups"": ""Gamepad"",
                     ""action"": ""Exit"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""2b6493bf-bb20-55ff-9de3-7dbbdf76c8ea"",
+                    ""path"": ""<Keyboard>/backspace"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard&Mouse"",
+                    ""action"": ""RouteCancel"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""b6404b28-1e92-57f7-bd81-096eecaf5303"",
+                    ""path"": ""<Keyboard>/delete"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard&Mouse"",
+                    ""action"": ""RemovePoint"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""2a34695b-b0b2-5451-a41e-20491c4706d5"",
+                    ""path"": ""<Keyboard>/enter"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard&Mouse"",
+                    ""action"": ""RouteConfirm"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""fd42716d-0e4b-5afa-9dc3-552dcc64f408"",
+                    ""path"": ""<Keyboard>/numpadEnter"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard&Mouse"",
+                    ""action"": ""RouteConfirm"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""CtrlZ"",
+                    ""id"": ""19dbc8d4-1946-51a7-a652-bb7dae21e78c"",
+                    ""path"": ""OneModifier"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Undo"",
+                    ""isComposite"": true,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""modifier"",
+                    ""id"": ""96f8cc52-8b83-5d28-9c32-cf4ad7f856a2"",
+                    ""path"": ""<Keyboard>/ctrl"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard&Mouse"",
+                    ""action"": ""Undo"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""binding"",
+                    ""id"": ""35ab96a7-8652-558e-ac2f-6f59ee7d63b9"",
+                    ""path"": ""<Keyboard>/z"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard&Mouse"",
+                    ""action"": ""Undo"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""CtrlY"",
+                    ""id"": ""e00fe6d6-d551-5332-bbfd-8c01f3828e08"",
+                    ""path"": ""OneModifier"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Redo"",
+                    ""isComposite"": true,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""modifier"",
+                    ""id"": ""f1bda809-7fa4-5f7e-b8a0-9d74b16761a0"",
+                    ""path"": ""<Keyboard>/ctrl"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard&Mouse"",
+                    ""action"": ""Redo"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""binding"",
+                    ""id"": ""f81896a6-e59f-5d1a-b20f-f700ebd61da9"",
+                    ""path"": ""<Keyboard>/y"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard&Mouse"",
+                    ""action"": ""Redo"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""0a64d589-debc-5d5a-84af-68042a3df5af"",
+                    ""path"": ""<Keyboard>/p"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard&Mouse"",
+                    ""action"": ""CycleProfile"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""60976a30-f3b2-56e2-9fdd-a39b6439e671"",
+                    ""path"": ""<Keyboard>/v"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard&Mouse"",
+                    ""action"": ""ViewAerial"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -2389,6 +2591,13 @@ public partial class @GaleControls: IInputActionCollection2, IDisposable
         m_Map_FocusRover = m_Map.FindAction("FocusRover", throwIfNotFound: true);
         m_Map_FocusCrater = m_Map.FindAction("FocusCrater", throwIfNotFound: true);
         m_Map_Exit = m_Map.FindAction("Exit", throwIfNotFound: true);
+        m_Map_RouteCancel = m_Map.FindAction("RouteCancel", throwIfNotFound: true);
+        m_Map_RemovePoint = m_Map.FindAction("RemovePoint", throwIfNotFound: true);
+        m_Map_RouteConfirm = m_Map.FindAction("RouteConfirm", throwIfNotFound: true);
+        m_Map_Undo = m_Map.FindAction("Undo", throwIfNotFound: true);
+        m_Map_Redo = m_Map.FindAction("Redo", throwIfNotFound: true);
+        m_Map_CycleProfile = m_Map.FindAction("CycleProfile", throwIfNotFound: true);
+        m_Map_ViewAerial = m_Map.FindAction("ViewAerial", throwIfNotFound: true);
         // UI
         m_UI = asset.FindActionMap("UI", throwIfNotFound: true);
         m_UI_Navigate = m_UI.FindAction("Navigate", throwIfNotFound: true);
@@ -3048,6 +3257,13 @@ public partial class @GaleControls: IInputActionCollection2, IDisposable
     private readonly InputAction m_Map_FocusRover;
     private readonly InputAction m_Map_FocusCrater;
     private readonly InputAction m_Map_Exit;
+    private readonly InputAction m_Map_RouteCancel;
+    private readonly InputAction m_Map_RemovePoint;
+    private readonly InputAction m_Map_RouteConfirm;
+    private readonly InputAction m_Map_Undo;
+    private readonly InputAction m_Map_Redo;
+    private readonly InputAction m_Map_CycleProfile;
+    private readonly InputAction m_Map_ViewAerial;
     /// <summary>
     /// Provides access to input actions defined in input action map "Map".
     /// </summary>
@@ -3111,6 +3327,34 @@ public partial class @GaleControls: IInputActionCollection2, IDisposable
         /// Provides access to the underlying input action "Map/Exit".
         /// </summary>
         public InputAction @Exit => m_Wrapper.m_Map_Exit;
+        /// <summary>
+        /// Provides access to the underlying input action "Map/RouteCancel".
+        /// </summary>
+        public InputAction @RouteCancel => m_Wrapper.m_Map_RouteCancel;
+        /// <summary>
+        /// Provides access to the underlying input action "Map/RemovePoint".
+        /// </summary>
+        public InputAction @RemovePoint => m_Wrapper.m_Map_RemovePoint;
+        /// <summary>
+        /// Provides access to the underlying input action "Map/RouteConfirm".
+        /// </summary>
+        public InputAction @RouteConfirm => m_Wrapper.m_Map_RouteConfirm;
+        /// <summary>
+        /// Provides access to the underlying input action "Map/Undo".
+        /// </summary>
+        public InputAction @Undo => m_Wrapper.m_Map_Undo;
+        /// <summary>
+        /// Provides access to the underlying input action "Map/Redo".
+        /// </summary>
+        public InputAction @Redo => m_Wrapper.m_Map_Redo;
+        /// <summary>
+        /// Provides access to the underlying input action "Map/CycleProfile".
+        /// </summary>
+        public InputAction @CycleProfile => m_Wrapper.m_Map_CycleProfile;
+        /// <summary>
+        /// Provides access to the underlying input action "Map/ViewAerial".
+        /// </summary>
+        public InputAction @ViewAerial => m_Wrapper.m_Map_ViewAerial;
         /// <summary>
         /// Provides access to the underlying input action map instance.
         /// </summary>
@@ -3176,6 +3420,27 @@ public partial class @GaleControls: IInputActionCollection2, IDisposable
             @Exit.started += instance.OnExit;
             @Exit.performed += instance.OnExit;
             @Exit.canceled += instance.OnExit;
+            @RouteCancel.started += instance.OnRouteCancel;
+            @RouteCancel.performed += instance.OnRouteCancel;
+            @RouteCancel.canceled += instance.OnRouteCancel;
+            @RemovePoint.started += instance.OnRemovePoint;
+            @RemovePoint.performed += instance.OnRemovePoint;
+            @RemovePoint.canceled += instance.OnRemovePoint;
+            @RouteConfirm.started += instance.OnRouteConfirm;
+            @RouteConfirm.performed += instance.OnRouteConfirm;
+            @RouteConfirm.canceled += instance.OnRouteConfirm;
+            @Undo.started += instance.OnUndo;
+            @Undo.performed += instance.OnUndo;
+            @Undo.canceled += instance.OnUndo;
+            @Redo.started += instance.OnRedo;
+            @Redo.performed += instance.OnRedo;
+            @Redo.canceled += instance.OnRedo;
+            @CycleProfile.started += instance.OnCycleProfile;
+            @CycleProfile.performed += instance.OnCycleProfile;
+            @CycleProfile.canceled += instance.OnCycleProfile;
+            @ViewAerial.started += instance.OnViewAerial;
+            @ViewAerial.performed += instance.OnViewAerial;
+            @ViewAerial.canceled += instance.OnViewAerial;
         }
 
         /// <summary>
@@ -3226,6 +3491,27 @@ public partial class @GaleControls: IInputActionCollection2, IDisposable
             @Exit.started -= instance.OnExit;
             @Exit.performed -= instance.OnExit;
             @Exit.canceled -= instance.OnExit;
+            @RouteCancel.started -= instance.OnRouteCancel;
+            @RouteCancel.performed -= instance.OnRouteCancel;
+            @RouteCancel.canceled -= instance.OnRouteCancel;
+            @RemovePoint.started -= instance.OnRemovePoint;
+            @RemovePoint.performed -= instance.OnRemovePoint;
+            @RemovePoint.canceled -= instance.OnRemovePoint;
+            @RouteConfirm.started -= instance.OnRouteConfirm;
+            @RouteConfirm.performed -= instance.OnRouteConfirm;
+            @RouteConfirm.canceled -= instance.OnRouteConfirm;
+            @Undo.started -= instance.OnUndo;
+            @Undo.performed -= instance.OnUndo;
+            @Undo.canceled -= instance.OnUndo;
+            @Redo.started -= instance.OnRedo;
+            @Redo.performed -= instance.OnRedo;
+            @Redo.canceled -= instance.OnRedo;
+            @CycleProfile.started -= instance.OnCycleProfile;
+            @CycleProfile.performed -= instance.OnCycleProfile;
+            @CycleProfile.canceled -= instance.OnCycleProfile;
+            @ViewAerial.started -= instance.OnViewAerial;
+            @ViewAerial.performed -= instance.OnViewAerial;
+            @ViewAerial.canceled -= instance.OnViewAerial;
         }
 
         /// <summary>
@@ -3782,6 +4068,55 @@ public partial class @GaleControls: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnExit(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "RouteCancel" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnRouteCancel(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "RemovePoint" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnRemovePoint(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "RouteConfirm" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnRouteConfirm(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "Undo" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnUndo(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "Redo" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnRedo(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "CycleProfile" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnCycleProfile(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "ViewAerial" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnViewAerial(InputAction.CallbackContext context);
     }
     /// <summary>
     /// Interface to implement callback methods for all input action callbacks associated with input actions defined by "UI" which allows adding and removing callbacks.
