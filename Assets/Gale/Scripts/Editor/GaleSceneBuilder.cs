@@ -181,6 +181,9 @@ public static class GaleSceneBuilder
         Debug.Log($"[Gale] relief: k={relief.reliefIntensity} sun az={relief.sunAzimuth} el={relief.sunElevation} " +
                   $"collider='{mc.sharedMesh.name}' render='{mf.sharedMesh.name}'");
 
+        // Capas temáticas (geología, material del suelo) y su leyenda.
+        GeoLayersBuilder.Install();
+
         EditorSceneManager.MarkSceneDirty(scene);
         EditorSceneManager.SaveScene(scene);
         Debug.Log($"[Gale] scene built and saved: {scene.path}");

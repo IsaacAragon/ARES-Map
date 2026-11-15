@@ -133,6 +133,16 @@ public partial class @GaleControls: IInputActionCollection2, IDisposable
                     ""priority"": 0
                 },
                 {
+                    ""name"": ""CycleLayer"",
+                    ""type"": ""Button"",
+                    ""id"": ""55b08189-5684-5316-99a0-44c7adf4d815"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false,
+                    ""priority"": 0
+                },
+                {
                     ""name"": ""MinimapZoom"",
                     ""type"": ""Value"",
                     ""id"": ""aad7ce9f-f72f-51d6-a876-2ea458142911"",
@@ -229,6 +239,28 @@ public partial class @GaleControls: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""groups"": ""Gamepad"",
                     ""action"": ""Help"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""482e687e-9a7f-5765-840f-bd35271b2579"",
+                    ""path"": ""<Keyboard>/l"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard&Mouse"",
+                    ""action"": ""CycleLayer"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""27bc5e12-1c1e-50cd-8882-30264e1db0f1"",
+                    ""path"": ""<Gamepad>/dpad/left"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Gamepad"",
+                    ""action"": ""CycleLayer"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 },
@@ -2321,6 +2353,7 @@ public partial class @GaleControls: IInputActionCollection2, IDisposable
         m_Global_ToggleAerial = m_Global.FindAction("ToggleAerial", throwIfNotFound: true);
         m_Global_ToggleMap = m_Global.FindAction("ToggleMap", throwIfNotFound: true);
         m_Global_Help = m_Global.FindAction("Help", throwIfNotFound: true);
+        m_Global_CycleLayer = m_Global.FindAction("CycleLayer", throwIfNotFound: true);
         m_Global_MinimapZoom = m_Global.FindAction("MinimapZoom", throwIfNotFound: true);
         // Rover
         m_Rover = asset.FindActionMap("Rover", throwIfNotFound: true);
@@ -2457,6 +2490,7 @@ public partial class @GaleControls: IInputActionCollection2, IDisposable
     private readonly InputAction m_Global_ToggleAerial;
     private readonly InputAction m_Global_ToggleMap;
     private readonly InputAction m_Global_Help;
+    private readonly InputAction m_Global_CycleLayer;
     private readonly InputAction m_Global_MinimapZoom;
     /// <summary>
     /// Provides access to input actions defined in input action map "Global".
@@ -2485,6 +2519,10 @@ public partial class @GaleControls: IInputActionCollection2, IDisposable
         /// Provides access to the underlying input action "Global/Help".
         /// </summary>
         public InputAction @Help => m_Wrapper.m_Global_Help;
+        /// <summary>
+        /// Provides access to the underlying input action "Global/CycleLayer".
+        /// </summary>
+        public InputAction @CycleLayer => m_Wrapper.m_Global_CycleLayer;
         /// <summary>
         /// Provides access to the underlying input action "Global/MinimapZoom".
         /// </summary>
@@ -2527,6 +2565,9 @@ public partial class @GaleControls: IInputActionCollection2, IDisposable
             @Help.started += instance.OnHelp;
             @Help.performed += instance.OnHelp;
             @Help.canceled += instance.OnHelp;
+            @CycleLayer.started += instance.OnCycleLayer;
+            @CycleLayer.performed += instance.OnCycleLayer;
+            @CycleLayer.canceled += instance.OnCycleLayer;
             @MinimapZoom.started += instance.OnMinimapZoom;
             @MinimapZoom.performed += instance.OnMinimapZoom;
             @MinimapZoom.canceled += instance.OnMinimapZoom;
@@ -2553,6 +2594,9 @@ public partial class @GaleControls: IInputActionCollection2, IDisposable
             @Help.started -= instance.OnHelp;
             @Help.performed -= instance.OnHelp;
             @Help.canceled -= instance.OnHelp;
+            @CycleLayer.started -= instance.OnCycleLayer;
+            @CycleLayer.performed -= instance.OnCycleLayer;
+            @CycleLayer.canceled -= instance.OnCycleLayer;
             @MinimapZoom.started -= instance.OnMinimapZoom;
             @MinimapZoom.performed -= instance.OnMinimapZoom;
             @MinimapZoom.canceled -= instance.OnMinimapZoom;
@@ -3510,6 +3554,13 @@ public partial class @GaleControls: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnHelp(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "CycleLayer" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnCycleLayer(InputAction.CallbackContext context);
         /// <summary>
         /// Method invoked when associated input action "MinimapZoom" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
         /// </summary>

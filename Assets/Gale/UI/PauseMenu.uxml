@@ -6,6 +6,7 @@
             <ui:Label text="Simulación en pausa" class="subtitle" />
             <ui:Button name="resume" text="Reanudar" class="menu-button primary" />
             <ui:Button name="controls" text="Controles" class="menu-button" />
+            <ui:Button name="layers" text="Capas del mapa" class="menu-button" />
             <ui:Button name="reset" text="Reiniciar en Bradbury" class="menu-button" />
             <ui:Button name="quit" text="Salir del simulador" class="menu-button danger" />
             <ui:Label text="Esc para reanudar" class="hint" />
@@ -14,6 +15,15 @@
             <ui:Label text="Controles" class="title" />
             <ui:Label name="controls-text" class="controls-text" enable-rich-text="true" />
             <ui:Button name="controls-back" text="Volver" class="menu-button" />
+        </ui:VisualElement>
+        <ui:VisualElement name="layers-panel" class="panel wide">
+            <ui:Label text="Capas del mapa" class="title" />
+            <ui:Label text="Qué se pinta sobre el terreno y el minimapa" class="subtitle" />
+            <ui:VisualElement name="layer-buttons" class="layer-buttons" />
+            <ui:ScrollView name="zone-scroll" class="zone-scroll">
+                <ui:Label name="zone-text" class="controls-text" enable-rich-text="true" />
+            </ui:ScrollView>
+            <ui:Button name="layers-back" text="Volver" class="menu-button" />
         </ui:VisualElement>
         <ui:VisualElement name="confirm-panel" class="panel">
             <ui:Label text="¿Salir del simulador?" class="title small" />

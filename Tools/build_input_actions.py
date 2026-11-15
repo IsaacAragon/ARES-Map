@@ -6,7 +6,7 @@ el mapa "UI" (lo usa la navegación de UI Toolkit). Cada acción tiene enlace de
 ejecutarlo no cambia el asset si no cambian las acciones.
 
 Reparto del mando (resuelve los choques de la propuesta original):
-  Global : Start pausa · Select vista aérea · R3 mapa · cruceta → ayuda
+  Global : Start pausa · Select vista aérea · R3 mapa · cruceta → ayuda · cruceta ← capa del mapa
   Rover  : stick izq. X girar · RT/LT acelerar/retroceder · A rápido · B freno · Y enderezar
   Camera : cruceta ↑/↓ zoom de la cámara de seguimiento
   Aerial : stick izq. mover · LB/RB girar · stick dcho. Y altura · stick dcho. X + cruceta ↑/↓ mirar
@@ -72,6 +72,8 @@ def build():
     g.action("ToggleAerial", "button"); g.bind("ToggleAerial", "<Keyboard>/tab", KM); g.bind("ToggleAerial", "<Gamepad>/select", GP)
     g.action("ToggleMap", "button"); g.bind("ToggleMap", "<Keyboard>/m", KM); g.bind("ToggleMap", "<Gamepad>/rightStickPress", GP)
     g.action("Help", "button"); g.bind("Help", "<Keyboard>/h", KM); g.bind("Help", "<Gamepad>/dpad/right", GP)
+    # Capas del mapa (geología, material del suelo): pasa a la siguiente.
+    g.action("CycleLayer", "button"); g.bind("CycleLayer", "<Keyboard>/l", KM); g.bind("CycleLayer", "<Gamepad>/dpad/left", GP)
     g.action("MinimapZoom", "axis")   # pasos −/+ del minimapa fuera del modo mapa
     g.axis_keys("MinimapZoom", "<Keyboard>/minus", "<Keyboard>/equals", name="MenosMas")
     g.axis_keys("MinimapZoom", "<Keyboard>/numpadMinus", "<Keyboard>/numpadPlus", name="Numpad")
