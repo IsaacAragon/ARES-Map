@@ -1,5 +1,4 @@
 using UnityEngine;
-using UnityEngine.InputSystem;
 using UnityEngine.UIElements;
 
 // Menú de pausa (UI Toolkit). Esc lo abre y lo cierra; si el minimapa interactivo está abierto,
@@ -16,7 +15,6 @@ public class PauseMenu : MonoBehaviour
     public float resetYaw = 180f;
 
     VisualElement root, mainPanel, controlsPanel, confirmPanel;
-    bool prevEsc;
 
     public bool Open => SimPause.IsPaused;
 
@@ -35,15 +33,6 @@ public class PauseMenu : MonoBehaviour
         root.Q<Button>("confirm-no").clicked += () => Show(mainPanel);
         root.Q<Button>("confirm-yes").clicked += Quit;
 
-        root.Q<Label>("controls-text").text =
-            "<b>Rover</b>\nW/S avanzar y retroceder · A/D girar · Shift rápido · Espacio freno · R enderezar\n\n" +
-            "<b>Cámara</b>\nRueda acercar/alejar · Tab vista aérea\n\n" +
-            "<b>Vista aérea</b>\nWASD mover · Q/E girar · rueda altura · clic derecho + arrastrar inclinar\n" +
-            "F centrar en el rover · C centrar en el cráter\n\n" +
-            "<b>Mapa (M)</b>\nClic derecho + arrastrar mover · rueda zoom · WASD · Q/E girar · F rover · C cráter · M/Esc salir\n" +
-            "− / + zoom del minimapa\n\n" +
-            "<b>Esc</b> pausa";
-
         SimPause.Changed += OnPauseChanged;
         OnPauseChanged(SimPause.IsPaused);
     }
@@ -56,9 +45,8 @@ public class PauseMenu : MonoBehaviour
 
     void Update()
     {
-        var kb = Keyboard.current;
-        bool esc = kb != null && kb.escapeKey.isPressed;
-        if (esc && !prevEsc)
+        // Acción Global.Pause: Esc / Start. En el mapa interactivo, Esc lo cierra MinimapHUD (Map.Exit).
+        if (GaleInput.Controls.Global.Pause.WasPressedThisFrame())
         {
             if (SimPause.IsPaused)
             {
@@ -71,16 +59,35 @@ public class PauseMenu : MonoBehaviour
                 SetOpen(true);
             }
         }
-        prevEsc = esc;
     }
 
     public void SetOpen(bool open) => SimPause.Set(open);
+
+    // Ayuda según el último dispositivo usado (GaleInput.UsingGamepad).
+    const string KeyboardHelp =
+        "<b>Rover</b>\nW/S avanzar y retroceder · A/D girar · Shift rápido · Espacio freno · R enderezar\n\n" +
+        "<b>Cámara</b>\nRueda acercar/alejar · Tab vista aérea\n\n" +
+        "<b>Vista aérea</b>\nWASD mover · Q/E girar · rueda altura · clic derecho + arrastrar inclinar\n" +
+        "F centrar en el rover · C centrar en el cráter\n\n" +
+        "<b>Mapa (M)</b>\nClic derecho + arrastrar mover · rueda zoom · WASD · Q/E girar · F rover · C cráter · M/Esc salir\n" +
+        "− / + zoom del minimapa · H ayuda\n\n" +
+        "<b>Esc</b> pausa";
+
+    const string GamepadHelp =
+        "<b>Rover</b>\nRT/LT avanzar y retroceder · stick izq. girar · A rápido · B freno · Y enderezar\n\n" +
+        "<b>Cámara</b>\nCruceta ↑/↓ acercar/alejar · Select vista aérea\n\n" +
+        "<b>Vista aérea</b>\nStick izq. mover · L3 rápido · LB/RB girar · stick dcho. Y altura\n" +
+        "stick dcho. X + cruceta ↑/↓ mirar · X centrar en el rover · Y centrar en el cráter\n\n" +
+        "<b>Mapa (R3)</b>\nStick izq. mover · gatillos zoom · LB/RB girar · stick dcho. cursor · A seleccionar\n" +
+        "cruceta ↑/↓ zoom por pasos · X rover · Y cráter · B salir · cruceta → ayuda\n\n" +
+        "<b>Start</b> pausa · en este menú: cruceta/stick para moverse, A para elegir";
 
     void OnPauseChanged(bool paused)
     {
         root.style.display = paused ? DisplayStyle.Flex : DisplayStyle.None;
         if (paused)
         {
+            root.Q<Label>("controls-text").text = GaleInput.UsingGamepad ? GamepadHelp : KeyboardHelp;
             Show(mainPanel);
             UnityEngine.Cursor.lockState = CursorLockMode.None;
             UnityEngine.Cursor.visible = true;
