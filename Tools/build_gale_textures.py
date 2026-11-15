@@ -31,6 +31,13 @@ ap.add_argument("--match-edge", choices=["south", "north"], default="south",
 ap.add_argument("--split-bottom", nargs=2, metavar=("ROWS", "BOTTOM_NAME"),
                 help="Process one joint image (e.g. Gale + north band) and save its bottom ROWS rows as "
                      "BOTTOM_NAME and the rest as --name, so both blocks share colour normalisation.")
+ap.add_argument("--save-stats", metavar="JSON",
+                help="Save the colour normalisation (Viking brightness percentiles, THEMIS mean) to JSON.")
+ap.add_argument("--load-stats", metavar="JSON",
+                help="Use a saved normalisation instead of this image's own, so a block processed on its own "
+                     "matches the blocks the stats came from.")
+ap.add_argument("--crop-margin", type=int, default=0, metavar="PX",
+                help="The WMS images carry PX extra pixels on every side (so the blur has context); crop them.")
 args = ap.parse_args()
 wms, acg, out = args.wms, args.acg, args.out
 os.makedirs(out, exist_ok=True)
@@ -63,7 +70,13 @@ assert viking.shape[:2] == themis.shape, (viking.shape, themis.shape)
 # Regional colour: blur Viking to drop its baked hillshade, take brightness.
 vk = to_linear(blur(viking, 10))
 lum = vk @ np.array([0.2126, 0.7152, 0.0722], dtype=np.float32)
-lo, hi = np.percentile(lum, [2, 98])
+import json
+if args.load_stats:
+    st = json.load(open(args.load_stats))
+    lo, hi, th_mean = st["viking_lum_p2"], st["viking_lum_p98"], st["themis_lowpass_mean"]
+else:
+    lo, hi = np.percentile(lum, [2, 98])
+    th_mean = None
 t = np.clip((lum - lo) / (hi - lo), 0, 1)
 
 # Mars palette (sRGB), from rover/orbiter true-colour images: dark basaltic sand -> ochre dust -> pale layered rock.
@@ -80,7 +93,12 @@ base = pal * 0.7 + vk_norm * 0.3
 th_low = blur(themis, 14)
 detail = np.clip(themis / np.maximum(th_low, 1e-3), 0.3, 2.5) ** 0.55
 # Large-scale THEMIS brightness also helps (albedo units on the mound); mix gently.
-th_reg = th_low / max(th_low.mean(), 1e-3)
+if th_mean is None:
+    th_mean = float(th_low.mean())
+if args.save_stats:
+    json.dump({"viking_lum_p2": float(lo), "viking_lum_p98": float(hi), "themis_lowpass_mean": th_mean},
+              open(args.save_stats, "w"), indent=2)
+th_reg = th_low / max(th_mean, 1e-3)
 albedo = base * detail[..., None] * (0.85 + 0.15 * th_reg[..., None])
 
 if args.match:
@@ -100,6 +118,9 @@ if args.match:
     albedo = albedo * (gain * w + (0.5 * gain + 0.5) * (1 - w))
     print("[tex] colour match gain (linear RGB):", gain.round(3))
 
+if args.crop_margin:
+    m = args.crop_margin
+    albedo = albedo[m:-m, m:-m]
 img = Image.fromarray((to_srgb(albedo) * 255 + 0.5).astype(np.uint8), "RGB")
 if args.split_bottom:
     rows, bottom_name = int(args.split_bottom[0]), args.split_bottom[1]

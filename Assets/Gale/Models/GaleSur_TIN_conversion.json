@@ -1,0 +1,35 @@
+{
+  "input": "C:\\Users\\isaac\\AppData\\Local\\Temp/mosaic/GaleSur_points.dxf",
+  "points": 30860,
+  "layers": {
+    "BASE": 1134,
+    "SECTOR_6": 28118,
+    "BORDE": 1608
+  },
+  "other_entities": {},
+  "vertices": 30860,
+  "duplicates_merged": 0,
+  "triangles": 60110,
+  "flipped": 0,
+  "removed_xy_offset": [
+    8168043.8858655,
+    -319997.63721099996
+  ],
+  "scale": 1.0,
+  "bounds_min": [
+    -99796.65625,
+    -106743.0625,
+    -769.0
+  ],
+  "bounds_max": [
+    99796.65625,
+    -99796.65625,
+    746.0777975166449
+  ],
+  "highest_vertex": [
+    10750.341796875,
+    -106154.578125,
+    746.0777975166449
+  ],
+  "fbx_bytes": 1665260
+}

@@ -14,9 +14,18 @@ using UnityEngine.Rendering.Universal;
 public static class GaleSceneBuilder
 {
     const string FbxPath = "Assets/Gale/Models/Gale_TIN.fbx";
-    // Franja norte (borde de Gale -> Babati): mismo origen XY que Gale (ver GaleNorte_TIN_conversion.json y Babati_georef.json).
-    const string NorthFbxPath = "Assets/Gale/Models/GaleNorte_TIN.fbx";
     const string MatDir = "Assets/Gale/Materials";
+
+    // Bloques del mosaico alrededor de Gale (Tools/mosaic_blocks.json). Todos comparten el origen XY
+    // de Gale_TIN y bordes con los mismos vértices, así que se colocan sin desplazamiento.
+    // nombre, FBX, material, textura (UV 0..1 = rectángulo del bloque).
+    static readonly (string name, string fbx, string mat, string albedo)[] Blocks =
+    {
+        // Franja norte (borde de Gale -> Babati): DXF Civil 3D + MOLA a los lados.
+        ("GaleNorte_TIN", "Assets/Gale/Models/GaleNorte_TIN.fbx", "GaleNorte_Terrain.mat", "Assets/Gale/Textures/GaleNorte_Albedo.png"),
+        // Franja sur (borde sur de Gale -> fin del sector 6, Farah Vallis).
+        ("GaleSur_TIN", "Assets/Gale/Models/GaleSur_TIN.fbx", "GaleSur_Terrain.mat", "Assets/Gale/Textures/GaleSur_Albedo.png"),
+    };
 
     // 1 m Unity = 50 m reales. Escala uniforme: las pendientes son las reales.
     const float WorldScale = 0.02f;
@@ -43,7 +52,7 @@ public static class GaleSceneBuilder
         }
 
         ConfigureImporter(FbxPath);
-        ConfigureImporter(NorthFbxPath);
+        foreach (var blk in Blocks) ConfigureImporter(blk.fbx);
 
         // ---------- terreno
         var root = new GameObject("Gale_Terrain");
@@ -73,14 +82,20 @@ public static class GaleSceneBuilder
         Debug.Log($"[Gale] highest vertex world={hw} -> real X={OffsetX + hw.x / WorldScale:0.0} " +
                   $"Y={OffsetY + hw.z / WorldScale:0.0} Z={hw.y / WorldScale:0.0}");
 
-        // Franja norte hasta Babati (DXF Civil 3D + MOLA a los lados): segundo bloque, mismo sistema de coordenadas, comparte el borde norte de Gale.
-        var north = (GameObject)PrefabUtility.InstantiatePrefab(AssetDatabase.LoadAssetAtPath<GameObject>(NorthFbxPath), root.transform);
-        north.name = "GaleNorte_TIN";
-        var bmf = north.GetComponentInChildren<MeshFilter>();
-        north.GetComponentInChildren<MeshRenderer>().sharedMaterial = TerrainMaterial("GaleNorte_Terrain.mat", NorthAlbedoPath);
-        var bmc = bmf.gameObject.AddComponent<MeshCollider>();
-        bmc.sharedMesh = bmf.sharedMesh;
-        Debug.Log($"[Gale] north band block verts={bmf.sharedMesh.vertexCount} worldBounds={north.GetComponentInChildren<MeshRenderer>().bounds}");
+        // Bloques vecinos del mosaico: mismo sistema de coordenadas, bordes compartidos con Gale.
+        var blockFilters = new System.Collections.Generic.List<MeshFilter>();
+        foreach (var blk in Blocks)
+        {
+            var go = (GameObject)PrefabUtility.InstantiatePrefab(AssetDatabase.LoadAssetAtPath<GameObject>(blk.fbx), root.transform);
+            go.name = blk.name;
+            var bmf = go.GetComponentInChildren<MeshFilter>();
+            var bmr = go.GetComponentInChildren<MeshRenderer>();
+            bmr.sharedMaterial = TerrainMaterial(blk.mat, blk.albedo);
+            var bmc = bmf.gameObject.AddComponent<MeshCollider>();
+            bmc.sharedMesh = bmf.sharedMesh;
+            blockFilters.Add(bmf);
+            Debug.Log($"[Gale] block {blk.name} verts={bmf.sharedMesh.vertexCount} worldBounds={bmr.bounds}");
+        }
 
         // ---------- rover
         var rover = BuildRover();
@@ -128,12 +143,15 @@ public static class GaleSceneBuilder
         relief.sunAzimuth = 315f;
         relief.sunElevation = 30f;
         relief.Apply();
-        // Franja norte: mismo realce de relieve; la luz la controla el de Gale.
-        var brelief = bmf.gameObject.AddComponent<ReliefShading>();
-        brelief.sourceMesh = bmf.sharedMesh;
-        brelief.controlLighting = false;
-        brelief.reliefIntensity = relief.reliefIntensity;
-        brelief.Apply();
+        // Bloques vecinos: mismo realce de relieve; la luz la controla el de Gale.
+        foreach (var bmf in blockFilters)
+        {
+            var brelief = bmf.gameObject.AddComponent<ReliefShading>();
+            brelief.sourceMesh = bmf.sharedMesh;
+            brelief.controlLighting = false;
+            brelief.reliefIntensity = relief.reliefIntensity;
+            brelief.Apply();
+        }
         DynamicGI.UpdateEnvironment();
         Debug.Log($"[Gale] relief: k={relief.reliefIntensity} sun az={relief.sunAzimuth} el={relief.sunElevation} " +
                   $"collider='{mc.sharedMesh.name}' render='{mf.sharedMesh.name}'");
@@ -160,7 +178,6 @@ public static class GaleSceneBuilder
     // ------------------------------------------------------------------ terreno
 
     const string AlbedoPath = "Assets/Gale/Textures/Gale_Albedo.png";
-    const string NorthAlbedoPath = "Assets/Gale/Textures/GaleNorte_Albedo.png";
     const string DetailAlbedoPath = "Assets/Gale/Textures/Detail_Rocks015_Albedo.png";
     const string DetailNormalPath = "Assets/Gale/Textures/Detail_Rocks015_Normal.png";
     // Un mosaico de la textura de detalle cubre ~4 m de Unity (el rover mide 3 m).
