@@ -5,7 +5,7 @@ using UnityEngine;
 // Ruta real del rover Curiosity (MSL) en Gale, del aterrizaje en Bradbury (sol 0) al último
 // punto publicado. Datos de JPL (MMGIS: MSL_traverse.json y MSL_waypoints.json), simplificados a
 // CSV en Assets/Gale/Route (lon, lat, cota; y los waypoints con su sol).
-//  - Cinta apoyada en el terreno (raycast cada `sampleMeters` m reales), material Gale/RouteLine.
+//  - Cinta apoyada en el terreno (raycast cada `sampleMeters` m reales, GroundRibbon), material Gale/RouteLine.
 //  - Points/Waypoints para el minimapa (MinimapHUD) y Nearest() para el instrumento de navegación.
 public class CuriosityRoute : MonoBehaviour
 {
@@ -130,51 +130,13 @@ public class CuriosityRoute : MonoBehaviour
         }
     }
 
-    static Vector3 OnGround(Vector3 p)
-    {
-        float? y = MarsGeo.GroundY(p);
-        p.y = y ?? p.y;
-        return p;
-    }
+    static Vector3 OnGround(Vector3 p) => GroundRibbon.OnGround(p);
 
     void BuildRibbon()
     {
         if (points.Count < 2 || !material) return;
-        var verts = new List<Vector3>(points.Count * 2);
-        var normals = new List<Vector3>(points.Count * 2);   // dirección lateral (el shader ensancha de lejos)
-        var uvs = new List<Vector2>(points.Count * 2);
-        var tris = new List<int>((points.Count - 1) * 6);
-        float u = 0f;
-        for (int i = 0; i < points.Count; i++)
-        {
-            Vector3 prev = points[Mathf.Max(0, i - 1)], next = points[Mathf.Min(points.Count - 1, i + 1)];
-            Vector3 dir = next - prev; dir.y = 0f;
-            if (dir.sqrMagnitude < 1e-8f) dir = Vector3.forward;
-            Vector3 right = Vector3.Cross(Vector3.up, dir.normalized) * (width * 0.5f);
-            if (i > 0) u += Vector3.Distance(points[i - 1], points[i]);
-            // Cada borde de la cinta se apoya en el suelo por separado (pendientes laterales).
-            Vector3 l = OnGround(points[i] - right) + Vector3.up * lift;
-            Vector3 r = OnGround(points[i] + right) + Vector3.up * lift;
-            int k = verts.Count;
-            Vector3 side = right.normalized;
-            verts.Add(l); uvs.Add(new Vector2(u, 0f)); normals.Add(-side);
-            verts.Add(r); uvs.Add(new Vector2(u, 1f)); normals.Add(side);
-            if (i > 0) { tris.Add(k - 2); tris.Add(k); tris.Add(k - 1); tris.Add(k - 1); tris.Add(k); tris.Add(k + 1); }
-        }
-        var mesh = new Mesh { name = "CuriosityRoute", indexFormat = UnityEngine.Rendering.IndexFormat.UInt32 };
-        mesh.SetVertices(verts); mesh.SetNormals(normals); mesh.SetUVs(0, uvs); mesh.SetTriangles(tris, 0);
-        mesh.RecalculateBounds();
-        mesh.bounds = new Bounds(mesh.bounds.center, mesh.bounds.size + Vector3.one * 50f);   // margen por el ensanche
-        ribbonGo = new GameObject("CuriosityRoute_Cinta") { hideFlags = HideFlags.DontSave, layer = 2 };
-        ribbonGo.transform.SetParent(transform, false);
-        ribbonGo.AddComponent<MeshFilter>().sharedMesh = mesh;
-        var mr = ribbonGo.AddComponent<MeshRenderer>();
-        mr.sharedMaterial = material;
-        mr.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
-        mr.receiveShadows = false;
-        var mpb = new MaterialPropertyBlock();
-        mpb.SetFloat("_HalfWidth", width * 0.5f);
-        mr.SetPropertyBlock(mpb);
+        var mesh = GroundRibbon.Build(points, width, lift, null, "CuriosityRoute");
+        ribbonGo = GroundRibbon.Spawn("CuriosityRoute_Cinta", transform, mesh, material, width * 0.5f);
     }
 
     /// <summary>Punto de la ruta más cercano (en planta): distancia real en m y sol aproximado.</summary>

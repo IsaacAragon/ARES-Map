@@ -145,8 +145,8 @@ public static class GaleSceneBuilder
             // en la escena. Primero el instrumento, que depende del minimapa.
             var oldNav = cam.GetComponent<NavInstrumentHUD>();
             if (oldNav) Object.DestroyImmediate(oldNav);
-            var oldMap = cam.GetComponent<MinimapHUD>();
-            if (oldMap) Object.DestroyImmediate(oldMap);
+            // Todos: una escena antigua puede tener más de uno (con dos, M abre dos mapas superpuestos).
+            foreach (var oldMap in cam.GetComponents<MinimapHUD>()) Object.DestroyImmediate(oldMap);
             var minimap = cam.gameObject.AddComponent<MinimapHUD>();
             minimap.circleMaterial = CircleMaskMaterial();
             cam.gameObject.AddComponent<NavInstrumentHUD>();
@@ -183,6 +183,10 @@ public static class GaleSceneBuilder
 
         // Capas temáticas (geología, material del suelo) y su leyenda.
         GeoLayersBuilder.Install();
+
+        // Navegación A→B: malla horneada desde los colliders recién colocados y su objeto en la escena.
+        NavGridBaker.Bake();
+        NavigationBuilder.Install();
 
         EditorSceneManager.MarkSceneDirty(scene);
         EditorSceneManager.SaveScene(scene);
