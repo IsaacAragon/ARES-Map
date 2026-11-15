@@ -29,8 +29,14 @@ public static class NavigationBuilder
         if (old) Object.DestroyImmediate(old);
 
         var cam = Camera.main;
-        var minimap = cam ? cam.GetComponent<MinimapHUD>() : null;
+        // El que usan InputRouter y el menú de pausa (el último que añadió GaleSceneBuilder).
+        var router = cam ? cam.GetComponent<InputRouter>() : null;
+        var minimap = router && router.minimap ? router.minimap : cam ? cam.GetComponent<MinimapHUD>() : null;
         if (!minimap) { Debug.LogError("[Nav] no hay MinimapHUD en la cámara principal"); return null; }
+        // Con dos MinimapHUD (escenas hechas antes de que GaleSceneBuilder los borrara todos), M abre dos
+        // mapas superpuestos y el segundo tapa la ruta: se deja solo ese.
+        foreach (var extra in cam.GetComponents<MinimapHUD>())
+            if (extra != minimap) { Debug.LogWarning("[Nav] MinimapHUD duplicado en la cámara: se quita"); Object.DestroyImmediate(extra); }
 
         var go = new GameObject("Navigation");
         var climate = go.AddComponent<ClimateService>();

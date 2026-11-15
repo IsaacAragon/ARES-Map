@@ -75,6 +75,8 @@ public class NavMapOverlay : MonoBehaviour
             {
                 int k = Mathf.Min(i, n - 1);
                 Vector2 cur = map.WorldToMap(w[k], r);
+                // Los puntos van cada pocos metros: se agrupan hasta que el tramo mida al menos 2 px.
+                if ((cur - prev).sqrMagnitude < 4f && k < n - 1) continue;
                 Vector2 a = prev, b = cur;
                 prev = cur;
                 if (!map.ClipLine(ref a, ref b, r)) continue;

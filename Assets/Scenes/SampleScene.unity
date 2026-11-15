@@ -133,7 +133,6 @@ GameObject:
   - component: {fileID: 330585547}
   - component: {fileID: 330585548}
   - component: {fileID: 330585556}
-  - component: {fileID: 330585557}
   - component: {fileID: 330585558}
   - component: {fileID: 330585559}
   m_Layer: 0
@@ -309,50 +308,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::InputRouter
   chase: {fileID: 330585548}
   minimap: {fileID: 330585558}
---- !u!114 &330585557
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 330585543}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fce5340473496184a831662771b72304, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::MinimapHUD
-  show: 1
-  diameterAt1080: 236
-  rightSpace: 128
-  topSpace: 48
-  margin: 12
-  circleMaterial: {fileID: 2100000, guid: 6919981316a17d749a46bf912a9877bc, type: 2}
-  radiusMeters: 10000
-  minRadiusMeters: 500
-  maxRadiusMeters: 60000
-  rotateWithRover: 0
-  disableFog: 1
-  places:
-  - name: Gale
-    lon: 137.8
-    lat: -5.4
-  - name: Aeolis Mons
-    lon: 137.85
-    lat: -5.08
-  - name: Babati
-    lon: 137.93
-    lat: -3.16
-  - name: Robert Sharp
-    lon: 133.59
-    lat: -4.12
-  interactiveFraction: 0.8
-  hideCursorInSimulation: 1
-  virtualCursorSpeed: 0.6
-  showCuriosityRoute: 1
-  curiosityRouteColor: {r: 1, g: 0.62, b: 0.2, a: 0.95}
-  solMarkEvery: 500
-  showPath: 1
-  pathColor: {r: 0.35, g: 0.95, b: 1, a: 0.9}
 --- !u!114 &330585558
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -391,6 +346,7 @@ MonoBehaviour:
     lat: -4.12
   interactiveFraction: 0.8
   hideCursorInSimulation: 1
+  extraHint: 
   virtualCursorSpeed: 0.6
   showCuriosityRoute: 1
   curiosityRouteColor: {r: 1, g: 0.62, b: 0.2, a: 0.95}
@@ -1019,6 +975,120 @@ MeshCollider:
   m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: 8166746868639372146, guid: 6ac36043de7b012478d30ef75c9ac0c3, type: 3}
+--- !u!1 &1151283925
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1151283930}
+  - component: {fileID: 1151283929}
+  - component: {fileID: 1151283928}
+  - component: {fileID: 1151283927}
+  - component: {fileID: 1151283926}
+  m_Layer: 0
+  m_Name: Navigation
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1151283926
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1151283925}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5bae43c2b78e6b64cbb0b496d5d9d35b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::NavRouteRibbon
+  material: {fileID: 2100000, guid: 2c19d0baf9ab3fa4ab026e1ae9d0b53e, type: 2}
+  width: 0.6
+  lift: 0.04
+  sampleMeters: 8
+  routeColor: {r: 0.72, g: 0.45, b: 1, a: 0.85}
+  cautionColor: {r: 1, g: 0.72, b: 0.2, a: 0.9}
+  unsafeColor: {r: 1, g: 0.25, b: 0.25, a: 0.95}
+  revealMinSeconds: 1.5
+  revealMaxSeconds: 3
+  kmMarkEvery: 1
+--- !u!114 &1151283927
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1151283925}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8c8562ea7881ef04492b04c26dac2edb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::NavMapOverlay
+  routeColor: {r: 0.72, g: 0.45, b: 1, a: 1}
+  cautionColor: {r: 1, g: 0.72, b: 0.2, a: 1}
+  unsafeColor: {r: 1, g: 0.25, b: 0.25, a: 1}
+  outlineColor: {r: 0.08, g: 0.03, b: 0.12, a: 0.9}
+  maxSegments: 1500
+--- !u!114 &1151283928
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1151283925}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 462d4489abdc4b74bb1ced5f212570e9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::NavigationSystem
+  gridAsset: {fileID: 4900000, guid: e8c218e57c2d0be4d9d04dbc14b31384, type: 3}
+  profilesAsset: {fileID: 4900000, guid: ec6b31e6c5396794fb0165a2122b5998, type: 3}
+  minimap: {fileID: 330585558}
+  chase: {fileID: 330585548}
+  vehicle: 0
+  weights: 0
+  allowRelax: 1
+  heuristicWeight: 1.3
+  rerouteOnDeviation: 1
+  offRouteUnits: 3
+  offRouteSeconds: 3
+  arrivalUnits: 2
+  completedSeconds: 5
+  provenMeters: 50
+--- !u!114 &1151283929
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1151283925}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bed5840e10207ca4c9c161e2ac90c4c8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ClimateService
+  dataset: {fileID: 4900000, guid: 96a68daeec93e7047bebbf44b3817312, type: 3}
+  dustScenario: 0
+--- !u!4 &1151283930
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1151283925}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &1537489746
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1897,3 +1967,4 @@ SceneRoots:
   - {fileID: 1757092274}
   - {fileID: 644716281}
   - {fileID: 1558796439}
+  - {fileID: 1151283930}

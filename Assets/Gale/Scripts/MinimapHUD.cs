@@ -405,7 +405,7 @@ public class MinimapHUD : MonoBehaviour
                     : "MAPA · clic dcho+arrastrar mover · rueda zoom · WASD · Q/E girar · F rover · C cráter · M/Esc salir",
                 hintStyle);
             if (!string.IsNullOrEmpty(extraHint))
-                GUI.Label(new Rect(r.x + 8, r.y + 42, r.width - 16, 40), extraHint, hintStyle);
+                GUI.Label(new Rect(r.x + 8, r.y + 22 + hintStyle.CalcHeight(new GUIContent(GaleInput.UsingGamepad ? "MAPA · stick izq. mover · gatillos zoom · stick dcho. cursor · A seleccionar · LB/RB girar · X rover · Y cráter · B salir" : "MAPA · clic dcho+arrastrar mover · rueda zoom · WASD · Q/E girar · F rover · C cráter · M/Esc salir"), r.width - 16), r.width - 16, 40), extraHint, hintStyle);
             if (useVirtualCursor) Marker(virtualCursor, "✛", new Color(1f, 0.95f, 0.4f), 0f);
         }
         GUI.color = old;

@@ -574,8 +574,8 @@ public class NavigationSystem : MonoBehaviour
             if (offRouteTime > offRouteSeconds)
             {
                 offRouteTime = 0f;
-                Message = "Fuera de ruta: recalculando.";
                 Recalculate();
+                Message = "Fuera de ruta: ruta recalculada desde aquí.";
             }
         }
     }
