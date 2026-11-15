@@ -202,9 +202,6 @@ public static class GaleSceneBuilder
         return mat;
     }
 
-    // ---------- Menú de pausa (UI Toolkit) ----------
-    const string UiDir = "Assets/Gale/UI";
-    const string PanelSettingsPath = UiDir + "/GalePanelSettings.asset";
     // ---------- Ruta real de Curiosity (JPL MMGIS, en Assets/Gale/Route) ----------
     static void BuildCuriosityRoute()
     {
@@ -226,6 +223,9 @@ public static class GaleSceneBuilder
         if (!route.routeCsv || !route.waypointsCsv) Debug.LogWarning("[Gale] faltan los CSV de la ruta de Curiosity");
     }
 
+    // ---------- Menú de pausa (UI Toolkit) ----------
+    const string UiDir = "Assets/Gale/UI";
+    const string PanelSettingsPath = UiDir + "/GalePanelSettings.asset";
 
     static void BuildPauseMenu(ChaseCamera chase, MinimapHUD minimap)
     {

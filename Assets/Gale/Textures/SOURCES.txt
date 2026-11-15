@@ -49,3 +49,5 @@ HD textures of the five large blocks (Gale, GaleNorte, GaleSur, GaleEste, GaleOe
            --base Tools/data/albedo_base/<B>_Albedo_base.png --size 8192 8192 --out Assets/Gale/Textures/<B>_Albedo.jpg
   Detail = CTX luminance / its own 250 m low-pass, ^0.9, multiplied in linear light; 96 px of context around each block
   so the shared edges match. GaleRuta_Albedo.jpg was rebuilt against the new Gale_Albedo.jpg (600 m feather).
+Geo/*.png (geology and soil material layers) extended from lon 141.0 E to 142.0 E by Tools/extend_geo_region.py with the same
+  method as the zip (THEMIS night/day via NASA Mars Trek; Tanaka et al. 2014 via the USGS ArcGIS service).

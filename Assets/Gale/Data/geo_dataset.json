@@ -2,10 +2,10 @@
  "fuente": "gale_ARES_v3_zonas (Salomonsters): NASA Mars Trek (THEMIS, TES, MOLA) y USGS SIM 3292",
  "region": {
   "lonOeste": 131.50085,
-  "lonEste": 141.00128,
+  "lonEste": 142.00104,
   "latSur": -8.00079,
   "latNorte": -2.49939,
-  "ancho": 3459,
+  "ancho": 3823,
   "alto": 2003,
   "metrosPorPixel": 162.8
  },
@@ -169,24 +169,24 @@
    "id": "zona_0_regional_completa",
    "nombre": "Región completa",
    "lonOeste": 131.50085,
-   "lonEste": 141.00128,
+   "lonEste": 142.00104,
    "latSur": -8.00079,
    "latNorte": -2.49939,
-   "anchoKm": 561.3,
+   "anchoKm": 622.4,
    "altoKm": 326.1,
    "sueloPct": [
-    14.7,
-    40.4,
-    30.2,
-    14.7
+    14.4,
+    40.7,
+    30.4,
+    14.6
    ],
    "geologiaPct": [
-    25.6,
-    4.1,
-    24.4,
-    1.3,
-    2.4,
-    42.1
+    25.2,
+    3.7,
+    29.3,
+    1.5,
+    2.2,
+    38.1
    ],
    "tes": [
     {
