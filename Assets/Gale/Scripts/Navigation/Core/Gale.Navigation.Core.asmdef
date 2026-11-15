@@ -1,0 +1,14 @@
+{
+    "name": "Gale.Navigation.Core",
+    "rootNamespace": "Gale.Navigation",
+    "references": [],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": true
+}
