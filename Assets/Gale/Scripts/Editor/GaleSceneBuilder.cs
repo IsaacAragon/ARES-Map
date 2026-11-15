@@ -263,7 +263,10 @@ public static class GaleSceneBuilder
         ti.anisoLevel = 8;
         ti.filterMode = FilterMode.Trilinear;
         ti.wrapMode = wrap;
-        ti.maxTextureSize = 2048;
+        // Tamaño máximo = el de la imagen (potencia de 2 por encima, hasta 16384): con 2048 fijo,
+        // las texturas de los bloques grandes y la de detalle de la ruta se reducían al importarlas.
+        ti.GetSourceTextureWidthAndHeight(out int tw, out int th);
+        ti.maxTextureSize = Mathf.Clamp(Mathf.NextPowerOfTwo(Mathf.Max(tw, th, 32)), 32, 16384);
         ti.textureCompression = TextureImporterCompression.CompressedHQ;
         ti.SaveAndReimport();
     }
