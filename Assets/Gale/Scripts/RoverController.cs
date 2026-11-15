@@ -1,8 +1,8 @@
 using UnityEngine;
-using UnityEngine.InputSystem;
 
 // Rover de prueba: suspensión por rayos (una por rueda), tracción y giro arcade.
-// WASD / flechas para moverse, Shift para ir rápido, Espacio para frenar, R para enderezar.
+// Controles por acciones (mapa Rover): WASD/flechas o stick izq. + gatillos para moverse,
+// Shift / A rápido, Espacio / B freno, R / Y enderezar.
 // La gravedad es la de Marte (3,71 m/s²) y se aplica solo al rover, sin tocar Physics.gravity.
 [RequireComponent(typeof(Rigidbody))]
 public class RoverController : MonoBehaviour
@@ -42,7 +42,6 @@ public class RoverController : MonoBehaviour
     // Lo apaga la vista aérea para que WASD mueva la cámara y no el rover.
     [HideInInspector] public bool inputEnabled = true;
 
-    bool prevR;
     Rigidbody rb;
     Vector3[] wheelRest;
     Quaternion[] wheelRestRot;
@@ -52,6 +51,17 @@ public class RoverController : MonoBehaviour
 
     public float Speed => rb ? rb.linearVelocity.magnitude : 0f;
     public bool Grounded => groundedWheels > 0;
+
+    /// <summary>Contacto de una rueda con el suelo, del rayo de suspensión del último FixedUpdate.</summary>
+    public struct WheelContact
+    {
+        public bool grounded;
+        public Vector3 point, normal;
+        public bool left;   // lado izquierdo del rover
+    }
+
+    /// <summary>Un contacto por rueda (mismo orden que <see cref="wheels"/>). Lo usan las huellas.</summary>
+    public WheelContact[] Contacts { get; private set; } = new WheelContact[0];
 
     void Awake()
     {
@@ -71,10 +81,12 @@ public class RoverController : MonoBehaviour
         wheelRest = new Vector3[wheels.Length];
         wheelRestRot = new Quaternion[wheels.Length];
         wheelSpin = new float[wheels.Length];
+        Contacts = new WheelContact[wheels.Length];
         for (int i = 0; i < wheels.Length; i++)
         {
             wheelRest[i] = transform.InverseTransformPoint(wheels[i].position);
             wheelRestRot[i] = Quaternion.Inverse(transform.rotation) * wheels[i].rotation;
+            Contacts[i].left = wheelRest[i].x < 0f;
         }
         // Centro de masas sobre el centroide de las ruedas: con el COM adelantado, las delanteras
         // cargaban más, el rover cabeceaba ~6° y los muelles inclinados lo hacían reptar hacia atrás.
@@ -91,38 +103,44 @@ public class RoverController : MonoBehaviour
         SnapToGround(transform.position);
     }
 
-    public void SnapToGround(Vector3 pos)
+    public void SnapToGround(Vector3 pos) => ResetTo(pos, transform.eulerAngles.y);
+
+    /// <summary>Coloca el rover sobre el terreno en (x, z), derecho y con rumbo yaw, parado.</summary>
+    public void ResetTo(Vector3 pos, float yaw)
     {
         var from = new Vector3(pos.x, 5000f, pos.z);
         if (Physics.Raycast(from, Vector3.down, out var hit, 20000f, groundMask))
             pos.y = hit.point.y + restLength + 0.8f;
-        transform.SetPositionAndRotation(pos, Quaternion.Euler(0f, transform.eulerAngles.y, 0f));
+        var rot = Quaternion.Euler(0f, yaw, 0f);
+        // Con interpolación, el Rigidbody manda: hay que moverlo a él además del transform.
+        rb.position = pos;
+        rb.rotation = rot;
+        transform.SetPositionAndRotation(pos, rot);
         rb.linearVelocity = Vector3.zero;
         rb.angularVelocity = Vector3.zero;
     }
 
+    bool ReadsInput => inputEnabled && !SimPause.IsPaused;
+
     void Update()
     {
-        var kb = Keyboard.current;
-        bool r = inputEnabled && kb != null && kb.rKey.isPressed;
-        if (r && !prevR) SnapToGround(transform.position);
-        prevR = r;
+        // Acciones del mapa Rover (Input System): teclado y mando. El mapa solo está activo en
+        // la vista de seguimiento (InputRouter); inputEnabled queda para scripts externos.
+        if (ReadsInput && GaleInput.Controls.Rover.Reset.WasPressedThisFrame()) SnapToGround(transform.position);
     }
 
     void FixedUpdate()
     {
         if (wheelRest == null) return;
-        var kb = Keyboard.current;
         float throttle = 0f, steer = 0f;
         bool boost = false, brake = false;
-        if (inputEnabled && kb != null)
+        if (ReadsInput)
         {
-            if (kb.wKey.isPressed || kb.upArrowKey.isPressed) throttle += 1f;
-            if (kb.sKey.isPressed || kb.downArrowKey.isPressed) throttle -= 1f;
-            if (kb.dKey.isPressed || kb.rightArrowKey.isPressed) steer += 1f;
-            if (kb.aKey.isPressed || kb.leftArrowKey.isPressed) steer -= 1f;
-            boost = kb.leftShiftKey.isPressed;
-            brake = kb.spaceKey.isPressed;
+            var a = GaleInput.Controls.Rover;
+            throttle = Mathf.Clamp(a.Throttle.ReadValue<float>(), -1f, 1f);
+            steer = Mathf.Clamp(a.Steer.ReadValue<float>(), -1f, 1f);
+            boost = a.Boost.IsPressed();
+            brake = a.Brake.IsPressed();
         }
 
         rb.AddForce(Vector3.down * gravity, ForceMode.Acceleration);
@@ -143,6 +161,9 @@ public class RoverController : MonoBehaviour
             {
                 groundedWheels++;
                 groundNormal += hit.normal;
+                Contacts[i].grounded = true;
+                Contacts[i].point = hit.point;
+                Contacts[i].normal = hit.normal;
                 float dist = hit.distance - rayHeadroom;           // negativa si el punto ya está bajo el suelo
                 float compression = maxDist - dist;
                 float vel = Vector3.Dot(rb.GetPointVelocity(origin), transform.up);
@@ -153,9 +174,10 @@ public class RoverController : MonoBehaviour
                 rb.AddForceAtPosition(transform.up * Mathf.Max(0f, force), origin);
                 if (moveWheelVisuals) wheels[i].position = hit.point + transform.up * wheelRadius;
             }
-            else if (moveWheelVisuals)
+            else
             {
-                wheels[i].position = origin + down * (maxDist - wheelRadius);
+                Contacts[i].grounded = false;
+                if (moveWheelVisuals) wheels[i].position = origin + down * (maxDist - wheelRadius);
             }
         }
 

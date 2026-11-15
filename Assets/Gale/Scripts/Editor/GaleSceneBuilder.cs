@@ -16,6 +16,21 @@ public static class GaleSceneBuilder
     const string FbxPath = "Assets/Gale/Models/Gale_TIN.fbx";
     const string MatDir = "Assets/Gale/Materials";
 
+    // Bloques del mosaico alrededor de Gale (Tools/mosaic_blocks.json). Todos comparten el origen XY
+    // de Gale_TIN y bordes con los mismos vértices, así que se colocan sin desplazamiento.
+    // nombre, FBX, material, textura (UV 0..1 = rectángulo del bloque).
+    static readonly (string name, string fbx, string mat, string albedo)[] Blocks =
+    {
+        // Franja norte (borde de Gale -> Babati): DXF Civil 3D + MOLA a los lados.
+        ("GaleNorte_TIN", "Assets/Gale/Models/GaleNorte_TIN.fbx", "GaleNorte_Terrain.mat", "Assets/Gale/Textures/GaleNorte_Albedo.png"),
+        // Franja sur (borde sur de Gale -> fin del sector 6, Farah Vallis).
+        ("GaleSur_TIN", "Assets/Gale/Models/GaleSur_TIN.fbx", "GaleSur_Terrain.mat", "Assets/Gale/Textures/GaleSur_Albedo.png"),
+        // Franja este (sector 7 a ~400 m + MOLA al sur), de la franja sur a la franja norte.
+        ("GaleEste_TIN", "Assets/Gale/Models/GaleEste_TIN.fbx", "GaleEste_Terrain.mat", "Assets/Gale/Textures/GaleEste_Albedo.png"),
+        // Franja oeste con el cráter Robert Sharp (sector 9 a ~400 m + MOLA al sur).
+        ("GaleOeste_TIN", "Assets/Gale/Models/GaleOeste_TIN.fbx", "GaleOeste_Terrain.mat", "Assets/Gale/Textures/GaleOeste_Albedo.png"),
+    };
+
     // 1 m Unity = 50 m reales. Escala uniforme: las pendientes son las reales.
     const float WorldScale = 0.02f;
     // Centro XY eliminado en Blender (ver Gale_TIN_conversion.json).
@@ -34,13 +49,14 @@ public static class GaleSceneBuilder
         }
         var scene = EditorSceneManager.GetActiveScene();
 
-        foreach (var n in new[] { "BallLeft", "BallRight", "Ground", "Gale_Terrain", "Rover" })
+        foreach (var n in new[] { "BallLeft", "BallRight", "Ground", "Gale_Terrain", "Rover", "PauseMenu" })
         {
             var go = GameObject.Find(n);
             if (go) Object.DestroyImmediate(go);
         }
 
-        ConfigureImporter();
+        ConfigureImporter(FbxPath);
+        foreach (var blk in Blocks) ConfigureImporter(blk.fbx);
 
         // ---------- terreno
         var root = new GameObject("Gale_Terrain");
@@ -55,7 +71,7 @@ public static class GaleSceneBuilder
         terrain.name = "Gale_TIN";
         var mf = terrain.GetComponentInChildren<MeshFilter>();
         var mr = terrain.GetComponentInChildren<MeshRenderer>();
-        mr.sharedMaterial = TerrainMaterial();
+        mr.sharedMaterial = TerrainMaterial("Gale_Terrain.mat", AlbedoPath);
         var mc = mf.gameObject.AddComponent<MeshCollider>();
         mc.sharedMesh = mf.sharedMesh;
 
@@ -69,6 +85,21 @@ public static class GaleSceneBuilder
         for (int i = 1; i < verts.Length; i++) { var w = l2w.MultiplyPoint3x4(verts[i]); if (w.y > hw.y) hw = w; }
         Debug.Log($"[Gale] highest vertex world={hw} -> real X={OffsetX + hw.x / WorldScale:0.0} " +
                   $"Y={OffsetY + hw.z / WorldScale:0.0} Z={hw.y / WorldScale:0.0}");
+
+        // Bloques vecinos del mosaico: mismo sistema de coordenadas, bordes compartidos con Gale.
+        var blockFilters = new System.Collections.Generic.List<MeshFilter>();
+        foreach (var blk in Blocks)
+        {
+            var go = (GameObject)PrefabUtility.InstantiatePrefab(AssetDatabase.LoadAssetAtPath<GameObject>(blk.fbx), root.transform);
+            go.name = blk.name;
+            var bmf = go.GetComponentInChildren<MeshFilter>();
+            var bmr = go.GetComponentInChildren<MeshRenderer>();
+            bmr.sharedMaterial = TerrainMaterial(blk.mat, blk.albedo);
+            var bmc = bmf.gameObject.AddComponent<MeshCollider>();
+            bmc.sharedMesh = bmf.sharedMesh;
+            blockFilters.Add(bmf);
+            Debug.Log($"[Gale] block {blk.name} verts={bmf.sharedMesh.vertexCount} worldBounds={bmr.bounds}");
+        }
 
         // ---------- rover
         var rover = BuildRover();
@@ -102,7 +133,24 @@ public static class GaleSceneBuilder
             chase.offsetX = OffsetX;
             chase.offsetY = OffsetY;
             chase.marsRadius = MarsRadius;
-            if (!cam.GetComponent<MinimapHUD>()) cam.gameObject.AddComponent<MinimapHUD>();
+            // Límites de la vista aérea = extensión del mosaico (u Unity desde el centro de Gale).
+            chase.aerialNorthLimit = 3000f;
+            chase.aerialSouthLimit = 2150f;
+            chase.aerialEastLimit = 5000f;
+            chase.aerialWestLimit = 6800f;
+            // Se recrean para que tomen los valores del código (p. ej. rótulos nuevos) y no los guardados
+            // en la escena. Primero el instrumento, que depende del minimapa.
+            var oldNav = cam.GetComponent<NavInstrumentHUD>();
+            if (oldNav) Object.DestroyImmediate(oldNav);
+            var oldMap = cam.GetComponent<MinimapHUD>();
+            if (oldMap) Object.DestroyImmediate(oldMap);
+            var minimap = cam.gameObject.AddComponent<MinimapHUD>();
+            minimap.circleMaterial = CircleMaskMaterial();
+            cam.gameObject.AddComponent<NavInstrumentHUD>();
+            var router = cam.GetComponent<InputRouter>() ?? cam.gameObject.AddComponent<InputRouter>();
+            router.chase = chase;
+            router.minimap = minimap;
+            BuildPauseMenu(chase, minimap);
             cam.transform.position = spawn + new Vector3(0f, 6f, 10f);
             cam.transform.LookAt(spawn);
         }
@@ -116,6 +164,15 @@ public static class GaleSceneBuilder
         relief.sunAzimuth = 315f;
         relief.sunElevation = 30f;
         relief.Apply();
+        // Bloques vecinos: mismo realce de relieve; la luz la controla el de Gale.
+        foreach (var bmf in blockFilters)
+        {
+            var brelief = bmf.gameObject.AddComponent<ReliefShading>();
+            brelief.sourceMesh = bmf.sharedMesh;
+            brelief.controlLighting = false;
+            brelief.reliefIntensity = relief.reliefIntensity;
+            brelief.Apply();
+        }
         DynamicGI.UpdateEnvironment();
         Debug.Log($"[Gale] relief: k={relief.reliefIntensity} sun az={relief.sunAzimuth} el={relief.sunElevation} " +
                   $"collider='{mc.sharedMesh.name}' render='{mf.sharedMesh.name}'");
@@ -125,9 +182,59 @@ public static class GaleSceneBuilder
         Debug.Log($"[Gale] scene built and saved: {scene.path}");
     }
 
-    static void ConfigureImporter()
+    // Material de la máscara circular del minimapa (asset, para que el shader entre en la build).
+    static Material CircleMaskMaterial()
     {
-        var imp = (ModelImporter)AssetImporter.GetAtPath(FbxPath);
+        const string path = MatDir + "/Minimap_CircleMask.mat";
+        var mat = AssetDatabase.LoadAssetAtPath<Material>(path);
+        if (!mat)
+        {
+            mat = new Material(Shader.Find("Hidden/Gale/CircleMask"));
+            AssetDatabase.CreateAsset(mat, path);
+        }
+        return mat;
+    }
+
+    // ---------- Menú de pausa (UI Toolkit) ----------
+    const string UiDir = "Assets/Gale/UI";
+    const string PanelSettingsPath = UiDir + "/GalePanelSettings.asset";
+
+    static void BuildPauseMenu(ChaseCamera chase, MinimapHUD minimap)
+    {
+        var go = new GameObject("PauseMenu");
+        var doc = go.AddComponent<UnityEngine.UIElements.UIDocument>();
+        doc.panelSettings = GalePanelSettings();
+        doc.visualTreeAsset = AssetDatabase.LoadAssetAtPath<UnityEngine.UIElements.VisualTreeAsset>(UiDir + "/PauseMenu.uxml");
+        doc.sortingOrder = 100;
+        var menu = go.AddComponent<PauseMenu>();
+        menu.chase = chase;
+        menu.minimap = minimap;
+        menu.resetLon = SpawnLon;
+        menu.resetLat = SpawnLat;
+    }
+
+    /// <summary>PanelSettings común de la UI del simulador: escala con la pantalla (referencia 1920×1080).</summary>
+    public static UnityEngine.UIElements.PanelSettings GalePanelSettings()
+    {
+        var ps = AssetDatabase.LoadAssetAtPath<UnityEngine.UIElements.PanelSettings>(PanelSettingsPath);
+        if (!ps)
+        {
+            ps = ScriptableObject.CreateInstance<UnityEngine.UIElements.PanelSettings>();
+            AssetDatabase.CreateAsset(ps, PanelSettingsPath);
+        }
+        ps.themeStyleSheet = AssetDatabase.LoadAssetAtPath<UnityEngine.UIElements.ThemeStyleSheet>(UiDir + "/GaleTheme.tss");
+        ps.scaleMode = UnityEngine.UIElements.PanelScaleMode.ScaleWithScreenSize;
+        ps.referenceResolution = new Vector2Int(1920, 1080);
+        ps.screenMatchMode = UnityEngine.UIElements.PanelScreenMatchMode.MatchWidthOrHeight;
+        ps.match = 0.5f;
+        EditorUtility.SetDirty(ps);
+        AssetDatabase.SaveAssets();
+        return ps;
+    }
+
+    static void ConfigureImporter(string path)
+    {
+        var imp = (ModelImporter)AssetImporter.GetAtPath(path);
         bool dirty = false;
         if (imp.materialImportMode != ModelImporterMaterialImportMode.None) { imp.materialImportMode = ModelImporterMaterialImportMode.None; dirty = true; }
         if (!imp.isReadable) { imp.isReadable = true; dirty = true; }
@@ -161,15 +268,15 @@ public static class GaleSceneBuilder
         ti.SaveAndReimport();
     }
 
-    static Material TerrainMaterial()
+    static Material TerrainMaterial(string matName, string albedoPath)
     {
         Directory.CreateDirectory(MatDir);
-        ConfigureTexture(AlbedoPath, true, false, TextureWrapMode.Clamp);
+        ConfigureTexture(albedoPath, true, false, TextureWrapMode.Clamp);
         // El detalle se multiplica x2 en URP: gris lineal 0,5 = neutro, por eso sRGB desactivado.
         ConfigureTexture(DetailAlbedoPath, false, false, TextureWrapMode.Repeat);
         ConfigureTexture(DetailNormalPath, false, true, TextureWrapMode.Repeat);
 
-        string matPath = MatDir + "/Gale_Terrain.mat";
+        string matPath = MatDir + "/" + matName;
         var mat = AssetDatabase.LoadAssetAtPath<Material>(matPath);
         if (!mat)
         {
@@ -178,7 +285,7 @@ public static class GaleSceneBuilder
         }
         // Color real de Gale: Viking MDIM 2.1 (color) x THEMIS (detalle), recortado al encuadre del DXF.
         mat.SetColor("_BaseColor", Color.white);
-        mat.SetTexture("_BaseMap", AssetDatabase.LoadAssetAtPath<Texture2D>(AlbedoPath));
+        mat.SetTexture("_BaseMap", AssetDatabase.LoadAssetAtPath<Texture2D>(albedoPath));
         mat.SetTextureScale("_BaseMap", Vector2.one);
         mat.SetTextureOffset("_BaseMap", Vector2.zero);
         // Detalle de cerca: guijarros y arena (ambientCG Rocks015, CC0).
@@ -383,6 +490,84 @@ public static class GaleSceneBuilder
         ctrl.moveWheelVisuals = false;   // el rocker-bogie del modelo es rígido: las ruedas sólo giran
         ctrl.autoRestLength = true;      // en reposo las ruedas tocan el suelo
         ctrl.centerOfMass = new Vector3(0f, 0.7f, 0f);
+
+        // Rodadas persistentes y recorrido georreferenciado.
+        var tracks = rover.AddComponent<RoverTracks>();
+        tracks.rover = ctrl;
+        tracks.material = TrackMaterial();
+        rover.AddComponent<RoverTrackRecorder>().rover = ctrl;
         return rover;
+    }
+
+    // ---------- Rodadas ----------
+    const string TreadTexPath = "Assets/Gale/Textures/Rover_Tread.png";
+
+    static Material TrackMaterial()
+    {
+        if (!File.Exists(TreadTexPath)) WriteTreadTexture(TreadTexPath);
+        var imp = (TextureImporter)AssetImporter.GetAtPath(TreadTexPath);
+        if (imp.sRGBTexture || imp.wrapModeU != TextureWrapMode.Repeat || imp.wrapModeV != TextureWrapMode.Clamp)
+        {
+            imp.sRGBTexture = false;
+            imp.wrapModeU = TextureWrapMode.Repeat;
+            imp.wrapModeV = TextureWrapMode.Clamp;
+            imp.SaveAndReimport();
+        }
+        string matPath = MatDir + "/Rover_Tracks.mat";
+        var mat = AssetDatabase.LoadAssetAtPath<Material>(matPath);
+        if (!mat)
+        {
+            mat = new Material(Shader.Find("Gale/RoverTrack"));
+            AssetDatabase.CreateAsset(mat, matPath);
+        }
+        mat.shader = Shader.Find("Gale/RoverTrack");
+        mat.SetTexture("_MainTex", AssetDatabase.LoadAssetAtPath<Texture2D>(TreadTexPath));
+        mat.SetFloat("_Strength", 0.8f);
+        EditorUtility.SetDirty(mat);
+        AssetDatabase.SaveAssets();
+        return mat;
+    }
+
+    // Dibujo de la banda de rodadura de Curiosity (gris, 1 = suelo sin tocar): huella general algo
+    // más oscura, grousers en chevrón (10 por vuelta de textura de 1,5 u, para que se lean a distancia
+    // de cámara aunque el real tiene 24 por rueda) y los agujeros de "JPL" en Morse
+    // (·--- ·--· ·-··) a lo largo del centro.
+    static void WriteTreadTexture(string path)
+    {
+        const int W = 512, H = 128;
+        var tex = new Texture2D(W, H, TextureFormat.RGB24, false);
+        var px = new Color[W * H];
+        // Morse JPL: punto = 1 unidad, raya = 3, separación entre símbolos 1, entre letras 3.
+        var morse = new System.Collections.Generic.List<(int start, int len)>();
+        int pos = 0;
+        foreach (var letter in new[] { ".---", ".--.", ".-.." })
+        {
+            foreach (char ch in letter) { int l = ch == '.' ? 1 : 3; morse.Add((pos, l)); pos += l + 1; }
+            pos += 2;
+        }
+        float morseLen = pos;
+        for (int y = 0; y < H; y++)
+            for (int x = 0; x < W; x++)
+            {
+                float u = (float)x / W, v = (float)y / H;
+                float g = 0.74f;                                   // suelo compactado
+                float vc = Mathf.Abs(v - 0.5f) * 2f;               // 0 centro, 1 borde
+                // Grousers en chevrón: 24 por vuelta, desplazados según la distancia al centro.
+                float phase = Mathf.Repeat(u * 10f - vc * 0.35f, 1f);
+                if (phase < 0.38f) g -= 0.34f * Mathf.Sin(phase / 0.38f * Mathf.PI);
+                // Agujeros Morse: franja central, repetida dos veces por vuelta.
+                if (vc < 0.18f)
+                {
+                    float m = Mathf.Repeat(u * 2f, 1f) * (morseLen + 4f);
+                    foreach (var (s, l) in morse)
+                        if (m >= s && m < s + l) { g += 0.18f; break; }
+                }
+                g += (Mathf.PerlinNoise(x * 0.11f, y * 0.11f) - 0.5f) * 0.10f;
+                px[y * W + x] = new Color(g, g, g);
+            }
+        tex.SetPixels(px);
+        File.WriteAllBytes(path, tex.EncodeToPNG());
+        Object.DestroyImmediate(tex);
+        AssetDatabase.ImportAsset(path);
     }
 }

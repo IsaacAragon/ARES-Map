@@ -1,4 +1,32 @@
-Gale_Albedo.png: derived from USGS Astrogeology WMS (planetarymaps.usgs.gov, mars_simp_cyl.map),
-  layers MDIM21_color (Viking MDIM 2.1 colorized, NASA/USGS, public domain) and THEMIS (THEMIS day IR, ASU/NASA).
-  BBOX lon 136.11621087545228..139.48347084890932, lat -7.082183679637354..-3.7149237061972213 (DXF point extent, R=3396190 m).
+Gale_Albedo.png, GaleNorte_Albedo.png, GaleSur_Albedo.png: derived from USGS Astrogeology WMS
+  (planetarymaps.usgs.gov, mars_simp_cyl.map), layers MDIM21_color (Viking MDIM 2.1 colorized, NASA/USGS, public domain)
+  and THEMIS (THEMIS day IR, ASU/NASA).
+  One texture per terrain block of Tools/mosaic_blocks.json; UV 0..1 = the block rectangle (Equirectangular Mars, R=3396190 m).
+  Gale_Albedo.png covers lon 136.11621087545228..139.48347084890932, lat -7.082183679637354..-3.7149237061972213.
+  Pipeline (same for every block, so the seams match):
+    python Tools/fetch_wms.py --config Tools/mosaic_blocks.json --block <B> --margin 64 --out <dir>
+    python Tools/build_gale_textures.py <dir> - Assets/Gale/Textures --name <B>_Albedo.png
+           --load-stats Assets/Gale/Textures/Albedo_stats.json --crop-margin 64
+  - fetch_wms.py asks MapServer for texel CENTRES (WMS 1.1.1 BBOX = centres of the edge pixels), 2048 px per Gale width
+    (~97 m/px), plus a 64 px margin so the blur has real context at the block edges.
+  - Albedo_stats.json fixes the colour normalisation (Viking brightness p2/p98, THEMIS low-pass mean) to the values of the
+    original joint Gale + north band image, so every block has the same colour scale.
 Detail_Rocks015_*: ambientCG Rocks015 (CC0), https://ambientcg.com/view?id=Rocks015
+
+Terrain blocks (Assets/Gale/Models, Tools/build_mosaic_block.py + Tools/blender_dxf_points_to_tin.py --halo):
+  Gale_TIN.fbx: MOLA MGS 463 m (Gale DXF, NASA/USGS) + "6. Gale_sector_sur_Farah_Vallis_Civil3D.dxf" (Civil 3D 200 m grid)
+    over the south half of the crater, 2 km blend to MOLA at the sector edges.
+  GaleSur_TIN.fbx: south band, Gale south rim -> end of sector 6 (~7 km), sector 6 + MOLA at its sides.
+  GaleNorte_TIN.fbx: north band from the Gale north rim to Babati (Tools/build_north_band_points.py):
+    "4. Gale_Babati_sector_norte_Civil3D.dxf", georeferenced by Tools/fit_sector_offset.py (Models/Babati_georef.json);
+    MOLA 463 m on both sides of it; 2 km blend; shares the north-rim vertices of Gale_TIN. Rebuilt through
+    build_mosaic_block.py (base "points:") so its east/west edges are straight and shared with the side blocks.
+  GaleEste_TIN.fbx: east block, Gale east rim -> end of "7.Gale_franja_este_noreste_Civil3D.dxf", from the south band
+    to the north band. Sector 7 decimated to ~400 m (every 2nd node); MOLA 463 m south of it; 2 km blend.
+  GaleOeste_TIN.fbx: west block, end of "9. Gale_franja_oeste_Robert_Sharp_Civil3D.dxf" -> Gale west rim, from the
+    south band to the north band (crater Robert Sharp, 133.59 E 4.12 S). Sector 9 decimated to ~400 m; MOLA 463 m south
+    of it; 2 km blend. The ~6 km of sector 9 north of the north band are not used.
+  Civil 3D sectors 6, 7, 9 share one local system: equirectangular with standard parallel phi0 = -4.59 deg, i.e.
+    X = X0 + x_local / cos(phi0), Y = Y0 + y_local (Tools/fit_sectors_georef.py -> Models/Sectores_georef.json).
+  Shared block edges carry the same vertices on both sides; vertex normals are computed with the neighbours' points
+  (--halo) so the shading has no seam.

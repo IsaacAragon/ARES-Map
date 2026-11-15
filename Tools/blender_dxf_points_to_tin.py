@@ -18,6 +18,7 @@ Options:
   --output      FBX to write (required)
   --scale       Source units -> meters. Default 1.
   --center-xy   Subtract the X/Y centre of the bounds (Z keeps the source datum).
+  --origin X Y  Subtract this X/Y instead (e.g. the Gale TIN offset, so a second block lines up).
   --name        Object name. Default Gale_TIN.
 """
 import sys, os, math, argparse, json
@@ -35,8 +36,55 @@ def parse_args():
     p.add_argument("--output", required=True)
     p.add_argument("--scale", type=float, default=1.0)
     p.add_argument("--center-xy", action="store_true")
+    p.add_argument("--origin", type=float, nargs=2, metavar=("X", "Y"),
+                   help="Subtract this X/Y instead of the bounds centre (to share another TIN's origin).")
     p.add_argument("--name", default="Gale_TIN")
+    p.add_argument("--halo", nargs="+", metavar="DXF",
+                   help="Point DXFs of the neighbouring blocks. Their points within --halo-dist of this block are used "
+                        "ONLY to compute vertex normals (exported as custom normals), so the shading of a shared edge "
+                        "is the same on both blocks. They do not become vertices.")
+    p.add_argument("--halo-dist", type=float, default=3000.0)
     return p.parse_args(argv)
+
+
+def halo_normals(pts, halo_files, dist, cx, cy, scale):
+    """Area-weighted vertex normals of `pts`, computed on a triangulation of pts + nearby neighbour points."""
+    xmin = min(p[0] for p in pts); xmax = max(p[0] for p in pts)
+    ymin = min(p[1] for p in pts); ymax = max(p[1] for p in pts)
+    eps = 1.0
+    extra = []
+    for f in halo_files:
+        hp, _, _ = read_points(f)
+        for x, y, z in hp:
+            outside = x < xmin - eps or x > xmax + eps or y < ymin - eps or y > ymax + eps
+            near = xmin - dist <= x <= xmax + dist and ymin - dist <= y <= ymax + dist
+            if outside and near:
+                extra.append((x, y, z))
+    allp = list(pts) + extra
+    v2 = [Vector(((x - cx) * scale, (y - cy) * scale)) for x, y, _ in allp]
+    ov, _e, of, orig, _oe, _of = delaunay_2d_cdt(v2, [], [], 0, 1e-6)
+    src = [o[0] for o in orig]
+    acc = [[0.0, 0.0, 0.0] for _ in pts]
+    n = len(pts)
+    for f in of:
+        ids = [src[k] for k in f]
+        if not any(i < n for i in ids):
+            continue
+        p0, p1, p2 = (allp[i] for i in ids[:3])
+        ax, ay, az = (p1[0] - p0[0]) * scale, (p1[1] - p0[1]) * scale, (p1[2] - p0[2]) * scale
+        bx, by, bz = (p2[0] - p0[0]) * scale, (p2[1] - p0[1]) * scale, (p2[2] - p0[2]) * scale
+        nx, ny, nz = ay * bz - az * by, az * bx - ax * bz, ax * by - ay * bx   # |n| = 2 * area
+        if nz < 0:
+            nx, ny, nz = -nx, -ny, -nz
+        for i in ids:
+            if i < n:
+                acc[i][0] += nx; acc[i][1] += ny; acc[i][2] += nz
+    out = []
+    for x, y, z in acc:
+        l = math.sqrt(x * x + y * y + z * z) or 1.0
+        out.append((x / l, y / l, z / l))
+    print(f"[tin] halo: {len(extra)} neighbour points used for normals")
+    return out
 
 
 def read_points(path):
@@ -98,6 +146,8 @@ def main():
     xmin, xmax, ymin, ymax = min(xs), max(xs), min(ys), max(ys)
     cx = (xmin + xmax) / 2 if a.center_xy else 0.0
     cy = (ymin + ymax) / 2 if a.center_xy else 0.0
+    if a.origin:
+        cx, cy = a.origin
 
     # Triangulate in local coordinates (better float precision than 8e6-scale numbers).
     v2 = [Vector(((x - cx) * a.scale, (y - cy) * a.scale)) for x, y, _ in pts]
@@ -135,6 +185,12 @@ def main():
         uv.data[loop.index].uv = ((co.x - x0) / w, (co.y - y0) / d)
     for p in mesh.polygons:
         p.use_smooth = True
+
+    if a.halo:
+        hn = halo_normals(pts, a.halo, a.halo_dist, cx, cy, a.scale)
+        # output vertex k comes from source point orig_verts[k][0]
+        mesh.normals_split_custom_set_from_vertices([hn[orig_verts[k][0]] for k in range(len(verts3))])
+        mesh.update()
 
     obj = bpy.data.objects.new(a.name, mesh)
     bpy.context.collection.objects.link(obj)

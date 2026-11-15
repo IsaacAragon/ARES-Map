@@ -1,0 +1,34 @@
+{
+  "input": "C:\\Users\\isaac\\AppData\\Local\\Temp/mosaic/s9/GaleNorte_points.dxf",
+  "points": 94122,
+  "layers": {
+    "BASE": 93052,
+    "BORDE": 1070
+  },
+  "other_entities": {},
+  "vertices": 94122,
+  "duplicates_merged": 0,
+  "triangles": 187172,
+  "flipped": 0,
+  "removed_xy_offset": [
+    8168043.8858655,
+    -319997.63721099996
+  ],
+  "scale": 1.0,
+  "bounds_min": [
+    -99796.65625,
+    99796.65625,
+    -3861.7902037713648
+  ],
+  "bounds_max": [
+    99796.65625,
+    147958.390625,
+    560.0
+  ],
+  "highest_vertex": [
+    -45614.71484375,
+    128508.4609375,
+    560.0
+  ],
+  "fbx_bytes": 5062204
+}
