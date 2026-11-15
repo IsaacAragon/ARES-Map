@@ -17,5 +17,6 @@ public class InputRouter : MonoBehaviour
             chase && chase.Aerial ? GaleInput.Context.Aerial :
             GaleInput.Context.Chase;
         GaleInput.SetContext(c);
+        GaleInput.SetTyping(ExplorerMenu.Typing);   // buscador del menú con el foco
     }
 }

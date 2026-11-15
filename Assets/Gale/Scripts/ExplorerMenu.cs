@@ -28,6 +28,7 @@ public static class ExplorerPrefs
 //   Rocas      unidad geológica, material del suelo e índice termofísico bajo el rover, y la ficha de la zona
 //   Radiación  dosis medidas por RAD (últimas 48 h) y la atmósfera del MCD ahora
 //   Ajustes    mostrar u ocultar el minimapa y las superposiciones (se recuerda durante la sesión)
+//   Buscar     coordenadas o nombre → formación con nombre oficial IAU (PlaceAtlas): sombreado y ficha
 // Todo sale de los datos que ya carga la escena. G (o clic en un icono con el cursor libre) abre y cierra
 // el panel; abrirlo libera el cursor. En pausa se oculta.
 [DefaultExecutionOrder(-40)]
@@ -42,13 +43,16 @@ public class ExplorerMenu : MonoBehaviour
     [Tooltip("Segundos entre actualizaciones de los datos del panel.")]
     public float refreshInterval = 0.25f;
 
-    public enum Section { None = 0, Layers = 1, Geodesy = 2, Rocks = 3, Radiation = 4, Settings = 5 }
-    static readonly string[] SectionNames = { "", "Capas", "Geodesia", "Rocas", "Radiación", "Ajustes" };
+    public enum Section { None = 0, Layers = 1, Geodesy = 2, Rocks = 3, Radiation = 4, Settings = 5, Search = 6 }
+    static readonly string[] SectionNames = { "", "Capas", "Geodesia", "Rocas", "Radiación", "Ajustes", "Buscar" };
 
     public Section Current { get; private set; } = Section.None;
     public bool PanelOpen => Current != Section.None;
     /// <summary>Con el panel abierto el cursor queda libre (MinimapHUD.ApplyCursor lo consulta).</summary>
     public static bool WantsCursor => Instance && Instance.isActiveAndEnabled && Instance.PanelOpen;
+    /// <summary>El buscador tiene el foco: el juego no lee el teclado (InputRouter → GaleInput.SetTyping).</summary>
+    public static bool Typing => Instance && Instance.isActiveAndEnabled && Instance.PanelOpen && Instance.typing;
+    bool typing;
 
     VisualElement root, rail, panel;
     Label title;
@@ -110,6 +114,7 @@ public class ExplorerMenu : MonoBehaviour
         rail = new VisualElement();
         rail.AddToClassList("ex-rail");
         root.Add(rail);
+        AddItem(Section.Search, ExplorerIcon.Kind.Search);
         AddItem(Section.Layers, ExplorerIcon.Kind.Layers);
         AddItem(Section.Geodesy, ExplorerIcon.Kind.Globe);
         AddItem(Section.Rocks, ExplorerIcon.Kind.Rock);
@@ -152,6 +157,7 @@ public class ExplorerMenu : MonoBehaviour
         pages[Section.Rocks] = BuildRocksPage();
         pages[Section.Radiation] = BuildRadiationPage();
         pages[Section.Settings] = BuildSettingsPage();
+        pages[Section.Search] = BuildSearchPage();
         foreach (var p in pages.Values) scroll.Add(p);
         Open(Section.None);
     }
@@ -169,6 +175,8 @@ public class ExplorerMenu : MonoBehaviour
         foreach (var kv in pages) kv.Value.style.display = kv.Key == s ? DisplayStyle.Flex : DisplayStyle.None;
         title.text = SectionNames[(int)s];
         if (s == Section.Layers) RebuildLayers();
+        if (s == Section.Search) { RunSearch(); searchField?.schedule.Execute(() => searchField.Focus()); }
+        else typing = false;
         SetLegendHidden(s != Section.None);   // el panel ocupa el sitio de la leyenda (y Capas la incluye)
         nextRefresh = nextSlowRefresh = 0f;
         Refresh(true);
@@ -191,7 +199,7 @@ public class ExplorerMenu : MonoBehaviour
     {
         if (SimPause.IsPaused) return;
         if (GaleInput.Controls.Global.ExplorerMenu.WasPressedThisFrame())
-            Open(PanelOpen ? Section.None : (Section)Mathf.Clamp(ExplorerPrefs.lastSection, 1, 5));
+            Open(PanelOpen ? Section.None : (Section)Mathf.Clamp(ExplorerPrefs.lastSection, 1, 6));
         if (PanelOpen && Time.unscaledTime >= nextRefresh) Refresh(false);
     }
 
@@ -604,6 +612,78 @@ public class ExplorerMenu : MonoBehaviour
         atSource.text = Join(data.fuentes?.mcd, data.fuentes?.mcdAviso);
     }
 
+    // ---------- Buscar ----------
+
+    TextField searchField;
+    Label searchMessage;
+    VisualElement searchResults;
+
+    VisualElement BuildSearchPage()
+    {
+        var p = Page();
+        searchField = new TextField { maxLength = 80 };
+        searchField.AddToClassList("ex-search");
+        searchField.textEdition.placeholder = "Coordenadas o nombre: -5.37, 137.81";
+        searchField.RegisterValueChangedCallback(_ => RunSearch());
+        searchField.RegisterCallback<FocusInEvent>(_ => typing = true);
+        searchField.RegisterCallback<FocusOutEvent>(_ => typing = false);
+        searchField.RegisterCallback<KeyDownEvent>(e =>
+        {
+            if (e.keyCode == KeyCode.Return || e.keyCode == KeyCode.KeypadEnter)
+            {
+                SubmitSearch();
+                searchField.Blur();
+            }
+            else if (e.keyCode == KeyCode.Escape) searchField.Blur();
+        }, TrickleDown.TrickleDown);
+        p.Add(searchField);
+        Text(p, "Latitud y longitud planetocéntricas, longitud este: «-5.37, 137.81», «5.37 S 137.81 E», «5°22' S 137°48' E». " +
+                "También por nombre: «Gale», «Yellowknife». Intro elige el primero.", "ex-note");
+        searchMessage = Text(p, "", "ex-text");
+        Heading(p, "Lugares con nombre oficial");
+        searchResults = new VisualElement();
+        p.Add(searchResults);
+        Text(p, "Nomenclatura de la IAU (Gazetteer of Planetary Nomenclature, USGS). En el mapa (M) y en la vista aérea " +
+                "cada lugar tiene un punto con su nombre: clic para elegirlo.", "ex-note");
+        return p;
+    }
+
+    /// <summary>Busca el texto del campo y elige el primer resultado (si son coordenadas, solo si caen dentro).</summary>
+    public void SubmitSearch(string text = null)
+    {
+        var atlas = PlaceAtlas.Instance;
+        if (!atlas) return;
+        if (text != null) searchField.SetValueWithoutNotify(text);
+        var r = atlas.Search(searchField.value);
+        if (r.hits.Count > 0 && (!r.isCoordinate || r.hits[0].inside) && searchField.value.Trim().Length > 0)
+            atlas.Select(r.hits[0].feature);
+        RunSearch();
+    }
+
+    void RunSearch()
+    {
+        var atlas = PlaceAtlas.Instance;
+        searchResults.Clear();
+        if (!atlas || atlas.Data == null) { searchMessage.text = "No hay datos de nomenclatura en la escena (iau_nomenclatura.json)."; return; }
+        var r = atlas.Search(searchField.value);
+        searchMessage.text = r.message ?? "";
+        searchMessage.style.display = string.IsNullOrEmpty(r.message) ? DisplayStyle.None : DisplayStyle.Flex;
+        foreach (var h in r.hits)
+        {
+            var f = h.feature;
+            var row = new VisualElement(); row.AddToClassList("ex-layer");
+            row.EnableInClassList("selected", atlas.Selected == f);
+            var col = new VisualElement(); col.AddToClassList("ex-layer-text");
+            Text(col, f.nombre, "ex-layer-name");
+            string extra = r.isCoordinate ? (h.centerMatch ? " · coordenadas oficiales" : h.inside ? " · contiene el punto" : $" · a {h.distanceKm:0.#} km") : "";
+            string diam = f.diametroKm > 0 ? $" · {f.diametroKm:0.##} km" : "";
+            Text(col, $"{f.TipoEs}{diam} · {PlaceAtlas.FormatLat(f.lat)}, {f.lon:0.##}° E{extra}", "ex-layer-src");
+            row.Add(col);
+            row.RegisterCallback<ClickEvent>(_ => { atlas.Select(f); RunSearch(); });
+            searchResults.Add(row);
+        }
+    }
+
     // ---------- Ajustes ----------
 
     readonly List<Switch> settingSwitches = new();
@@ -691,7 +771,7 @@ public class ExplorerMenu : MonoBehaviour
 /// <summary>Iconos de la barra lateral dibujados con vectores (no dependen de los glifos de la fuente).</summary>
 public class ExplorerIcon : VisualElement
 {
-    public enum Kind { Layers, Globe, Rock, Radiation, Gear }
+    public enum Kind { Layers, Globe, Rock, Radiation, Gear, Search }
     readonly Kind kind;
     static readonly Color Ink = new Color(0.91f, 0.92f, 0.93f);
 
@@ -754,6 +834,11 @@ public class ExplorerIcon : VisualElement
                     p.ClosePath();
                     p.Fill();
                 }
+                break;
+            case Kind.Search:
+                p.BeginPath(); p.Arc(new Vector2(cx - r * 0.15f, cy - r * 0.15f), r * 0.62f, 0f, 360f); p.Stroke();
+                p.lineWidth = 3f;
+                p.BeginPath(); p.MoveTo(new Vector2(cx + r * 0.32f, cy + r * 0.32f)); p.LineTo(new Vector2(cx + r, cy + r)); p.Stroke();
                 break;
             case Kind.Gear:
                 p.BeginPath();
