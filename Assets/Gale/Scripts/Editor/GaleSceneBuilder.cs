@@ -22,13 +22,13 @@ public static class GaleSceneBuilder
     static readonly (string name, string fbx, string mat, string albedo)[] Blocks =
     {
         // Franja norte (borde de Gale -> Babati): DXF Civil 3D + MOLA a los lados.
-        ("GaleNorte_TIN", "Assets/Gale/Models/GaleNorte_TIN.fbx", "GaleNorte_Terrain.mat", "Assets/Gale/Textures/GaleNorte_Albedo.png"),
+        ("GaleNorte_TIN", "Assets/Gale/Models/GaleNorte_TIN.fbx", "GaleNorte_Terrain.mat", "Assets/Gale/Textures/GaleNorte_Albedo.jpg"),
         // Franja sur (borde sur de Gale -> fin del sector 6, Farah Vallis).
-        ("GaleSur_TIN", "Assets/Gale/Models/GaleSur_TIN.fbx", "GaleSur_Terrain.mat", "Assets/Gale/Textures/GaleSur_Albedo.png"),
+        ("GaleSur_TIN", "Assets/Gale/Models/GaleSur_TIN.fbx", "GaleSur_Terrain.mat", "Assets/Gale/Textures/GaleSur_Albedo.jpg"),
         // Franja este (sector 7 a ~400 m + MOLA al sur), de la franja sur a la franja norte.
-        ("GaleEste_TIN", "Assets/Gale/Models/GaleEste_TIN.fbx", "GaleEste_Terrain.mat", "Assets/Gale/Textures/GaleEste_Albedo.png"),
+        ("GaleEste_TIN", "Assets/Gale/Models/GaleEste_TIN.fbx", "GaleEste_Terrain.mat", "Assets/Gale/Textures/GaleEste_Albedo.jpg"),
         // Franja oeste con el cráter Robert Sharp (sector 9 a ~400 m + MOLA al sur).
-        ("GaleOeste_TIN", "Assets/Gale/Models/GaleOeste_TIN.fbx", "GaleOeste_Terrain.mat", "Assets/Gale/Textures/GaleOeste_Albedo.png"),
+        ("GaleOeste_TIN", "Assets/Gale/Models/GaleOeste_TIN.fbx", "GaleOeste_Terrain.mat", "Assets/Gale/Textures/GaleOeste_Albedo.jpg"),
         // Zona de la ruta de Curiosity, dentro de Gale (hueco en Gale_TIN): DEM MSL de 1 m (a 8 m, quadtree)
         // y textura de color HiRISE a 2 m/px.
         ("GaleRuta_TIN", "Assets/Gale/Models/GaleRuta_TIN.fbx", "GaleRuta_Terrain.mat", "Assets/Gale/Textures/GaleRuta_Albedo.jpg"),
@@ -273,7 +273,7 @@ public static class GaleSceneBuilder
 
     // ------------------------------------------------------------------ terreno
 
-    const string AlbedoPath = "Assets/Gale/Textures/Gale_Albedo.png";
+    const string AlbedoPath = "Assets/Gale/Textures/Gale_Albedo.jpg";
     const string DetailAlbedoPath = "Assets/Gale/Textures/Detail_Rocks015_Albedo.png";
     const string DetailNormalPath = "Assets/Gale/Textures/Detail_Rocks015_Normal.png";
     // Un mosaico de la textura de detalle cubre ~4 m de Unity (el rover mide 3 m).
