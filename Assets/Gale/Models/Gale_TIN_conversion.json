@@ -1,5 +1,5 @@
 {
-  "input": "C:\\Users\\isaac\\AppData\\Local\\Temp/mosaic/Gale_points.dxf",
+  "input": "C:\\Users\\isaac\\AppData\\Local\\Temp/mosaic/s7/Gale_points.dxf",
   "points": 531634,
   "layers": {
     "BASE": 70567,
@@ -31,5 +31,5 @@
     -76954.578125,
     1463.0777576655385
   ],
-  "fbx_bytes": 30204124
+  "fbx_bytes": 30204412
 }

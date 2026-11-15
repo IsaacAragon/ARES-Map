@@ -19,7 +19,10 @@ Terrain blocks (Assets/Gale/Models, Tools/build_mosaic_block.py + Tools/blender_
   GaleSur_TIN.fbx: south band, Gale south rim -> end of sector 6 (~7 km), sector 6 + MOLA at its sides.
   GaleNorte_TIN.fbx: north band from the Gale north rim to Babati (Tools/build_north_band_points.py):
     "4. Gale_Babati_sector_norte_Civil3D.dxf", georeferenced by Tools/fit_sector_offset.py (Models/Babati_georef.json);
-    MOLA 463 m on both sides of it; 2 km blend; shares the north-rim vertices of Gale_TIN.
+    MOLA 463 m on both sides of it; 2 km blend; shares the north-rim vertices of Gale_TIN. Rebuilt through
+    build_mosaic_block.py (base "points:") so its east/west edges are straight and shared with the side blocks.
+  GaleEste_TIN.fbx: east block, Gale east rim -> end of "7.Gale_franja_este_noreste_Civil3D.dxf", from the south band
+    to the north band. Sector 7 decimated to ~400 m (every 2nd node); MOLA 463 m south of it; 2 km blend.
   Civil 3D sectors 6, 7, 9 share one local system: equirectangular with standard parallel phi0 = -4.59 deg, i.e.
     X = X0 + x_local / cos(phi0), Y = Y0 + y_local (Tools/fit_sectors_georef.py -> Models/Sectores_georef.json).
   Shared block edges carry the same vertices on both sides; vertex normals are computed with the neighbours' points

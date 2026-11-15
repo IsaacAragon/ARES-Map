@@ -1,0 +1,35 @@
+{
+  "input": "C:\\Users\\isaac\\AppData\\Local\\Temp/mosaic/s7/GaleEste_points.dxf",
+  "points": 215856,
+  "layers": {
+    "BASE": 81763,
+    "SECTOR_7": 132042,
+    "BORDE": 2051
+  },
+  "other_entities": {},
+  "vertices": 215856,
+  "duplicates_merged": 0,
+  "triangles": 429659,
+  "flipped": 0,
+  "removed_xy_offset": [
+    8168043.8858655,
+    -319997.63721099996
+  ],
+  "scale": 1.0,
+  "bounds_min": [
+    99796.65625,
+    -106743.0625,
+    -3225.0
+  ],
+  "bounds_max": [
+    248912.78125,
+    147958.390625,
+    317.0
+  ],
+  "highest_vertex": [
+    99796.65625,
+    -87756.2265625,
+    317.0
+  ],
+  "fbx_bytes": 12105724
+}

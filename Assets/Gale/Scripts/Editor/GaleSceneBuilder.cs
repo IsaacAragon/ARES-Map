@@ -25,6 +25,8 @@ public static class GaleSceneBuilder
         ("GaleNorte_TIN", "Assets/Gale/Models/GaleNorte_TIN.fbx", "GaleNorte_Terrain.mat", "Assets/Gale/Textures/GaleNorte_Albedo.png"),
         // Franja sur (borde sur de Gale -> fin del sector 6, Farah Vallis).
         ("GaleSur_TIN", "Assets/Gale/Models/GaleSur_TIN.fbx", "GaleSur_Terrain.mat", "Assets/Gale/Textures/GaleSur_Albedo.png"),
+        // Franja este (sector 7 a ~400 m + MOLA al sur), de la franja sur a la franja norte.
+        ("GaleEste_TIN", "Assets/Gale/Models/GaleEste_TIN.fbx", "GaleEste_Terrain.mat", "Assets/Gale/Textures/GaleEste_Albedo.png"),
     };
 
     // 1 m Unity = 50 m reales. Escala uniforme: las pendientes son las reales.

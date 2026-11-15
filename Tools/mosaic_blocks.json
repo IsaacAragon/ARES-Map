@@ -6,12 +6,64 @@
   "layer": "COTAS_DEM_200M",
   "blend_m": 2000.0,
   "sectors": {
-    "6": {"dxf": "6. Gale_sector_sur_Farah_Vallis_Civil3D.dxf", "step": 1, "name": "Sector sur / Farah Vallis"}
+    "6": {
+      "dxf": "6. Gale_sector_sur_Farah_Vallis_Civil3D.dxf",
+      "step": 1,
+      "name": "Sector sur / Farah Vallis"
+    },
+    "7": {
+      "dxf": "7.Gale_franja_este_noreste_Civil3D.dxf",
+      "step": 2,
+      "name": "Franja este-noreste (diezmado a ~400 m)"
+    }
   },
   "blocks": {
-    "Gale": {"rect": [8068247.227661, 8267840.54407, -419794.295415, -220200.979007], "base": "gale", "sectors": ["6"]},
-    "GaleNorte": {"rect": [8068247.227661, 8267840.54407, -220200.979007, -172039.2506859632], "base": "points:Gale_franja_norte_points.dxf", "sectors": [],
-                  "comment": "Construida con Tools/build_north_band_points.py (sector 4 Babati + MOLA)."},
-    "GaleSur": {"rect": [8068247.227661, 8267840.54407, -426740.6985382556, -419794.295415], "base": "mola", "sectors": ["6"]}
+    "Gale": {
+      "rect": [
+        8068247.227661,
+        8267840.54407,
+        -419794.295415,
+        -220200.979007
+      ],
+      "base": "gale",
+      "sectors": [
+        "6"
+      ]
+    },
+    "GaleNorte": {
+      "rect": [
+        8068247.227661,
+        8267840.54407,
+        -220200.979007,
+        -172039.2506859632
+      ],
+      "base": "points:Gale_franja_norte_points.dxf",
+      "sectors": [],
+      "comment": "Construida con Tools/build_north_band_points.py (sector 4 Babati + MOLA)."
+    },
+    "GaleSur": {
+      "rect": [
+        8068247.227661,
+        8267840.54407,
+        -426740.6985382556,
+        -419794.295415
+      ],
+      "base": "mola",
+      "sectors": [
+        "6"
+      ]
+    },
+    "GaleEste": {
+      "rect": [
+        8267840.54407,
+        8416956.664449219,
+        -426740.6985382556,
+        -172039.2506859632
+      ],
+      "base": "mola",
+      "sectors": [
+        "7"
+      ]
+    }
   }
 }
