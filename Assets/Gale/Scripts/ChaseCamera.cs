@@ -1,12 +1,11 @@
 using UnityEngine;
-using UnityEngine.InputSystem;
 
 // Cámara con dos modos:
-//  - Seguimiento (por defecto): detrás del rover. Rueda del ratón: acercar/alejar.
-//  - Vista aérea (Tab): sobre el cráter. WASD desplaza, Q/E gira, rueda = altura,
-//    botón derecho + arrastrar = inclinación y giro, F = centrar en el rover, C = centrar en el cráter.
+//  - Seguimiento (por defecto): detrás del rover. Rueda / cruceta: acercar y alejar.
+//  - Vista aérea (Tab / Select): sobre el cráter. WASD / stick izq. desplaza, Q/E / LB-RB gira, rueda / stick dcho. = altura,
+//    clic dcho. + arrastrar / stick dcho. X + cruceta = mirar, F / X = rover, C / Y = cráter (acciones del mapa Aerial).
 //    Mientras está activa, el rover no recibe teclas (se queda frenado).
-// HUD con velocidad y posición en coordenadas reales del DXF (Equirectangular Marte).
+// Los datos del rover se muestran en NavInstrumentHUD (alrededor del minimapa).
 public class ChaseCamera : MonoBehaviour
 {
     public RoverController target;
@@ -17,7 +16,6 @@ public class ChaseCamera : MonoBehaviour
     public float smooth = 6f;
 
     [Header("Vista aérea")]
-    public Key toggleKey = Key.Tab;
     public Vector3 craterCenter = Vector3.zero;   // centro del recorte (Gale) en Unity
     public float aerialHeight = 3200f;            // altura sobre el foco (m Unity)
     public float aerialMinHeight = 50f;
@@ -46,9 +44,9 @@ public class ChaseCamera : MonoBehaviour
 
     // Lo activa el minimapa interactivo: la cámara no lee teclado ni ratón mientras tanto.
     [HideInInspector] public bool inputBlocked;
+    bool InputOff => inputBlocked || SimPause.IsPaused;
 
     Vector3 aerialFocus;
-    bool prevToggle, prevF, prevC;
     Camera cam;
     float baseFar;
 
@@ -70,22 +68,19 @@ public class ChaseCamera : MonoBehaviour
 
     void LateUpdate()
     {
-        var kb = inputBlocked ? null : Keyboard.current;
-        // Flanco de subida comparando con el frame anterior (fiable también con el Input System en FixedUpdate).
-        bool toggle = kb != null && kb[toggleKey].isPressed;
-        if (toggle && !prevToggle) SetAerial(!Aerial);
-        prevToggle = toggle;
+        var k = GaleInput.Controls;
+        if (!InputOff && k.Global.ToggleAerial.WasPressedThisFrame()) SetAerial(!Aerial);
 
-        if (Aerial) UpdateAerial(kb);
+        if (Aerial) UpdateAerial(!InputOff);
         else UpdateChase();
     }
 
     void UpdateChase()
     {
         if (!target) return;
-        var mouse = inputBlocked ? null : Mouse.current;
-        if (mouse != null)
-            distance = Mathf.Clamp(distance - mouse.scroll.ReadValue().y * 0.01f, 4f, 200f);
+        // Rueda del ratón (unidades de rueda) o cruceta del mando (≈6 u por segundo).
+        if (!InputOff)
+            distance = Mathf.Clamp(distance - GaleInput.Delta(GaleInput.Controls.Camera.Zoom, 600f) * 0.01f, 4f, 200f);
 
         Transform t = target.transform;
         Vector3 flatFwd = Vector3.ProjectOnPlane(t.forward, Vector3.up).normalized;
@@ -106,43 +101,32 @@ public class ChaseCamera : MonoBehaviour
             1f - Mathf.Exp(-k * 2f * Time.deltaTime));
     }
 
-    void UpdateAerial(Keyboard kb)
+    void UpdateAerial(bool readInput)
     {
         float dt = Time.unscaledDeltaTime;
-        var mouse = inputBlocked ? null : Mouse.current;
 
-        if (kb != null)
+        if (readInput)
         {
+            var a = GaleInput.Controls.Aerial;
             Quaternion yawRot = Quaternion.Euler(0f, aerialYaw, 0f);
-            Vector3 move = Vector3.zero;
-            if (kb.wKey.isPressed || kb.upArrowKey.isPressed) move += Vector3.forward;
-            if (kb.sKey.isPressed || kb.downArrowKey.isPressed) move += Vector3.back;
-            if (kb.dKey.isPressed || kb.rightArrowKey.isPressed) move += Vector3.right;
-            if (kb.aKey.isPressed || kb.leftArrowKey.isPressed) move += Vector3.left;
-            float speed = aerialHeight * 0.6f * (kb.leftShiftKey.isPressed ? 3f : 1f);
-            aerialFocus += yawRot * move.normalized * speed * dt;
-            // Gale ±2000 u (200 km) y hacia el norte hasta el sector de Babati (borde norte ≈ +2954 u).
+            Vector2 pan = Vector2.ClampMagnitude(a.Pan.ReadValue<Vector2>(), 1f);
+            float speed = aerialHeight * 0.6f * (a.Fast.IsPressed() ? 3f : 1f);
+            aerialFocus += yawRot * new Vector3(pan.x, 0f, pan.y) * speed * dt;
+            // Límites: la extensión del mosaico de terreno (los fija el builder).
             aerialFocus.x = Mathf.Clamp(aerialFocus.x, craterCenter.x - aerialWestLimit, craterCenter.x + aerialEastLimit);
             aerialFocus.z = Mathf.Clamp(aerialFocus.z, craterCenter.z - aerialSouthLimit, craterCenter.z + aerialNorthLimit);
 
-            if (kb.qKey.isPressed) aerialYaw -= 60f * dt;
-            if (kb.eKey.isPressed) aerialYaw += 60f * dt;
-            bool f = kb.fKey.isPressed, c = kb.cKey.isPressed;
-            if (f && !prevF && target) aerialFocus = target.transform.position;
-            if (c && !prevC) { aerialFocus = craterCenter; aerialYaw = 0f; }
-            prevF = f; prevC = c;
-        }
-        if (mouse != null)
-        {
-            // Rueda: zoom proporcional a la altura (rápido lejos, fino cerca).
-            float scroll = mouse.scroll.ReadValue().y;
+            aerialYaw += a.Rotate.ReadValue<float>() * 60f * dt;
+            if (a.FocusRover.WasPressedThisFrame() && target) aerialFocus = target.transform.position;
+            if (a.FocusCrater.WasPressedThisFrame()) { aerialFocus = craterCenter; aerialYaw = 0f; }
+
+            // Altura: rueda (zoom proporcional a la altura) o stick derecho Y del mando.
+            float scroll = GaleInput.Delta(a.Height, 900f);
             aerialHeight = Mathf.Clamp(aerialHeight * Mathf.Pow(0.999f, scroll), aerialMinHeight, aerialMaxHeight);
-            if (mouse.rightButton.isPressed)
-            {
-                Vector2 d = mouse.delta.ReadValue();
-                aerialYaw += d.x * 0.2f;
-                aerialPitch = Mathf.Clamp(aerialPitch - d.y * 0.2f, 20f, 90f);
-            }
+            // Mirar: clic derecho + arrastrar (píxeles) o stick derecho X + cruceta (≈250 px/s).
+            Vector2 d = GaleInput.Delta2(a.Look, 250f);
+            aerialYaw += d.x * 0.2f;
+            aerialPitch = Mathf.Clamp(aerialPitch - d.y * 0.2f, 20f, 90f);
         }
 
         Quaternion rot = Quaternion.Euler(aerialPitch, aerialYaw, 0f);
@@ -154,23 +138,10 @@ public class ChaseCamera : MonoBehaviour
 
     void OnGUI()
     {
-        if (!target) return;
+        // Los datos (velocidad, rumbo, elevación, coordenadas, g) y las ayudas los muestra
+        // NavInstrumentHUD alrededor del minimapa.
+        if (!target || SimPause.IsPaused) return;
         Vector3 p = target.transform.position;
-        double x = offsetX + p.x / worldScale;
-        double y = offsetY + p.z / worldScale;
-        double z = p.y / worldScale;
-        double lon = x / marsRadius * 180.0 / System.Math.PI;
-        double lat = y / marsRadius * 180.0 / System.Math.PI;
-        GUI.Box(new Rect(10, 10, 360, 146), GUIContent.none);
-        string controls = Aerial
-            ? "VISTA AÉREA · WASD mover · Q/E girar · rueda altura\nclic dcho+arrastrar inclinar · F rover · C cráter · Tab volver · M mapa"
-            : "WASD mover · Shift rápido · Espacio freno · R enderezar\nTab vista aérea · M mapa";
-        GUI.Label(new Rect(20, 16, 350, 140),
-            $"Gale (MOLA 463 m) — escala 1:{1f / worldScale:0}\n" +
-            $"Velocidad: {target.Speed:0.0} m/s (Unity)\n" +
-            $"Gravedad: g = {target.gravity:0.00} m/s² (Marte)\n" +
-            $"Lon {lon:0.0000}° E   Lat {lat:0.0000}°\n" +
-            $"X {x:0} m   Y {y:0} m   Elev. {z:0} m\n" + controls);
 
         // En vista aérea el rover es diminuto: marcador sobre su posición en pantalla.
         if (Aerial && cam)

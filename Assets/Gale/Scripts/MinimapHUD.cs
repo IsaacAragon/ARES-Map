@@ -1,26 +1,31 @@
 using System;
 using UnityEngine;
-using UnityEngine.InputSystem;
 using UnityEngine.Rendering;
 
-// Minimapa abajo a la derecha: vista cenital centrada en el rover. Una cámara ortográfica
+// Minimapa circular arriba a la derecha: vista cenital centrada en el rover (el aro y los datos
+// del borde los dibuja NavInstrumentHUD). Una cámara ortográfica
 // propia, creada en ejecución y sin guardarse en la escena, pinta a una RenderTexture que
 // se dibuja con IMGUI.
 //
-// Durante la simulación el cursor está oculto y bloqueado. Con M se entra al mapa:
+// Durante la simulación el cursor está oculto y bloqueado. Con M (R3 en el mando) se entra al mapa:
 // se agranda, aparece el cursor y se navega sin mover el rover:
-//   clic derecho + arrastrar = desplazar · rueda = zoom sobre el cursor
-//   WASD = desplazar · Q/E = girar · F = rover · C = cráter · M / Esc = salir
+//   clic derecho + arrastrar / stick izq. = desplazar · rueda / gatillos = zoom sobre el cursor
+//   WASD = desplazar · Q/E / LB-RB = girar · F / X = rover · C / Y = cráter · M / Esc / B = salir
+//   Con mando, el stick derecho mueve un cursor virtual y A selecciona (acciones del mapa Map).
 // Fuera del mapa, - / + siguen acercando y alejando.
 // Preparado para la navegación A→B: MapToWorld / WorldToMap y el evento MapClicked (clic izquierdo).
 [RequireComponent(typeof(ChaseCamera))]
 public class MinimapHUD : MonoBehaviour
 {
-    [Header("Minimapa")]
+    [Header("Minimapa (círculo arriba a la derecha)")]
     public bool show = true;
-    [Tooltip("Lado del minimapa en píxeles de pantalla.")]
-    public int sizePixels = 260;
+    [Tooltip("Diámetro del minimapa en píxeles a 1080 p (escala con el alto de la pantalla).")]
+    public float diameterAt1080 = 236f;
+    [Tooltip("Espacio a la derecha y arriba del círculo para los datos del borde (px a 1080 p).")]
+    public float rightSpace = 128f, topSpace = 48f;
     public int margin = 12;
+    [Tooltip("Material con Hidden/Gale/CircleMask (lo asigna el builder; si falta se crea en ejecución).")]
+    public Material circleMaterial;
     [Tooltip("Mitad del lado visible, en metros reales.")]
     public float radiusMeters = 10000f;
     public float minRadiusMeters = 500f;
@@ -48,7 +53,6 @@ public class MinimapHUD : MonoBehaviour
     };
 
     [Header("Mapa interactivo")]
-    public Key toggleKey = Key.M;
     [Tooltip("Lado del mapa interactivo como fracción del alto de la pantalla.")]
     [Range(0.3f, 0.95f)] public float interactiveFraction = 0.8f;
     [Tooltip("Ocultar y bloquear el cursor fuera del mapa.")]
@@ -66,7 +70,6 @@ public class MinimapHUD : MonoBehaviour
     Camera mapCam;
     RenderTexture rt;
     bool fogWas;
-    bool prevMinus, prevPlus, prevToggle, prevEsc, prevF, prevC, prevLeft;
     bool dragging;
     float mapYaw;
     Vector3 focus;
@@ -148,79 +151,90 @@ public class MinimapHUD : MonoBehaviour
         ApplyCursor();
     }
 
-    void ApplyCursor()
+    /// <summary>Cursor libre en el mapa interactivo (o en pausa); oculto y bloqueado en la simulación.</summary>
+    public void ApplyCursor()
     {
-        bool free = Interactive || !hideCursorInSimulation;
+        bool free = Interactive || !hideCursorInSimulation || SimPause.IsPaused;
         Cursor.lockState = free ? CursorLockMode.None : CursorLockMode.Locked;
         Cursor.visible = free;
     }
 
     void Update()
     {
-        if (!show || !chase || !chase.target) return;
-        var kb = Keyboard.current;
-        var mouse = Mouse.current;
+        if (!show || !chase || !chase.target || SimPause.IsPaused) return;
+        var k = GaleInput.Controls;
 
-        if (kb != null)
+        if (k.Global.ToggleMap.WasPressedThisFrame()) SetInteractive(!Interactive);
+        else if (Interactive && k.Map.Exit.WasPressedThisFrame()) SetInteractive(false);
+
+        // Zoom por pasos: −/+ fuera del mapa (Global) y también −/+ y cruceta dentro (Map).
+        var step = Interactive ? k.Map.ZoomStep : k.Global.MinimapZoom;
+        if (step.WasPressedThisFrame())
         {
-            bool toggle = kb[toggleKey].isPressed, esc = kb.escapeKey.isPressed;
-            if (toggle && !prevToggle) SetInteractive(!Interactive);
-            else if (esc && !prevEsc && Interactive) SetInteractive(false);
-            prevToggle = toggle; prevEsc = esc;
-
-            bool minus = kb.minusKey.isPressed || kb.numpadMinusKey.isPressed;
-            bool plus = kb.equalsKey.isPressed || kb.numpadPlusKey.isPressed;
-            if (minus && !prevMinus) radiusMeters = Mathf.Min(radiusMeters * 2f, maxRadiusMeters);
-            if (plus && !prevPlus) radiusMeters = Mathf.Max(radiusMeters * 0.5f, minRadiusMeters);
-            prevMinus = minus; prevPlus = plus;
+            float v = step.ReadValue<float>();
+            if (v < 0f) radiusMeters = Mathf.Min(radiusMeters * 2f, maxRadiusMeters);
+            else if (v > 0f) radiusMeters = Mathf.Max(radiusMeters * 0.5f, minRadiusMeters);
         }
 
-        if (Interactive) UpdateInteractive(kb, mouse);
+        if (Interactive) UpdateInteractive(k.Map);
     }
 
-    void UpdateInteractive(Keyboard kb, Mouse mouse)
+    [Header("Cursor virtual (mando)")]
+    [Tooltip("Velocidad del cursor del mapa con el stick derecho, en fracción del lado del mapa por segundo.")]
+    public float virtualCursorSpeed = 0.6f;
+    Vector2 virtualCursor;
+    bool useVirtualCursor;
+
+    /// <summary>Cursor del mapa en coordenadas de GUI: el del ratón o, con mando, uno virtual.</summary>
+    public Vector2 MapCursor => useVirtualCursor ? virtualCursor : MousePointGui();
+    public bool UsingVirtualCursor => useVirtualCursor;
+
+    static Vector2 MousePointGui()
+    {
+        Vector2 sp = GaleInput.Controls.Map.Point.ReadValue<Vector2>();
+        return new Vector2(sp.x, Screen.height - sp.y);
+    }
+
+    void UpdateInteractive(GaleControls.MapActions a)
     {
         float dt = Time.unscaledDeltaTime;
         Rect r = MapRect();
 
-        if (kb != null)
+        Vector2 pan = Vector2.ClampMagnitude(a.Pan.ReadValue<Vector2>(), 1f);
+        float speed = Half * (a.Fast.IsPressed() ? 3f : 1f);   // medio mapa por segundo
+        focus += Quaternion.Euler(0f, mapYaw, 0f) * new Vector3(pan.x, 0f, pan.y) * speed * dt;
+        mapYaw += a.Rotate.ReadValue<float>() * 60f * dt;
+        if (a.FocusRover.WasPressedThisFrame()) focus = chase.target.transform.position;
+        if (a.FocusCrater.WasPressedThisFrame()) { focus = chase.craterCenter; mapYaw = 0f; }
+
+        // Cursor: el ratón manda en cuanto se mueve; el stick derecho activa el cursor virtual.
+        Vector2 stick = a.CursorMove.ReadValue<Vector2>();
+        if (stick.sqrMagnitude > 0.02f)
         {
-            Vector3 move = Vector3.zero;
-            if (kb.wKey.isPressed || kb.upArrowKey.isPressed) move += Vector3.forward;
-            if (kb.sKey.isPressed || kb.downArrowKey.isPressed) move += Vector3.back;
-            if (kb.dKey.isPressed || kb.rightArrowKey.isPressed) move += Vector3.right;
-            if (kb.aKey.isPressed || kb.leftArrowKey.isPressed) move += Vector3.left;
-            float speed = Half * (kb.leftShiftKey.isPressed ? 3f : 1f);   // medio mapa por segundo
-            focus += Quaternion.Euler(0f, mapYaw, 0f) * move.normalized * speed * dt;
-
-            if (kb.qKey.isPressed) mapYaw -= 60f * dt;
-            if (kb.eKey.isPressed) mapYaw += 60f * dt;
-            bool f = kb.fKey.isPressed, c = kb.cKey.isPressed;
-            if (f && !prevF) focus = chase.target.transform.position;
-            if (c && !prevC) { focus = chase.craterCenter; mapYaw = 0f; }
-            prevF = f; prevC = c;
+            if (!useVirtualCursor) { useVirtualCursor = true; virtualCursor = r.center; }
+            virtualCursor += new Vector2(stick.x, -stick.y) * r.width * virtualCursorSpeed * dt;
+            Vector2 d = virtualCursor - r.center;
+            virtualCursor = r.center + Vector2.ClampMagnitude(new Vector2(
+                Mathf.Clamp(d.x, -r.width * 0.5f, r.width * 0.5f), Mathf.Clamp(d.y, -r.height * 0.5f, r.height * 0.5f)), r.width);
         }
-
-        if (mouse != null)
+        else if (a.PointerDelta.ReadValue<Vector2>().sqrMagnitude > 0.5f)
         {
-            Vector2 sp = mouse.position.ReadValue();
-            Vector2 gui = new Vector2(sp.x, Screen.height - sp.y);
-            bool inside = r.Contains(gui);
-
-            // Rueda: zoom manteniendo fijo el punto del terreno bajo el cursor.
-            float scroll = mouse.scroll.ReadValue().y;
-            if (inside && Mathf.Abs(scroll) > 0.01f) ZoomAt(gui, Mathf.Pow(0.999f, scroll));
-
-            // Clic derecho + arrastrar: el terreno sigue al cursor.
-            if (mouse.rightButton.wasPressedThisFrame && inside) dragging = true;
-            if (!mouse.rightButton.isPressed) dragging = false;
-            if (dragging) Pan(mouse.delta.ReadValue(), r);
-
-            // Clic izquierdo: punto en el mundo (para la futura navegación A→B).
-            bool left = mouse.leftButton.isPressed;
-            if (left && !prevLeft && inside) MapClicked?.Invoke(MapToWorld(gui));
-            prevLeft = left;
+            useVirtualCursor = false;
         }
+        Vector2 gui = MapCursor;
+        bool inside = InMap(gui, r);
+
+        // Rueda / gatillos: zoom manteniendo fijo el punto del terreno bajo el cursor.
+        float scroll = GaleInput.Delta(a.Zoom, 700f);
+        if (inside && Mathf.Abs(scroll) > 0.01f) ZoomAt(gui, Mathf.Pow(0.999f, scroll));
+
+        // Clic derecho + arrastrar: el terreno sigue al cursor.
+        if (a.Drag.WasPressedThisFrame() && inside) dragging = true;
+        if (!a.Drag.IsPressed()) dragging = false;
+        if (dragging) Pan(a.PointerDelta.ReadValue<Vector2>(), r);
+
+        // Clic izquierdo / A: punto en el mundo (para la futura navegación A→B).
+        if (a.Select.WasPressedThisFrame() && inside) MapClicked?.Invoke(MapToWorld(gui));
     }
 
     /// <summary>Acerca (factor &lt; 1) o aleja (factor &gt; 1) manteniendo fijo el punto del mapa en guiPoint.</summary>
@@ -243,13 +257,27 @@ public class MinimapHUD : MonoBehaviour
 
     // ---------- Conversiones mapa <-> mundo ----------
 
-    /// <summary>Rectángulo del mapa en coordenadas de GUI (origen arriba a la izquierda).</summary>
+    /// <summary>Escala de la UI respecto a 1080 p.</summary>
+    public static float UiScale => Mathf.Max(0.6f, Screen.height / 1080f);
+
+    /// <summary>Rectángulo del mapa en coordenadas de GUI (origen arriba a la izquierda).
+    /// Fuera del modo interactivo es el cuadrado que circunscribe el círculo.</summary>
     public Rect MapRect()
     {
-        float s = Interactive
-            ? Mathf.Min(Screen.height * interactiveFraction, Screen.width - 2f * margin)
-            : sizePixels;
-        return new Rect(Screen.width - s - margin, Screen.height - s - margin, s, s);
+        if (Interactive)
+        {
+            float s = Mathf.Min(Screen.height * interactiveFraction, Screen.width - 2f * margin);
+            return new Rect((Screen.width - s) * 0.5f, (Screen.height - s) * 0.5f - 20f * UiScale, s, s);
+        }
+        float d = diameterAt1080 * UiScale;
+        return new Rect(Screen.width - d - rightSpace * UiScale, topSpace * UiScale, d, d);
+    }
+
+    /// <summary>¿Cae un punto de GUI dentro del mapa visible? (círculo, o cuadrado en modo interactivo).</summary>
+    public bool InMap(Vector2 gui, Rect r, float inset = 0f)
+    {
+        if (Interactive) return r.Contains(gui);
+        return (gui - r.center).magnitude <= r.width * 0.5f - inset;
     }
 
     public Vector2 WorldToMap(Vector3 world) => WorldToMap(world, MapRect());
@@ -293,16 +321,31 @@ public class MinimapHUD : MonoBehaviour
 
     void OnGUI()
     {
-        if (!show || !mapCam || !mapCam.enabled || !rt) return;
+        GUI.depth = 10;  // debajo del aro y los datos de NavInstrumentHUD
+        if (!show || !mapCam || !mapCam.enabled || !rt || SimPause.IsPaused) return;
         markerStyle ??= new GUIStyle(GUI.skin.label) { alignment = TextAnchor.MiddleCenter, fontSize = 16, padding = new RectOffset() };
         hintStyle ??= new GUIStyle(GUI.skin.label) { alignment = TextAnchor.UpperCenter, wordWrap = true };
 
         Rect r = MapRect();
         var old = GUI.color;
-        GUI.color = new Color(0f, 0f, 0f, 0.6f);
-        GUI.DrawTexture(new Rect(r.x - 3, r.y - 3, r.width + 6, r.height + 6), Texture2D.whiteTexture);
-        GUI.color = old;
-        GUI.DrawTexture(r, rt, ScaleMode.StretchToFill, false);
+        if (Interactive)
+        {
+            GUI.color = new Color(0f, 0f, 0f, 0.6f);
+            GUI.DrawTexture(new Rect(r.x - 3, r.y - 3, r.width + 6, r.height + 6), Texture2D.whiteTexture);
+            GUI.color = old;
+            GUI.DrawTexture(r, rt, ScaleMode.StretchToFill, false);
+        }
+        else if (Event.current.type == EventType.Repaint)
+        {
+            // Círculo: la RenderTexture con máscara circular (el aro lo dibuja NavInstrumentHUD).
+            if (!circleMaterial)
+            {
+                var sh = Shader.Find("Hidden/Gale/CircleMask");
+                if (sh) circleMaterial = new Material(sh) { hideFlags = HideFlags.DontSave };
+            }
+            if (circleMaterial) Graphics.DrawTexture(r, rt, circleMaterial);
+            else GUI.DrawTexture(r, rt, ScaleMode.StretchToFill, false);
+        }
 
         Transform t = chase.target.transform;
         float yaw = MapYaw;
@@ -311,15 +354,18 @@ public class MinimapHUD : MonoBehaviour
         if (chase.Aerial)
         {
             Vector2 fp = WorldToMap(AerialFocusOnGround(), r);
-            if (r.Contains(fp)) Marker(fp, "✚", Color.yellow, 0f);
+            if (InMap(fp, r, 8f)) Marker(fp, "✚", Color.yellow, 0f);
         }
+
+        // Recorrido del rover (RoverTrackRecorder), como línea.
+        if (Event.current.type == EventType.Repaint) DrawRecordedPath(r);
 
         // Lugares con nombre.
         if (places != null)
             foreach (var pl in places)
             {
                 Vector2 pp = WorldToMap(MarsGeo.LonLatToUnity(pl.lon, pl.lat), r);
-                if (!r.Contains(pp)) continue;
+                if (!InMap(pp, r, 8f)) continue;
                 Marker(pp, "•", new Color(1f, 0.85f, 0.55f), 0f);
                 var oldc = GUI.color;
                 GUI.color = Color.black; GUI.Label(new Rect(pp.x + 7, pp.y - 9, 120, 20), pl.name);
@@ -329,27 +375,76 @@ public class MinimapHUD : MonoBehaviour
 
         // Rover con flecha de rumbo (en el centro salvo que el mapa interactivo se haya desplazado).
         Vector2 rp = WorldToMap(t.position, r);
-        if (r.Contains(rp)) Marker(rp, "▲", Color.cyan, t.eulerAngles.y - yaw);
+        if (InMap(rp, r, 6f)) Marker(rp, "▲", Color.cyan, t.eulerAngles.y - yaw);
 
-        // Norte: en el borde, en la dirección real del norte.
-        Vector2 dirN = new Vector2(Mathf.Sin(-yaw * Mathf.Deg2Rad), -Mathf.Cos(-yaw * Mathf.Deg2Rad));
-        Marker(r.center + dirN * (r.width * 0.5f - 12f), "N", Color.white, 0f);
-
-        // Escala.
-        float bar = r.width * 0.25f;
-        float barMeters = radiusMeters * 2f * 0.25f;
-        GUI.color = Color.white;
-        GUI.DrawTexture(new Rect(r.x + 8, r.yMax - 10, bar, 3), Texture2D.whiteTexture);
-        GUI.Label(new Rect(r.x + 8, r.yMax - 30, 200, 20),
-            barMeters >= 1000f ? $"{barMeters / 1000f:0.#} km" : $"{barMeters:0} m");
-
+        // En el modo interactivo (cuadrado) se dibujan aquí el norte, la escala y la ayuda;
+        // en el círculo lo hace NavInstrumentHUD sobre el aro.
         if (Interactive)
+        {
+            Vector2 dirN = new Vector2(Mathf.Sin(-yaw * Mathf.Deg2Rad), -Mathf.Cos(-yaw * Mathf.Deg2Rad));
+            Marker(r.center + dirN * (r.width * 0.5f - 12f), "N", Color.white, 0f);
+
+            float bar = r.width * 0.25f;
+            GUI.color = Color.white;
+            GUI.DrawTexture(new Rect(r.x + 8, r.yMax - 10, bar, 3), Texture2D.whiteTexture);
+            GUI.Label(new Rect(r.x + 8, r.yMax - 30, 200, 20), ScaleText(r));
             GUI.Label(new Rect(r.x + 8, r.y + 22, r.width - 16, 40),
-                "MAPA · clic dcho+arrastrar mover · rueda zoom · WASD · Q/E girar · F rover · C cráter · M/Esc salir",
+                GaleInput.UsingGamepad
+                    ? "MAPA · stick izq. mover · gatillos zoom · stick dcho. cursor · A seleccionar · LB/RB girar · X rover · Y cráter · B salir"
+                    : "MAPA · clic dcho+arrastrar mover · rueda zoom · WASD · Q/E girar · F rover · C cráter · M/Esc salir",
                 hintStyle);
-        else
-            GUI.Label(new Rect(r.xMax - 90, r.yMax - 22, 90, 20), "M mapa · − / +");
+            if (useVirtualCursor) Marker(virtualCursor, "✛", new Color(1f, 0.95f, 0.4f), 0f);
+        }
         GUI.color = old;
+    }
+
+    [Header("Recorrido")]
+    public bool showPath = true;
+    public Color pathColor = new Color(0.35f, 0.95f, 1f, 0.9f);
+    RoverTrackRecorder recorder;
+
+    void DrawRecordedPath(Rect r)
+    {
+        if (!showPath) return;
+        if (!recorder && chase && chase.target) recorder = chase.target.GetComponent<RoverTrackRecorder>();
+        if (!recorder) return;
+        var s = recorder.Samples;
+        int n = s.Count;
+        if (n < 2) return;
+        int stride = Mathf.Max(1, n / 600);
+        var old = GUI.color;
+        GUI.color = pathColor;
+        Vector2 prev = WorldToMap(s[0].unity, r);
+        int prevSeg = s[0].segment;
+        for (int i = stride; i < n + stride - 1; i += stride)
+        {
+            int k = Mathf.Min(i, n - 1);
+            Vector2 cur = WorldToMap(s[k].unity, r);
+            if (s[k].segment == prevSeg && InMap(prev, r, 2f) && InMap(cur, r, 2f))
+                Line(prev, cur, 2f);
+            prev = cur; prevSeg = s[k].segment;
+        }
+        GUI.color = old;
+    }
+
+    static void Line(Vector2 a, Vector2 b, float w)
+    {
+        Vector2 d = b - a;
+        float len = d.magnitude;
+        if (len < 0.5f) return;
+        var m = GUI.matrix;
+        GUIUtility.RotateAroundPivot(Mathf.Atan2(d.y, d.x) * Mathf.Rad2Deg, a);
+        GUI.DrawTexture(new Rect(a.x, a.y - w * 0.5f, len, w), Texture2D.whiteTexture);
+        GUI.matrix = m;
+    }
+
+    /// <summary>Distancia real que abarca un cuarto del ancho del mapa (la barra de escala).</summary>
+    public float ScaleBarMeters => radiusMeters * 2f * 0.25f;
+
+    public string ScaleText(Rect r)
+    {
+        float m = ScaleBarMeters;
+        return m >= 1000f ? $"{m / 1000f:0.#} km" : $"{m:0} m";
     }
 
     Vector3 AerialFocusOnGround()

@@ -1,0 +1,73 @@
+.overlay {
+    position: absolute;
+    left: 0; top: 0; right: 0; bottom: 0;
+    background-color: rgba(12, 6, 4, 0.62);
+    align-items: center;
+    justify-content: center;
+}
+
+.panel {
+    width: 460px;
+    padding: 32px 36px 26px 36px;
+    background-color: rgba(30, 18, 13, 0.94);
+    border-width: 1px;
+    border-color: rgba(214, 128, 82, 0.55);
+    border-radius: 10px;
+    align-items: stretch;
+}
+
+.panel.wide { width: 820px; }
+
+.title {
+    font-size: 40px;
+    -unity-font-style: bold;
+    color: rgb(240, 196, 160);
+    -unity-text-align: middle-center;
+    margin-bottom: 4px;
+}
+
+.title.small { font-size: 30px; }
+
+.subtitle {
+    font-size: 18px;
+    color: rgb(196, 160, 136);
+    -unity-text-align: middle-center;
+    margin-bottom: 22px;
+}
+
+.menu-button {
+    height: 52px;
+    margin: 6px 0;
+    font-size: 20px;
+    color: rgb(240, 222, 206);
+    background-color: rgba(78, 44, 30, 0.95);
+    border-width: 1px;
+    border-color: rgba(214, 128, 82, 0.35);
+    border-radius: 6px;
+}
+
+.menu-button:hover, .menu-button:focus {
+    background-color: rgba(150, 74, 40, 0.95);
+    border-color: rgb(240, 160, 110);
+}
+
+.menu-button:active { background-color: rgba(186, 92, 48, 1); }
+
+.menu-button.primary { background-color: rgba(168, 80, 40, 0.95); }
+.menu-button.primary:hover, .menu-button.primary:focus { background-color: rgba(206, 104, 54, 1); }
+
+.menu-button.danger:hover, .menu-button.danger:focus { background-color: rgba(150, 40, 34, 1); }
+
+.hint {
+    margin-top: 14px;
+    font-size: 15px;
+    color: rgb(160, 128, 108);
+    -unity-text-align: middle-center;
+}
+
+.controls-text {
+    font-size: 17px;
+    color: rgb(232, 214, 198);
+    white-space: normal;
+    margin-bottom: 18px;
+}
