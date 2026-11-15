@@ -38,3 +38,14 @@ Terrain blocks (Assets/Gale/Models, Tools/build_mosaic_block.py + Tools/blender_
   GaleRuta_Albedo.jpg: "MSL_Gale_HiRISE-LRGB_78quads_sharp_cog.tif" (USGS, Parker & Calef, HiRISE color fused to the
     MSL HiRISE RED orthomosaic), read at 2 m/px (Tools/build_detail_texture.py), colour-matched to Gale_Albedo, grey
     (RED-only) strips tinted from Gale_Albedo, 600 m feather to Gale_Albedo at the edges.
+
+HD textures of the five large blocks (Gale, GaleNorte, GaleSur, GaleEste, GaleOeste) = <Block>_Albedo.jpg, 8192 px on the long side (power of two: Unity does not compress NPOT textures)
+  (24-36 m/px; before: ~97 m/px PNG, kept as the colour base in Tools/data/albedo_base/):
+  albedo = Viking/THEMIS colour base (the PNGs described above) x real detail of the global CTX mosaic (MRO Context Camera,
+  ~5 m/px, Murray Lab / Caltech: NASA/JPL/MSSS/Caltech Murray Lab, Dickson et al.), read from Esri's tile service
+  (https://astro.arcgis.com/arcgis/rest/services/OnMars/CTX1/MapServer, level 11 = 10.2 m/px):
+    python Tools/fetch_ctx.py --config Tools/mosaic_blocks.json --lod 11 --cache <dir>
+    python Tools/build_ctx_texture.py --config Tools/mosaic_blocks.json --block <B> --cache <dir>
+           --base Tools/data/albedo_base/<B>_Albedo_base.png --size 8192 8192 --out Assets/Gale/Textures/<B>_Albedo.jpg
+  Detail = CTX luminance / its own 250 m low-pass, ^0.9, multiplied in linear light; 96 px of context around each block
+  so the shared edges match. GaleRuta_Albedo.jpg was rebuilt against the new Gale_Albedo.jpg (600 m feather).
