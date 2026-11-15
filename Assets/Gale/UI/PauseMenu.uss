@@ -71,3 +71,28 @@
     white-space: normal;
     margin-bottom: 18px;
 }
+
+.layer-buttons {
+    flex-direction: row;
+    margin: 0 -5px 14px -5px;
+}
+
+.layer-buttons > .menu-button {
+    flex-grow: 1;
+    flex-basis: 0;
+    margin: 0 5px;
+}
+
+.menu-button.selected {
+    background-color: rgba(168, 80, 40, 0.95);
+    border-color: rgb(240, 160, 110);
+    -unity-font-style: bold;
+}
+
+.zone-scroll {
+    max-height: 430px;
+    margin-bottom: 12px;
+    padding: 12px 14px;
+    background-color: rgba(18, 10, 7, 0.6);
+    border-radius: 6px;
+}

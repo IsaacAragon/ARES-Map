@@ -1,0 +1,126 @@
+.legend {
+    position: absolute;
+    left: 16px;
+    top: 16px;
+    width: 440px;
+    padding: 14px 16px 12px 16px;
+    background-color: rgba(30, 18, 13, 0.88);
+    border-width: 1px;
+    border-color: rgba(214, 128, 82, 0.55);
+    border-radius: 8px;
+}
+
+.legend-title {
+    font-size: 20px;
+    -unity-font-style: bold;
+    color: rgb(240, 196, 160);
+    padding: 0;
+    margin: 0 0 2px 0;
+}
+
+.legend-small {
+    font-size: 13px;
+    color: rgb(196, 160, 136);
+    white-space: normal;
+    padding: 0;
+    margin: 0;
+}
+
+.legend-rows {
+    margin: 10px 0 8px 0;
+}
+
+.legend-row {
+    flex-direction: row;
+    align-items: center;
+    padding: 3px 6px;
+    margin: 1px -6px;
+    border-radius: 4px;
+    border-left-width: 3px;
+    border-left-color: rgba(0, 0, 0, 0);
+}
+
+.legend-row.current {
+    background-color: rgba(214, 128, 82, 0.28);
+    border-left-color: rgb(240, 160, 110);
+}
+
+.legend-swatch {
+    width: 22px;
+    height: 16px;
+    margin-right: 9px;
+    flex-shrink: 0;
+    border-width: 1px;
+    border-color: rgba(20, 12, 9, 0.9);
+    border-radius: 2px;
+}
+
+.legend-code {
+    width: 38px;
+    flex-shrink: 0;
+    font-size: 14px;
+    -unity-font-style: bold;
+    color: rgb(240, 222, 206);
+    padding: 0;
+    margin: 0;
+}
+
+.legend-name {
+    flex-grow: 1;
+    flex-shrink: 1;
+    font-size: 14px;
+    color: rgb(232, 214, 198);
+    white-space: normal;
+    padding: 0;
+    margin: 0;
+}
+
+.legend-pct {
+    width: 46px;
+    flex-shrink: 0;
+    font-size: 13px;
+    color: rgb(196, 160, 136);
+    -unity-text-align: middle-right;
+    padding: 0;
+    margin: 0;
+}
+
+.legend-here {
+    margin-top: 10px;
+    padding-top: 9px;
+    border-top-width: 1px;
+    border-top-color: rgba(214, 128, 82, 0.35);
+}
+
+.legend-heading {
+    font-size: 12px;
+    -unity-font-style: bold;
+    color: rgb(196, 160, 136);
+    padding: 0;
+    margin: 0 0 3px 0;
+}
+
+.legend-here-class {
+    font-size: 15px;
+    -unity-font-style: bold;
+    color: rgb(240, 222, 206);
+    white-space: normal;
+    padding: 0;
+    margin: 0 0 3px 0;
+}
+
+.legend-text {
+    font-size: 13px;
+    color: rgb(232, 214, 198);
+    white-space: normal;
+    padding: 0;
+    margin: 0 0 3px 0;
+}
+
+.legend-hint {
+    margin: 8px 0 0 0;
+    padding: 0;
+    font-size: 12px;
+    color: rgb(160, 128, 108);
+    white-space: normal;
+}
