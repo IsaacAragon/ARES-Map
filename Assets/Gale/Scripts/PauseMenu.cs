@@ -79,7 +79,9 @@ public class PauseMenu : MonoBehaviour
         "F centrar en el rover · C centrar en el cráter\n\n" +
         "<b>Mapa (M)</b>\nClic derecho + arrastrar mover · rueda zoom · WASD · Q/E girar · F rover · C cráter · M/Esc salir\n" +
         "− / + zoom del minimapa · H ayuda\n\n" +
-        "<b>Capas del mapa</b>\nL cambia entre imagen real, geología y material del suelo\n\n" +
+        "<b>Ruta A→B (en el mapa)</b>\nClic destino · Mayús + clic parada · arrastrar un pin moverlo · Supr quitarlo\n" +
+        "Intro iniciar el guiado · Retroceso cancelar · P perfil · V verla en vista aérea · Ctrl+Z / Ctrl+Y\n\n" +
+        "<b>Capas del mapa</b>\nL cambia entre imagen real, geología, material del suelo y transitabilidad\n\n" +
         "<b>Esc</b> pausa";
 
     const string GamepadHelp =
@@ -88,8 +90,9 @@ public class PauseMenu : MonoBehaviour
         "<b>Vista aérea</b>\nStick izq. mover · L3 rápido · LB/RB girar · stick dcho. Y altura\n" +
         "stick dcho. X + cruceta ↑/↓ mirar · X centrar en el rover · Y centrar en el cráter\n\n" +
         "<b>Mapa (R3)</b>\nStick izq. mover · gatillos zoom · LB/RB girar · stick dcho. cursor · A seleccionar\n" +
-        "cruceta ↑/↓ zoom por pasos · X rover · Y cráter · B salir · cruceta → ayuda\n\n" +
-        "<b>Capas del mapa</b>\nCruceta ← cambia entre imagen real, geología y material del suelo\n\n" +
+        "cruceta ↑/↓ zoom por pasos · X rover · Y cráter · B salir · cruceta → ayuda\n" +
+        "Ruta A→B: A en el mapa elige el destino (el resto de la edición, de momento con teclado)\n\n" +
+        "<b>Capas del mapa</b>\nCruceta ← cambia entre imagen real, geología, material del suelo y transitabilidad\n\n" +
         "<b>Start</b> pausa · en este menú: cruceta/stick para moverse, A para elegir";
 
     void OnPauseChanged(bool paused)
@@ -122,9 +125,11 @@ public class PauseMenu : MonoBehaviour
     {
         var geo = GeoLayers.Instance;
         if (!geo) return;
-        if (layerButtons.Count == 0)
+        if (layerButtons.Count != geo.LayerCount + 1)   // la navegación añade la capa Transitabilidad al cargar
         {
             var box = root.Q("layer-buttons");
+            foreach (var old in layerButtons) old.RemoveFromHierarchy();
+            layerButtons.Clear();
             for (int i = -1; i < geo.LayerCount; i++)
             {
                 int layer = i;
@@ -157,6 +162,8 @@ public class PauseMenu : MonoBehaviour
             // El salto no se une con una rodada ni con el tramo anterior del recorrido.
             if (chase.target.TryGetComponent<RoverTracks>(out var tracks)) tracks.BreakAll();
             if (chase.target.TryGetComponent<RoverTrackRecorder>(out var rec)) rec.BreakSegment();
+            // La ruta planificada se recalcula desde la nueva posición.
+            if (NavigationSystem.Instance) NavigationSystem.Instance.OnRoverReset();
         }
         SetOpen(false);
     }

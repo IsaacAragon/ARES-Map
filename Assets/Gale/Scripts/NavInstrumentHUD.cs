@@ -69,6 +69,19 @@ public class NavInstrumentHUD : MonoBehaviour
 
     bool HelpShown => helpPinned || Time.unscaledTime < helpUntil;
 
+    // Navegación A→B: distancia y tiempo restantes y rumbo al punto de la ruta que está por delante.
+    string GuidanceText()
+    {
+        var nav = NavigationSystem.Instance;
+        if (!nav || nav.Route == null) return null;
+        if (nav.Current == NavigationSystem.State.Completed) return "<b>" + nav.Message + "</b>";
+        if (nav.Current == NavigationSystem.State.Calculating) return "ruta: calculando…";
+        if (!nav.Guiding) return $"ruta en vista previa · {NavMapOverlay.Km(nav.Route.DistanceM)} · Intro en el mapa (M) la inicia";
+        nav.Bearing(out float brg, out _);
+        string card = Cardinal16[Mathf.RoundToInt(brg / 22.5f) % 16];
+        return $"<b>RUTA</b> quedan {NavMapOverlay.Km(nav.RemainingMeters)} · {NavMapOverlay.Hours(nav.RemainingSeconds)} · rumbo {brg:000}° {card}";
+    }
+
     // Aro: anillo blanco con alfa suavizado; el color se aplica con GUI.color.
     Texture2D Ring()
     {
@@ -155,6 +168,10 @@ public class NavInstrumentHUD : MonoBehaviour
             if (routeText != null)
                 Text(new Rect(c.x - 190 * s, r.yMax + 72 * s, 380 * s, 20 * s), routeText, small,
                      new Color(1f, 0.72f, 0.4f), TextAnchor.MiddleCenter);
+            string guide = GuidanceText();
+            if (guide != null)
+                Text(new Rect(c.x - 210 * s, r.yMax + 90 * s, 420 * s, 20 * s), guide, small,
+                     new Color(0.8f, 0.65f, 1f), TextAnchor.MiddleCenter);
         }
 
         if (HelpShown && !map.Interactive)
