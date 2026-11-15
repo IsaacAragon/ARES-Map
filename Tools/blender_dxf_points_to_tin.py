@@ -44,10 +44,13 @@ def parse_args():
                         "ONLY to compute vertex normals (exported as custom normals), so the shading of a shared edge "
                         "is the same on both blocks. They do not become vertices.")
     p.add_argument("--halo-dist", type=float, default=3000.0)
+    p.add_argument("--hole", type=float, nargs=4, action="append", metavar=("X0", "X1", "Y0", "Y1"),
+                   help="Rectangle (source units) of an inner block: faces whose centroid falls inside are removed, "
+                        "and halo points inside it are used for the normals. Repeatable.")
     return p.parse_args(argv)
 
 
-def halo_normals(pts, halo_files, dist, cx, cy, scale):
+def halo_normals(pts, halo_files, dist, cx, cy, scale, holes=()):
     """Area-weighted vertex normals of `pts`, computed on a triangulation of pts + nearby neighbour points."""
     xmin = min(p[0] for p in pts); xmax = max(p[0] for p in pts)
     ymin = min(p[1] for p in pts); ymax = max(p[1] for p in pts)
@@ -58,7 +61,8 @@ def halo_normals(pts, halo_files, dist, cx, cy, scale):
         for x, y, z in hp:
             outside = x < xmin - eps or x > xmax + eps or y < ymin - eps or y > ymax + eps
             near = xmin - dist <= x <= xmax + dist and ymin - dist <= y <= ymax + dist
-            if outside and near:
+            in_hole = any(h[0] + eps < x < h[1] - eps and h[2] + eps < y < h[3] - eps for h in holes)
+            if (outside and near) or in_hole:
                 extra.append((x, y, z))
     allp = list(pts) + extra
     v2 = [Vector(((x - cx) * scale, (y - cy) * scale)) for x, y, _ in allp]
@@ -160,6 +164,17 @@ def main():
         zmap.append(pts[orig[0]][2] * a.scale)
     merged = sum(len(o) - 1 for o in orig_verts)
     verts3 = [(v.x, v.y, z) for v, z in zip(out_verts, zmap)]
+    if a.hole:
+        # Huecos para bloques interiores: fuera las caras con el centroide dentro del rectángulo.
+        holes = [((x0 - cx) * a.scale, (x1 - cx) * a.scale, (y0 - cy) * a.scale, (y1 - cy) * a.scale) for x0, x1, y0, y1 in a.hole]
+        before = len(out_faces)
+        kept = []
+        for f in out_faces:
+            mx = sum(out_verts[i].x for i in f) / len(f); my = sum(out_verts[i].y for i in f) / len(f)
+            if not any(h[0] < mx < h[1] and h[2] < my < h[3] for h in holes):
+                kept.append(f)
+        out_faces = kept
+        print(f"[tin] holes: removed {before - len(out_faces)} faces inside {len(holes)} rectangle(s)")
     print(f"[tin] vertices out: {len(verts3)}  (duplicates merged: {merged})  triangles: {len(out_faces)}")
 
     mesh = bpy.data.meshes.new(a.name)
@@ -187,7 +202,7 @@ def main():
         p.use_smooth = True
 
     if a.halo:
-        hn = halo_normals(pts, a.halo, a.halo_dist, cx, cy, a.scale)
+        hn = halo_normals(pts, a.halo, a.halo_dist, cx, cy, a.scale, a.hole or ())
         # output vertex k comes from source point orig_verts[k][0]
         mesh.normals_split_custom_set_from_vertices([hn[orig_verts[k][0]] for k in range(len(verts3))])
         mesh.update()

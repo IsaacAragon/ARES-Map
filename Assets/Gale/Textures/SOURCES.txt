@@ -30,3 +30,11 @@ Terrain blocks (Assets/Gale/Models, Tools/build_mosaic_block.py + Tools/blender_
     X = X0 + x_local / cos(phi0), Y = Y0 + y_local (Tools/fit_sectors_georef.py -> Models/Sectores_georef.json).
   Shared block edges carry the same vertices on both sides; vertex normals are computed with the neighbours' points
   (--halo) so the shading has no seam.
+  GaleRuta_TIN.fbx: detail block over the Curiosity traverse (sol 0-5073), inside Gale_TIN (a hole is cut in Gale with
+    blender_dxf_points_to_tin.py --hole). Elevation: "Mars MSL Gale Merged DEM 1m v3" (USGS Astrogeology, T. Parker &
+    F. Calef III; HiRISE + CTX + HRSC tied to MOLA), read at 8 m from its overviews (Tools: MSL_Gale_DEM_8m_ruta.tif) and
+    thinned with an adaptive quadtree (cells 8-256 m, max vertical error 2 m); 600 m blend to MOLA at the edges; shared
+    edge vertices every ~58 m.
+  GaleRuta_Albedo.jpg: "MSL_Gale_HiRISE-LRGB_78quads_sharp_cog.tif" (USGS, Parker & Calef, HiRISE color fused to the
+    MSL HiRISE RED orthomosaic), read at 2 m/px (Tools/build_detail_texture.py), colour-matched to Gale_Albedo, grey
+    (RED-only) strips tinted from Gale_Albedo, 600 m feather to Gale_Albedo at the edges.

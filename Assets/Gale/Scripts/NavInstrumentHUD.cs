@@ -50,7 +50,22 @@ public class NavInstrumentHUD : MonoBehaviour
             if (HelpShown) { helpPinned = false; helpUntil = 0f; }
             else helpPinned = true;
         }
+
+        // Ruta de Curiosity: punto más cercano (4 veces por segundo; son ~7700 puntos).
+        if (Time.unscaledTime >= nextRouteCheck && chase && chase.target)
+        {
+            nextRouteCheck = Time.unscaledTime + 0.25f;
+            if (!routeSearched) { route = FindAnyObjectByType<CuriosityRoute>(); routeSearched = true; }
+            routeText = route && route.Nearest(chase.target.transform.position, out float m, out int sol)
+                ? $"ruta de Curiosity a {(m >= 1000f ? $"{m / 1000f:0.0} km" : $"{m:0} m")} · sol {sol}"
+                : null;
+        }
     }
+
+    CuriosityRoute route;
+    bool routeSearched;
+    float nextRouteCheck;
+    string routeText;
 
     bool HelpShown => helpPinned || Time.unscaledTime < helpUntil;
 
@@ -137,6 +152,9 @@ public class NavInstrumentHUD : MonoBehaviour
             Text(new Rect(c.x - 170 * s, r.yMax + 54 * s, 340 * s, 20 * s),
                 GaleInput.UsingGamepad ? "R3 mapa · cruceta → ayuda" : "M mapa · − / + zoom · H ayuda",
                 small, dimTextColor, TextAnchor.MiddleCenter);
+            if (routeText != null)
+                Text(new Rect(c.x - 190 * s, r.yMax + 72 * s, 380 * s, 20 * s), routeText, small,
+                     new Color(1f, 0.72f, 0.4f), TextAnchor.MiddleCenter);
         }
 
         if (HelpShown && !map.Interactive)

@@ -29,6 +29,9 @@ public static class GaleSceneBuilder
         ("GaleEste_TIN", "Assets/Gale/Models/GaleEste_TIN.fbx", "GaleEste_Terrain.mat", "Assets/Gale/Textures/GaleEste_Albedo.png"),
         // Franja oeste con el cráter Robert Sharp (sector 9 a ~400 m + MOLA al sur).
         ("GaleOeste_TIN", "Assets/Gale/Models/GaleOeste_TIN.fbx", "GaleOeste_Terrain.mat", "Assets/Gale/Textures/GaleOeste_Albedo.png"),
+        // Zona de la ruta de Curiosity, dentro de Gale (hueco en Gale_TIN): DEM MSL de 1 m (a 8 m, quadtree)
+        // y textura de color HiRISE a 2 m/px.
+        ("GaleRuta_TIN", "Assets/Gale/Models/GaleRuta_TIN.fbx", "GaleRuta_Terrain.mat", "Assets/Gale/Textures/GaleRuta_Albedo.jpg"),
     };
 
     // 1 m Unity = 50 m reales. Escala uniforme: las pendientes son las reales.
@@ -49,7 +52,7 @@ public static class GaleSceneBuilder
         }
         var scene = EditorSceneManager.GetActiveScene();
 
-        foreach (var n in new[] { "BallLeft", "BallRight", "Ground", "Gale_Terrain", "Rover", "PauseMenu" })
+        foreach (var n in new[] { "BallLeft", "BallRight", "Ground", "Gale_Terrain", "Rover", "PauseMenu", "CuriosityRoute" })
         {
             var go = GameObject.Find(n);
             if (go) Object.DestroyImmediate(go);
@@ -151,6 +154,7 @@ public static class GaleSceneBuilder
             router.chase = chase;
             router.minimap = minimap;
             BuildPauseMenu(chase, minimap);
+            BuildCuriosityRoute();
             cam.transform.position = spawn + new Vector3(0f, 6f, 10f);
             cam.transform.LookAt(spawn);
         }
@@ -198,6 +202,27 @@ public static class GaleSceneBuilder
     // ---------- Menú de pausa (UI Toolkit) ----------
     const string UiDir = "Assets/Gale/UI";
     const string PanelSettingsPath = UiDir + "/GalePanelSettings.asset";
+    // ---------- Ruta real de Curiosity (JPL MMGIS, en Assets/Gale/Route) ----------
+    static void BuildCuriosityRoute()
+    {
+        var go = new GameObject("CuriosityRoute");
+        var route = go.AddComponent<CuriosityRoute>();
+        route.routeCsv = AssetDatabase.LoadAssetAtPath<TextAsset>("Assets/Gale/Route/MSL_ruta.csv");
+        route.waypointsCsv = AssetDatabase.LoadAssetAtPath<TextAsset>("Assets/Gale/Route/MSL_waypoints.csv");
+        const string matPath = MatDir + "/Curiosity_Route.mat";
+        var mat = AssetDatabase.LoadAssetAtPath<Material>(matPath);
+        if (!mat)
+        {
+            mat = new Material(Shader.Find("Gale/RouteLine"));
+            AssetDatabase.CreateAsset(mat, matPath);
+        }
+        mat.SetColor("_Color", new Color(1f, 0.6f, 0.15f, 0.7f));
+        mat.SetFloat("_Dash", 0.5f);   // rayas de ~1,3 u: se distingue de las rodadas del rover
+        EditorUtility.SetDirty(mat);
+        route.material = mat;
+        if (!route.routeCsv || !route.waypointsCsv) Debug.LogWarning("[Gale] faltan los CSV de la ruta de Curiosity");
+    }
+
 
     static void BuildPauseMenu(ChaseCamera chase, MinimapHUD minimap)
     {
@@ -263,7 +288,10 @@ public static class GaleSceneBuilder
         ti.anisoLevel = 8;
         ti.filterMode = FilterMode.Trilinear;
         ti.wrapMode = wrap;
-        ti.maxTextureSize = 2048;
+        // Tamaño máximo = el de la imagen (potencia de 2 por encima, hasta 16384): con 2048 fijo,
+        // las texturas de los bloques grandes y la de detalle de la ruta se reducían al importarlas.
+        ti.GetSourceTextureWidthAndHeight(out int tw, out int th);
+        ti.maxTextureSize = Mathf.Clamp(Mathf.NextPowerOfTwo(Mathf.Max(tw, th, 32)), 32, 16384);
         ti.textureCompression = TextureImporterCompression.CompressedHQ;
         ti.SaveAndReimport();
     }
