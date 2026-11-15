@@ -49,7 +49,7 @@ public static class GaleSceneBuilder
         }
         var scene = EditorSceneManager.GetActiveScene();
 
-        foreach (var n in new[] { "BallLeft", "BallRight", "Ground", "Gale_Terrain", "Rover" })
+        foreach (var n in new[] { "BallLeft", "BallRight", "Ground", "Gale_Terrain", "Rover", "PauseMenu" })
         {
             var go = GameObject.Find(n);
             if (go) Object.DestroyImmediate(go);
@@ -141,7 +141,8 @@ public static class GaleSceneBuilder
             // Se recrea para que tome los valores del código (p. ej. rótulos nuevos) y no los guardados en la escena.
             var oldMap = cam.GetComponent<MinimapHUD>();
             if (oldMap) Object.DestroyImmediate(oldMap);
-            cam.gameObject.AddComponent<MinimapHUD>();
+            var minimap = cam.gameObject.AddComponent<MinimapHUD>();
+            BuildPauseMenu(chase, minimap);
             cam.transform.position = spawn + new Vector3(0f, 6f, 10f);
             cam.transform.LookAt(spawn);
         }
@@ -171,6 +172,43 @@ public static class GaleSceneBuilder
         EditorSceneManager.MarkSceneDirty(scene);
         EditorSceneManager.SaveScene(scene);
         Debug.Log($"[Gale] scene built and saved: {scene.path}");
+    }
+
+    // ---------- Menú de pausa (UI Toolkit) ----------
+    const string UiDir = "Assets/Gale/UI";
+    const string PanelSettingsPath = UiDir + "/GalePanelSettings.asset";
+
+    static void BuildPauseMenu(ChaseCamera chase, MinimapHUD minimap)
+    {
+        var go = new GameObject("PauseMenu");
+        var doc = go.AddComponent<UnityEngine.UIElements.UIDocument>();
+        doc.panelSettings = GalePanelSettings();
+        doc.visualTreeAsset = AssetDatabase.LoadAssetAtPath<UnityEngine.UIElements.VisualTreeAsset>(UiDir + "/PauseMenu.uxml");
+        doc.sortingOrder = 100;
+        var menu = go.AddComponent<PauseMenu>();
+        menu.chase = chase;
+        menu.minimap = minimap;
+        menu.resetLon = SpawnLon;
+        menu.resetLat = SpawnLat;
+    }
+
+    /// <summary>PanelSettings común de la UI del simulador: escala con la pantalla (referencia 1920×1080).</summary>
+    public static UnityEngine.UIElements.PanelSettings GalePanelSettings()
+    {
+        var ps = AssetDatabase.LoadAssetAtPath<UnityEngine.UIElements.PanelSettings>(PanelSettingsPath);
+        if (!ps)
+        {
+            ps = ScriptableObject.CreateInstance<UnityEngine.UIElements.PanelSettings>();
+            AssetDatabase.CreateAsset(ps, PanelSettingsPath);
+        }
+        ps.themeStyleSheet = AssetDatabase.LoadAssetAtPath<UnityEngine.UIElements.ThemeStyleSheet>(UiDir + "/GaleTheme.tss");
+        ps.scaleMode = UnityEngine.UIElements.PanelScaleMode.ScaleWithScreenSize;
+        ps.referenceResolution = new Vector2Int(1920, 1080);
+        ps.screenMatchMode = UnityEngine.UIElements.PanelScreenMatchMode.MatchWidthOrHeight;
+        ps.match = 0.5f;
+        EditorUtility.SetDirty(ps);
+        AssetDatabase.SaveAssets();
+        return ps;
     }
 
     static void ConfigureImporter(string path)

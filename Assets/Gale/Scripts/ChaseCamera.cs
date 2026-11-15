@@ -46,6 +46,7 @@ public class ChaseCamera : MonoBehaviour
 
     // Lo activa el minimapa interactivo: la cámara no lee teclado ni ratón mientras tanto.
     [HideInInspector] public bool inputBlocked;
+    bool InputOff => inputBlocked || SimPause.IsPaused;
 
     Vector3 aerialFocus;
     bool prevToggle, prevF, prevC;
@@ -70,7 +71,7 @@ public class ChaseCamera : MonoBehaviour
 
     void LateUpdate()
     {
-        var kb = inputBlocked ? null : Keyboard.current;
+        var kb = InputOff ? null : Keyboard.current;
         // Flanco de subida comparando con el frame anterior (fiable también con el Input System en FixedUpdate).
         bool toggle = kb != null && kb[toggleKey].isPressed;
         if (toggle && !prevToggle) SetAerial(!Aerial);
@@ -83,7 +84,7 @@ public class ChaseCamera : MonoBehaviour
     void UpdateChase()
     {
         if (!target) return;
-        var mouse = inputBlocked ? null : Mouse.current;
+        var mouse = InputOff ? null : Mouse.current;
         if (mouse != null)
             distance = Mathf.Clamp(distance - mouse.scroll.ReadValue().y * 0.01f, 4f, 200f);
 
@@ -109,7 +110,7 @@ public class ChaseCamera : MonoBehaviour
     void UpdateAerial(Keyboard kb)
     {
         float dt = Time.unscaledDeltaTime;
-        var mouse = inputBlocked ? null : Mouse.current;
+        var mouse = InputOff ? null : Mouse.current;
 
         if (kb != null)
         {
@@ -154,7 +155,7 @@ public class ChaseCamera : MonoBehaviour
 
     void OnGUI()
     {
-        if (!target) return;
+        if (!target || SimPause.IsPaused) return;
         Vector3 p = target.transform.position;
         double x = offsetX + p.x / worldScale;
         double y = offsetY + p.z / worldScale;
@@ -163,7 +164,7 @@ public class ChaseCamera : MonoBehaviour
         double lat = y / marsRadius * 180.0 / System.Math.PI;
         GUI.Box(new Rect(10, 10, 360, 146), GUIContent.none);
         string controls = Aerial
-            ? "VISTA AÉREA · WASD mover · Q/E girar · rueda altura\nclic dcho+arrastrar inclinar · F rover · C cráter · Tab volver · M mapa"
+            ? "VISTA AÉREA · WASD mover · Q/E girar · rueda altura\nclic dcho+arrastrar inclinar · F rover · C cráter · Tab volver · M mapa · Esc pausa"
             : "WASD mover · Shift rápido · Espacio freno · R enderezar\nTab vista aérea · M mapa";
         GUI.Label(new Rect(20, 16, 350, 140),
             $"Gale (MOLA 463 m) — escala 1:{1f / worldScale:0}\n" +

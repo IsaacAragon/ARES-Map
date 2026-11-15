@@ -1,0 +1,25 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements">
+    <Style src="PauseMenu.uss" />
+    <ui:VisualElement name="overlay" class="overlay">
+        <ui:VisualElement name="main-panel" class="panel">
+            <ui:Label text="ARES Map" class="title" />
+            <ui:Label text="Simulación en pausa" class="subtitle" />
+            <ui:Button name="resume" text="Reanudar" class="menu-button primary" />
+            <ui:Button name="controls" text="Controles" class="menu-button" />
+            <ui:Button name="reset" text="Reiniciar en Bradbury" class="menu-button" />
+            <ui:Button name="quit" text="Salir del simulador" class="menu-button danger" />
+            <ui:Label text="Esc para reanudar" class="hint" />
+        </ui:VisualElement>
+        <ui:VisualElement name="controls-panel" class="panel wide">
+            <ui:Label text="Controles" class="title" />
+            <ui:Label name="controls-text" class="controls-text" enable-rich-text="true" />
+            <ui:Button name="controls-back" text="Volver" class="menu-button" />
+        </ui:VisualElement>
+        <ui:VisualElement name="confirm-panel" class="panel">
+            <ui:Label text="¿Salir del simulador?" class="title small" />
+            <ui:Label text="Se perderá el recorrido de esta sesión." class="subtitle" />
+            <ui:Button name="confirm-yes" text="Salir" class="menu-button danger" />
+            <ui:Button name="confirm-no" text="Cancelar" class="menu-button" />
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>
