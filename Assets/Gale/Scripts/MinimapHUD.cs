@@ -148,16 +148,17 @@ public class MinimapHUD : MonoBehaviour
         ApplyCursor();
     }
 
-    void ApplyCursor()
+    /// <summary>Cursor libre en el mapa interactivo (o en pausa); oculto y bloqueado en la simulación.</summary>
+    public void ApplyCursor()
     {
-        bool free = Interactive || !hideCursorInSimulation;
+        bool free = Interactive || !hideCursorInSimulation || SimPause.IsPaused;
         Cursor.lockState = free ? CursorLockMode.None : CursorLockMode.Locked;
         Cursor.visible = free;
     }
 
     void Update()
     {
-        if (!show || !chase || !chase.target) return;
+        if (!show || !chase || !chase.target || SimPause.IsPaused) return;
         var kb = Keyboard.current;
         var mouse = Mouse.current;
 
@@ -293,7 +294,7 @@ public class MinimapHUD : MonoBehaviour
 
     void OnGUI()
     {
-        if (!show || !mapCam || !mapCam.enabled || !rt) return;
+        if (!show || !mapCam || !mapCam.enabled || !rt || SimPause.IsPaused) return;
         markerStyle ??= new GUIStyle(GUI.skin.label) { alignment = TextAnchor.MiddleCenter, fontSize = 16, padding = new RectOffset() };
         hintStyle ??= new GUIStyle(GUI.skin.label) { alignment = TextAnchor.UpperCenter, wordWrap = true };
 

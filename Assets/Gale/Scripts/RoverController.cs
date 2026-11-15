@@ -91,20 +91,29 @@ public class RoverController : MonoBehaviour
         SnapToGround(transform.position);
     }
 
-    public void SnapToGround(Vector3 pos)
+    public void SnapToGround(Vector3 pos) => ResetTo(pos, transform.eulerAngles.y);
+
+    /// <summary>Coloca el rover sobre el terreno en (x, z), derecho y con rumbo yaw, parado.</summary>
+    public void ResetTo(Vector3 pos, float yaw)
     {
         var from = new Vector3(pos.x, 5000f, pos.z);
         if (Physics.Raycast(from, Vector3.down, out var hit, 20000f, groundMask))
             pos.y = hit.point.y + restLength + 0.8f;
-        transform.SetPositionAndRotation(pos, Quaternion.Euler(0f, transform.eulerAngles.y, 0f));
+        var rot = Quaternion.Euler(0f, yaw, 0f);
+        // Con interpolación, el Rigidbody manda: hay que moverlo a él además del transform.
+        rb.position = pos;
+        rb.rotation = rot;
+        transform.SetPositionAndRotation(pos, rot);
         rb.linearVelocity = Vector3.zero;
         rb.angularVelocity = Vector3.zero;
     }
 
+    bool ReadsInput => inputEnabled && !SimPause.IsPaused;
+
     void Update()
     {
         var kb = Keyboard.current;
-        bool r = inputEnabled && kb != null && kb.rKey.isPressed;
+        bool r = ReadsInput && kb != null && kb.rKey.isPressed;
         if (r && !prevR) SnapToGround(transform.position);
         prevR = r;
     }
@@ -115,7 +124,7 @@ public class RoverController : MonoBehaviour
         var kb = Keyboard.current;
         float throttle = 0f, steer = 0f;
         bool boost = false, brake = false;
-        if (inputEnabled && kb != null)
+        if (ReadsInput && kb != null)
         {
             if (kb.wKey.isPressed || kb.upArrowKey.isPressed) throttle += 1f;
             if (kb.sKey.isPressed || kb.downArrowKey.isPressed) throttle -= 1f;
