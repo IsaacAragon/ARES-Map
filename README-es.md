@@ -6,6 +6,15 @@ Simulador del cráter Gale para planear un recorrido en la superficie de Marte. 
 
 Proyecto del equipo [Salomonsters](https://www.spaceappschallenge.org/2026/find-a-team/salomonsters/) (Universidad Americana, Managua) para el reto [Interplanetary Survival Guide: Martian Map](https://www.spaceappschallenge.org/2026/challenges/interplanetary-survival-guide-martian-map/) del NASA Space Apps Challenge 2026.
 
+## Descarga
+
+Versión lista para ejecutar en **Windows**, sin necesidad de Unity:
+
+1. Ve a la [página de releases](https://github.com/IsaacAragon/ARES-Map/releases) y abre el release más reciente (**ARES Map v1**).
+2. Descarga `ARES.Map.zip` (unos 200 MB).
+3. Extrae el zip en la carpeta que quieras.
+4. Abre la carpeta `ARES Map` y ejecuta **`ARES Map.exe`**.
+
 ![Vista aérea de Farah Vallis, con el buscador de lugares y la ficha del valle](docs/screenshots/vista-aerea-farah-vallis.png)
 
 ![Ficha del cráter Gale sobre el mapa de la región](docs/screenshots/ficha-crater-gale.png)
