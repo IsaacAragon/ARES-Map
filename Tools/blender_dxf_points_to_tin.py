@@ -18,6 +18,7 @@ Options:
   --output      FBX to write (required)
   --scale       Source units -> meters. Default 1.
   --center-xy   Subtract the X/Y centre of the bounds (Z keeps the source datum).
+  --origin X Y  Subtract this X/Y instead (e.g. the Gale TIN offset, so a second block lines up).
   --name        Object name. Default Gale_TIN.
 """
 import sys, os, math, argparse, json
@@ -35,6 +36,8 @@ def parse_args():
     p.add_argument("--output", required=True)
     p.add_argument("--scale", type=float, default=1.0)
     p.add_argument("--center-xy", action="store_true")
+    p.add_argument("--origin", type=float, nargs=2, metavar=("X", "Y"),
+                   help="Subtract this X/Y instead of the bounds centre (to share another TIN's origin).")
     p.add_argument("--name", default="Gale_TIN")
     return p.parse_args(argv)
 
@@ -98,6 +101,8 @@ def main():
     xmin, xmax, ymin, ymax = min(xs), max(xs), min(ys), max(ys)
     cx = (xmin + xmax) / 2 if a.center_xy else 0.0
     cy = (ymin + ymax) / 2 if a.center_xy else 0.0
+    if a.origin:
+        cx, cy = a.origin
 
     # Triangulate in local coordinates (better float precision than 8e6-scale numbers).
     v2 = [Vector(((x - cx) * a.scale, (y - cy) * a.scale)) for x, y, _ in pts]

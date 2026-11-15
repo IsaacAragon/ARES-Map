@@ -30,6 +30,22 @@ public class MinimapHUD : MonoBehaviour
     [Tooltip("Pintar sin niebla (el polvo taparía el suelo visto desde arriba).")]
     public bool disableFog = true;
 
+    [System.Serializable]
+    public struct Place
+    {
+        public string name;
+        public double lon, lat;   // grados, Este positivo
+        public Place(string n, double lon, double lat) { name = n; this.lon = lon; this.lat = lat; }
+    }
+
+    [Header("Lugares (IAU, planetocéntricos)")]
+    public Place[] places =
+    {
+        new Place("Gale", 137.80, -5.40),
+        new Place("Aeolis Mons", 137.85, -5.08),
+        new Place("Babati", 137.93, -3.16),
+    };
+
     [Header("Mapa interactivo")]
     public Key toggleKey = Key.M;
     [Tooltip("Lado del mapa interactivo como fracción del alto de la pantalla.")]
@@ -296,6 +312,19 @@ public class MinimapHUD : MonoBehaviour
             Vector2 fp = WorldToMap(AerialFocusOnGround(), r);
             if (r.Contains(fp)) Marker(fp, "✚", Color.yellow, 0f);
         }
+
+        // Lugares con nombre.
+        if (places != null)
+            foreach (var pl in places)
+            {
+                Vector2 pp = WorldToMap(MarsGeo.LonLatToUnity(pl.lon, pl.lat), r);
+                if (!r.Contains(pp)) continue;
+                Marker(pp, "•", new Color(1f, 0.85f, 0.55f), 0f);
+                var oldc = GUI.color;
+                GUI.color = Color.black; GUI.Label(new Rect(pp.x + 7, pp.y - 9, 120, 20), pl.name);
+                GUI.color = new Color(1f, 0.92f, 0.75f); GUI.Label(new Rect(pp.x + 6, pp.y - 10, 120, 20), pl.name);
+                GUI.color = oldc;
+            }
 
         // Rover con flecha de rumbo (en el centro salvo que el mapa interactivo se haya desplazado).
         Vector2 rp = WorldToMap(t.position, r);
