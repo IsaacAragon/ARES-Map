@@ -64,6 +64,8 @@ public class MinimapHUD : MonoBehaviour
 
     /// <summary>Clic izquierdo dentro del mapa interactivo, en coordenadas de mundo (sobre el terreno).</summary>
     public event Action<Vector3> MapClicked;
+    /// <summary>Antes de MapClicked: si devuelve true, el clic ya se usó (p. ej. elegir un lugar con nombre).</summary>
+    public Func<Vector2, bool> clickFilter;
     /// <summary>Dibujo extra sobre el mapa (IMGUI, Rect del mapa), tras el recorrido y antes del rover.</summary>
     public event Action<Rect> OverlayGUI;
     /// <summary>Texto extra para la línea de ayuda del mapa interactivo (lo pone la navegación).</summary>
@@ -246,7 +248,7 @@ public class MinimapHUD : MonoBehaviour
         if (dragging) Pan(a.PointerDelta.ReadValue<Vector2>(), r);
 
         // Clic izquierdo / A: punto en el mundo (destino de la navegación A→B).
-        if (a.Select.WasPressedThisFrame() && inside) MapClicked?.Invoke(MapToWorld(gui));
+        if (a.Select.WasPressedThisFrame() && inside && !(clickFilter != null && clickFilter(gui))) MapClicked?.Invoke(MapToWorld(gui));
     }
 
     /// <summary>Acerca (factor &lt; 1) o aleja (factor &gt; 1) manteniendo fijo el punto del mapa en guiPoint.</summary>
