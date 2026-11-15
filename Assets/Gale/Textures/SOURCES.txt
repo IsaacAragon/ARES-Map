@@ -1,9 +1,11 @@
-Gale_Albedo.png: derived from USGS Astrogeology WMS (planetarymaps.usgs.gov, mars_simp_cyl.map),
+Gale_Albedo.png + GaleNorte_Albedo.png: derived from USGS Astrogeology WMS (planetarymaps.usgs.gov, mars_simp_cyl.map),
   layers MDIM21_color (Viking MDIM 2.1 colorized, NASA/USGS, public domain) and THEMIS (THEMIS day IR, ASU/NASA).
-  BBOX lon 136.11621087545228..139.48347084890932, lat -7.082183679637354..-3.7149237061972213 (DXF point extent, R=3396190 m).
+  Gale_Albedo.png covers BBOX lon 136.11621087545228..139.48347084890932, lat -7.082183679637354..-3.7149237061972213 (Gale DXF point extent, R=3396190 m).
 Detail_Rocks015_*: ambientCG Rocks015 (CC0), https://ambientcg.com/view?id=Rocks015
-Babati_Albedo.png: same method and WMS layers as Gale_Albedo.png (build_gale_textures.py --name Babati_Albedo.png),
-  BBOX lon 137.51467847464008..138.35844663503153, lat -3.7149237061972213..-2.90702733909986 (Babati_TIN point extent),
-  colour-matched at its south edge to the north strip of Gale_Albedo.png (gain 0.982/0.954/0.944 linear RGB).
-Babati_TIN.fbx: from "4. Gale_Babati_sector_norte_Civil3D.dxf" (Civil 3D, local metres, layer COTAS_DEM_200M,
-  200 m grid), georeferenced by Tools/fit_sector_offset.py against the Gale MOLA TIN (see Models/Babati_georef.json).
+Gale_Albedo.png and GaleNorte_Albedo.png are processed together from ONE WMS request
+  (BBOX lon 136.11621087545228..139.48347084890932, lat -7.082183679637354..-2.9024062184091126, 2048x2542 px)
+  and split (build_gale_textures.py --split-bottom 2048 Gale_Albedo.png), so the seam has no colour jump.
+GaleNorte_TIN.fbx: north band from the Gale north rim to Babati (Tools/build_north_band_points.py):
+  "4. Gale_Babati_sector_norte_Civil3D.dxf" (Civil 3D, local metres, layer COTAS_DEM_200M, 200 m grid), georeferenced by
+  Tools/fit_sector_offset.py (Models/Babati_georef.json); MOLA MGS 463 m global mosaic (NASA/USGS) on both sides of it;
+  2 km blend between both sources; shares the north-rim vertices of Gale_TIN.
