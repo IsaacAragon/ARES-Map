@@ -29,6 +29,9 @@ public static class GaleSceneBuilder
         ("GaleEste_TIN", "Assets/Gale/Models/GaleEste_TIN.fbx", "GaleEste_Terrain.mat", "Assets/Gale/Textures/GaleEste_Albedo.png"),
         // Franja oeste con el cráter Robert Sharp (sector 9 a ~400 m + MOLA al sur).
         ("GaleOeste_TIN", "Assets/Gale/Models/GaleOeste_TIN.fbx", "GaleOeste_Terrain.mat", "Assets/Gale/Textures/GaleOeste_Albedo.png"),
+        // Zona de la ruta de Curiosity, dentro de Gale (hueco en Gale_TIN): DEM MSL de 1 m (a 8 m, quadtree)
+        // y textura de color HiRISE a 2 m/px.
+        ("GaleRuta_TIN", "Assets/Gale/Models/GaleRuta_TIN.fbx", "GaleRuta_Terrain.mat", "Assets/Gale/Textures/GaleRuta_Albedo.jpg"),
     };
 
     // 1 m Unity = 50 m reales. Escala uniforme: las pendientes son las reales.

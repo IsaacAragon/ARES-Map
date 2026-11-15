@@ -20,6 +20,17 @@
       "dxf": "9. Gale_franja_oeste_Robert_Sharp_Civil3D.dxf",
       "step": 2,
       "name": "Franja oeste / Robert Sharp (diezmado a ~400 m)"
+    },
+    "MSL": {
+      "raster": "MSL_Gale_DEM_8m_ruta.tif",
+      "name": "MSL Gale Merged DEM 1 m v3 (HiRISE/CTX/HRSC, USGS) remuestreado a 8 m",
+      "dz": 0.0,
+      "blend_m": 600.0,
+      "quadtree": {
+        "min_cell": 8.0,
+        "max_cell": 256.0,
+        "tol": 2.0
+      }
     }
   },
   "blocks": {
@@ -81,6 +92,21 @@
       "sectors": [
         "9"
       ]
+    },
+    "GaleRuta": {
+      "rect": [
+        8140026.726601307,
+        8148825.503890764,
+        -288738.82315624505,
+        -270215.0814942302
+      ],
+      "base": "mola",
+      "sectors": [
+        "MSL"
+      ],
+      "inside": "Gale",
+      "seam_subdiv": 8,
+      "comment": "Zona de la ruta de Curiosity (sol 0-5073): hueco en Gale, borde cada ~58 m."
     }
   }
 }

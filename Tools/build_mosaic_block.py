@@ -82,17 +82,80 @@ class Sector:
         return x, y
 
 
+class RasterSector:
+    """Sector desde un GeoTIFF ya en Equirectangular Marte (p. ej. el DEM MSL de 1 m remuestreado a 8 m).
+    points() elige los nodos con un quadtree: una celda se divide mientras la interpolación bilineal
+    desde sus esquinas se aparte del DEM más de `tol` metros (y no haya llegado a `min_cell`)."""
+
+    def __init__(self, sid, path, scfg, default_blend):
+        with rasterio.open(path) as ds:
+            g = ds.read(1).astype(np.float64)
+            t = ds.transform
+            if ds.nodata is not None and (g == ds.nodata).any():
+                raise SystemExit(f"sector {sid}: nodata en el raster")
+        self.grid = g - scfg.get("dz", 0.0)
+        self.t, self.res = t, t.a
+        H, W = g.shape
+        self.box = (t.c + 0.5 * t.a, t.c + (W - 0.5) * t.a, t.f + (H - 0.5) * t.e, t.f + 0.5 * t.e)
+        self.id, self.step = sid, 1
+        self.blend = scfg.get("blend_m", default_blend)
+        self.qt = scfg["quadtree"]
+
+    def sample(self, x, y):
+        t, g = self.t, self.grid
+        c = (x - t.c) / t.a - 0.5; r = (y - t.f) / t.e - 0.5
+        c0 = np.clip(np.floor(c).astype(int), 0, g.shape[1] - 2); r0 = np.clip(np.floor(r).astype(int), 0, g.shape[0] - 2)
+        fc = np.clip(c - c0, 0, 1); fr = np.clip(r - r0, 0, 1)
+        return (g[r0, c0] * (1 - fc) * (1 - fr) + g[r0, c0 + 1] * fc * (1 - fr)
+                + g[r0 + 1, c0] * (1 - fc) * fr + g[r0 + 1, c0 + 1] * fc * fr)
+
+    def points(self):
+        g = self.grid
+        H, W = g.shape
+        smax = int(round(self.qt["max_cell"] / self.res)); smin = max(1, int(round(self.qt["min_cell"] / self.res)))
+        tol = self.qt["tol"]
+        # Rejilla rellenada (borde replicado) hasta un múltiplo de smax, más la fila/columna de esquinas.
+        Hp = -(-(H - 1) // smax) * smax + 1; Wp = -(-(W - 1) // smax) * smax + 1
+        G = np.pad(g, ((0, Hp - H), (0, Wp - W)), mode="edge")
+        lin = {}
+        keep = np.zeros((Hp, Wp), dtype=bool)
+        stack = [(r, c, smax) for r in range(0, Hp - 1, smax) for c in range(0, Wp - 1, smax)]
+        while stack:
+            r, c, s = stack.pop()
+            sub = G[r:r + s + 1, c:c + s + 1]
+            if s > smin:
+                if s not in lin:
+                    lin[s] = np.linspace(0.0, 1.0, s + 1)
+                u = lin[s]
+                top = (1 - u) * sub[0, 0] + u * sub[0, -1]
+                bot = (1 - u) * sub[-1, 0] + u * sub[-1, -1]
+                bil = (1 - u)[:, None] * top[None, :] + u[:, None] * bot[None, :]
+                if np.abs(sub - bil).max() > tol:
+                    h = s // 2
+                    stack += [(r, c, h), (r, c + h, h), (r + h, c, h), (r + h, c + h, h)]
+                    continue
+            keep[r, c] = keep[r, c + s] = keep[r + s, c] = keep[r + s, c + s] = True
+        rr, cc = np.nonzero(keep[:H, :W])
+        t = self.t
+        return t.c + (cc + 0.5) * t.a, t.f + (rr + 0.5) * t.e
+
+
 class Mosaic:
     def __init__(self, cfg, src, only_sectors):
         self.cfg = cfg
         self.src = src
         self.blocks = cfg["blocks"]
         geo = json.load(open(cfg["georef"]))
+        self.blend = cfg.get("blend_m", 2000.0)
         self.sectors = {}
         for sid in only_sectors:
             s = cfg["sectors"][sid]
-            self.sectors[sid] = Sector(sid, os.path.join(src, s["dxf"]), geo, s.get("step", 1), cfg.get("layer", "COTAS_DEM_200M"))
-        self.blend = cfg.get("blend_m", 2000.0)
+            if "raster" in s:
+                self.sectors[sid] = RasterSector(sid, os.path.join(src, s["raster"]), s, self.blend)
+            else:
+                sec = Sector(sid, os.path.join(src, s["dxf"]), geo, s.get("step", 1), cfg.get("layer", "COTAS_DEM_200M"))
+                sec.blend = s.get("blend_m", self.blend)
+                self.sectors[sid] = sec
         rects = np.array([b["rect"] for b in self.blocks.values()])
         self.extent = (rects[:, 0].min(), rects[:, 1].max(), rects[:, 2].min(), rects[:, 3].max())
         self.gale = dxf_points(os.path.join(src, cfg["gale_dxf"]))
@@ -129,11 +192,23 @@ class Mosaic:
         return X[m], Y[m], self.z[m]
 
     # ---- vecinos y pesos
+    def holes(self, name):
+        """Bloques que están DENTRO de `name` ("inside": name): huecos en su malla."""
+        return [cn for cn, cb in self.blocks.items() if cb.get("inside") == name]
+
+    def subdiv(self, name):
+        return int(self.blocks[name].get("seam_subdiv", 1)) if name else 1
+
     def neighbours(self, name):
         """Para cada borde del bloque: lista de (vecino, a, b) con el tramo compartido."""
         x0, x1, y0, y1 = self.blocks[name]["rect"]
+        parent = self.blocks[name].get("inside")
+        if parent:   # bloque interior: todo su contorno lo comparte con el bloque que lo contiene
+            return {"W": [(parent, y0, y1)], "E": [(parent, y0, y1)], "S": [(parent, x0, x1)], "N": [(parent, x0, x1)]}
         out = {"W": [], "E": [], "S": [], "N": []}
         for on, ob in self.blocks.items():
+            if ob.get("inside"):
+                continue
             if on == name:
                 continue
             u0, u1, v0, v1 = ob["rect"]
@@ -167,7 +242,7 @@ class Mosaic:
                     # distancia al tramo (no a la recta entera)
                     gap = np.maximum(0, np.maximum(a - along, along - b))
                     d = np.minimum(d, np.hypot(np.maximum(dd, 0), gap))
-        w = smoothstep(d / self.blend)
+        w = smoothstep(d / getattr(s, "blend", self.blend))
         return np.where(inside, w, 0.0)
 
     def overlay(self, name, x, y, z, extra=()):
@@ -185,11 +260,13 @@ class Mosaic:
         return z, wmax
 
     # ---- bordes
-    def seam(self, name, edge, a, b, neighbour):
-        """Puntos (x, y, z) del tramo [a, b] del borde `edge` del bloque `name`."""
+    def seam(self, name, edge, a, b, neighbour, line=None):
+        """Puntos (x, y, z) del tramo [a, b] del borde `edge` del bloque `name`
+        (o, con `line`, del borde de un hueco: la recta x = line o y = line)."""
         x0, x1, y0, y1 = self.blocks[name]["rect"]
         horiz = edge in "SN"
-        line = {"W": x0, "E": x1, "S": y0, "N": y1}[edge]
+        if line is None:
+            line = {"W": x0, "E": x1, "S": y0, "N": y1}[edge]
         gx0, gx1, gy0, gy1 = self.grect
         on_gale = ((horiz and (abs(line - gy0) < EPS or abs(line - gy1) < EPS) and a >= gx0 - EPS and b <= gx1 + EPS) or
                    (not horiz and (abs(line - gx0) < EPS or abs(line - gx1) < EPS) and a >= gy0 - EPS and b <= gy1 + EPS))
@@ -202,10 +279,19 @@ class Mosaic:
             al, zb = al[k], e[k, 2]
             o = np.argsort(al); al, zb = al[o], zb[o]
         else:
+            # Centros de píxel MOLA de la recta, subdivididos `n` veces si alguno de los dos bloques
+            # pide un borde más denso (seam_subdiv): la rejilla sigue conteniendo los centros.
             ref = self.mt.c if horiz else self.mt.f
-            step = self.px if horiz else -self.mt.e
-            i0 = math.ceil((a - ref) / step - 0.5 - 1e-9); i1 = math.floor((b - ref) / step - 0.5 + 1e-9)
-            al = ref + (np.arange(i0, i1 + 1) + 0.5) * step
+            n = max(self.subdiv(name), self.subdiv(neighbour))
+            step = (self.px if horiz else -self.mt.e)
+            if n == 1:   # misma expresión de siempre: los bordes ya construidos no cambian ni en el último bit
+                i0 = math.ceil((a - ref) / step - 0.5 - 1e-9); i1 = math.floor((b - ref) / step - 0.5 + 1e-9)
+                al = ref + (np.arange(i0, i1 + 1) + 0.5) * step
+            else:
+                base0 = ref + 0.5 * step
+                sub = step / n
+                i0 = math.ceil((a - base0) / sub - 1e-9); i1 = math.floor((b - base0) / sub + 1e-9)
+                al = base0 + np.arange(i0, i1 + 1) * sub
             al = al[(al > a + EPS) & (al < b - EPS)]
             al = np.concatenate([[a], al, [b]])
             xx, yy = (al, np.full_like(al, line)) if horiz else (np.full_like(al, line), al)
@@ -232,8 +318,19 @@ class Mosaic:
                 if b - a <= EPS:
                     continue
                 owner = next((on for on, u, v in nb[edge] if u <= a + EPS and v >= b - EPS), None)
-                segs.append((edge, a, b, owner))
+                segs.append((edge, a, b, owner, None))
+        # Contorno de los huecos (bloques interiores), con el bloque interior como vecino.
+        for cn in self.holes(name):
+            c0, c1, d0, d1 = self.blocks[cn]["rect"]
+            segs += [("W", d0, d1, cn, c0), ("E", d0, d1, cn, c1), ("S", c0, c1, cn, d0), ("N", c0, c1, cn, d1)]
         return segs
+
+    def outside_holes(self, name, x, y, margin):
+        m = np.ones(x.shape, dtype=bool)
+        for cn in self.holes(name):
+            c0, c1, d0, d1 = self.blocks[cn]["rect"]
+            m &= ~((x > c0 - margin) & (x < c1 + margin) & (y > d0 - margin) & (y < d1 + margin))
+        return m
 
     # ---- bloque
     def build(self, name):
@@ -255,6 +352,8 @@ class Mosaic:
             bx, by, bz = p[m, 0], p[m, 1], p[m, 2]
         else:
             raise SystemExit(f"base desconocida: {base}")
+        hm = self.outside_holes(name, bx, by, 0.3 * self.px)
+        bx, by, bz = bx[hm], by[hm], bz[hm]
         bz2, bw = self.overlay(name, bx, by, bz)
         k = bw < 1.0 - 1e-6
         layers["BASE"] = np.column_stack([bx[k], by[k], bz2[k]])
@@ -264,8 +363,9 @@ class Mosaic:
         for sid in blk.get("sectors", []):
             s = self.sectors[sid]
             sx, sy = s.points()
-            gap = 0.3 * self.px
+            gap = 0.3 * self.px / self.subdiv(name)
             m = (sx > x0 + gap) & (sx < x1 - gap) & (sy > y0 + gap) & (sy < y1 - gap)
+            m &= self.outside_holes(name, sx, sy, 0.3 * self.px)
             sx, sy = sx[m], sy[m]
             w = self.weight(s, name, sx, sy)
             m = w > 0
@@ -278,10 +378,11 @@ class Mosaic:
                               "max_change_vs_mola_m": float(np.abs(z - z0).max()) if len(z) else 0.0}
 
         seams, seam_info = [], []
-        for edge, a, b, owner in self.edge_segments(name):
-            pts, on_gale = self.seam(name, edge, a, b, owner)
+        for edge, a, b, owner, line in self.edge_segments(name):
+            pts, on_gale = self.seam(name, edge, a, b, owner, line)
             seams.append(pts)
-            seam_info.append({"edge": edge, "from": a, "to": b, "neighbour": owner, "gale_points": on_gale, "points": int(len(pts))})
+            seam_info.append({"edge": edge, "from": a, "to": b, "neighbour": owner, "gale_points": on_gale,
+                              "hole": line is not None, "points": int(len(pts))})
         sp = np.vstack(seams)
         # quitar duplicados (esquinas compartidas por dos bordes)
         _, ui = np.unique(np.round(sp[:, :2], 3), axis=0, return_index=True)

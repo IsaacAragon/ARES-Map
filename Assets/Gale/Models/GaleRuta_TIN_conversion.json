@@ -1,0 +1,35 @@
+{
+  "input": "C:\\Users\\isaac\\AppData\\Local\\Temp/mosaic/sR/GaleRuta_points.dxf",
+  "points": 241384,
+  "layers": {
+    "BASE": 110,
+    "SECTOR_MSL": 240330,
+    "BORDE": 944
+  },
+  "other_entities": {},
+  "vertices": 241384,
+  "duplicates_merged": 0,
+  "triangles": 481822,
+  "flipped": 0,
+  "removed_xy_offset": [
+    8168043.8858655,
+    -319997.63721099996
+  ],
+  "scale": 1.0,
+  "bounds_min": [
+    -28017.16015625,
+    31258.814453125,
+    -4529.083007812492
+  ],
+  "bounds_max": [
+    -19218.3828125,
+    49782.5546875,
+    -2607.00000008008
+  ],
+  "highest_vertex": [
+    -19218.3828125,
+    31258.814453125,
+    -2607.00000008008
+  ],
+  "fbx_bytes": 14112028
+}
