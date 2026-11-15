@@ -30,7 +30,7 @@ public class ChaseCamera : MonoBehaviour
     [Tooltip("Límites de la vista aérea al sur, este y oeste (u Unity desde el centro de Gale); cubren los bloques del mosaico.")]
     public float aerialSouthLimit = 2150f;
     public float aerialEastLimit = 5000f;
-    public float aerialWestLimit = 2000f;
+    public float aerialWestLimit = 6800f;
 
     [Header("Atmósfera (polvo en suspensión)")]
     public float chaseFogDensity = 0.0005f;

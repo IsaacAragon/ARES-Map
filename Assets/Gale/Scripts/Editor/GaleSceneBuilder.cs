@@ -133,7 +133,15 @@ public static class GaleSceneBuilder
             chase.offsetX = OffsetX;
             chase.offsetY = OffsetY;
             chase.marsRadius = MarsRadius;
-            if (!cam.GetComponent<MinimapHUD>()) cam.gameObject.AddComponent<MinimapHUD>();
+            // Límites de la vista aérea = extensión del mosaico (u Unity desde el centro de Gale).
+            chase.aerialNorthLimit = 3000f;
+            chase.aerialSouthLimit = 2150f;
+            chase.aerialEastLimit = 5000f;
+            chase.aerialWestLimit = 6800f;
+            // Se recrea para que tome los valores del código (p. ej. rótulos nuevos) y no los guardados en la escena.
+            var oldMap = cam.GetComponent<MinimapHUD>();
+            if (oldMap) Object.DestroyImmediate(oldMap);
+            cam.gameObject.AddComponent<MinimapHUD>();
             cam.transform.position = spawn + new Vector3(0f, 6f, 10f);
             cam.transform.LookAt(spawn);
         }
