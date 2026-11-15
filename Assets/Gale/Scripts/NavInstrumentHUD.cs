@@ -1,5 +1,4 @@
 using UnityEngine;
-using UnityEngine.InputSystem;
 
 // Instrumento de navegación alrededor del minimapa circular (arriba a la derecha):
 //   aro con marcas cada 30° y N/E/S/O que giran con el mapa, y los datos en el borde:
@@ -12,7 +11,6 @@ public class NavInstrumentHUD : MonoBehaviour
     public bool show = true;
     [Tooltip("Segundos que se ven las ayudas al empezar.")]
     public float helpSecondsAtStart = 8f;
-    public Key helpKey = Key.H;
 
     [Header("Colores")]
     public Color ringColor = new Color(0.10f, 0.06f, 0.05f, 0.92f);
@@ -24,7 +22,7 @@ public class NavInstrumentHUD : MonoBehaviour
     MinimapHUD map;
     ChaseCamera chase;
     Texture2D ringTex;
-    bool helpPinned, prevHelp;
+    bool helpPinned;
     float helpUntil;
     GUIStyle big, small, center, help;
 
@@ -47,14 +45,11 @@ public class NavInstrumentHUD : MonoBehaviour
     void Update()
     {
         if (SimPause.IsPaused) return;
-        var kb = Keyboard.current;
-        bool h = kb != null && kb[helpKey].isPressed;
-        if (h && !prevHelp)
+        if (GaleInput.Controls.Global.Help.WasPressedThisFrame())   // H / cruceta →
         {
             if (HelpShown) { helpPinned = false; helpUntil = 0f; }
             else helpPinned = true;
         }
-        prevHelp = h;
     }
 
     bool HelpShown => helpPinned || Time.unscaledTime < helpUntil;
@@ -140,14 +135,19 @@ public class NavInstrumentHUD : MonoBehaviour
             Text(new Rect(c.x - 170 * s, r.yMax + 36 * s, 340 * s, 20 * s),
                 $"escala {map.ScaleText(r)}  ·  {g}", small, dimTextColor, TextAnchor.MiddleCenter);
             Text(new Rect(c.x - 170 * s, r.yMax + 54 * s, 340 * s, 20 * s),
-                "M mapa · − / + zoom · H ayuda", small, dimTextColor, TextAnchor.MiddleCenter);
+                GaleInput.UsingGamepad ? "R3 mapa · cruceta → ayuda" : "M mapa · − / + zoom · H ayuda",
+                small, dimTextColor, TextAnchor.MiddleCenter);
         }
 
         if (HelpShown && !map.Interactive)
         {
-            string txt = chase.Aerial
-                ? "<b>VISTA AÉREA</b>\nWASD mover · Shift rápido · Q/E girar · rueda altura\nclic derecho + arrastrar inclinar\nF centrar en el rover · C centrar en el cráter\nTab volver · M mapa · Esc pausa · H ocultar"
-                : "<b>ROVER</b>\nW/S avanzar · A/D girar · Shift rápido\nEspacio freno · R enderezar · rueda distancia\nTab vista aérea · M mapa · Esc pausa · H ocultar";
+            string txt = GaleInput.UsingGamepad
+                ? (chase.Aerial
+                    ? "<b>VISTA AÉREA</b>\nStick izq. mover · L3 rápido · LB/RB girar · stick dcho. Y altura\nstick dcho. X + cruceta ↑/↓ mirar\nX centrar en el rover · Y centrar en el cráter\nSelect volver · R3 mapa · Start pausa · cruceta → ocultar"
+                    : "<b>ROVER</b>\nRT/LT avanzar y retroceder · stick izq. girar · A rápido\nB freno · Y enderezar · cruceta ↑/↓ distancia\nSelect vista aérea · R3 mapa · Start pausa · cruceta → ocultar")
+                : (chase.Aerial
+                    ? "<b>VISTA AÉREA</b>\nWASD mover · Shift rápido · Q/E girar · rueda altura\nclic derecho + arrastrar inclinar\nF centrar en el rover · C centrar en el cráter\nTab volver · M mapa · Esc pausa · H ocultar"
+                    : "<b>ROVER</b>\nW/S avanzar · A/D girar · Shift rápido\nEspacio freno · R enderezar · rueda distancia\nTab vista aérea · M mapa · Esc pausa · H ocultar");
             var box = new Rect(16 * s, Screen.height - 132 * s, 380 * s, 116 * s);
             var old = GUI.color;
             GUI.color = new Color(1f, 1f, 1f, 0.9f);

@@ -1,8 +1,8 @@
 using UnityEngine;
-using UnityEngine.InputSystem;
 
 // Rover de prueba: suspensión por rayos (una por rueda), tracción y giro arcade.
-// WASD / flechas para moverse, Shift para ir rápido, Espacio para frenar, R para enderezar.
+// Controles por acciones (mapa Rover): WASD/flechas o stick izq. + gatillos para moverse,
+// Shift / A rápido, Espacio / B freno, R / Y enderezar.
 // La gravedad es la de Marte (3,71 m/s²) y se aplica solo al rover, sin tocar Physics.gravity.
 [RequireComponent(typeof(Rigidbody))]
 public class RoverController : MonoBehaviour
@@ -42,7 +42,6 @@ public class RoverController : MonoBehaviour
     // Lo apaga la vista aérea para que WASD mueva la cámara y no el rover.
     [HideInInspector] public bool inputEnabled = true;
 
-    bool prevR;
     Rigidbody rb;
     Vector3[] wheelRest;
     Quaternion[] wheelRestRot;
@@ -125,26 +124,23 @@ public class RoverController : MonoBehaviour
 
     void Update()
     {
-        var kb = Keyboard.current;
-        bool r = ReadsInput && kb != null && kb.rKey.isPressed;
-        if (r && !prevR) SnapToGround(transform.position);
-        prevR = r;
+        // Acciones del mapa Rover (Input System): teclado y mando. El mapa solo está activo en
+        // la vista de seguimiento (InputRouter); inputEnabled queda para scripts externos.
+        if (ReadsInput && GaleInput.Controls.Rover.Reset.WasPressedThisFrame()) SnapToGround(transform.position);
     }
 
     void FixedUpdate()
     {
         if (wheelRest == null) return;
-        var kb = Keyboard.current;
         float throttle = 0f, steer = 0f;
         bool boost = false, brake = false;
-        if (ReadsInput && kb != null)
+        if (ReadsInput)
         {
-            if (kb.wKey.isPressed || kb.upArrowKey.isPressed) throttle += 1f;
-            if (kb.sKey.isPressed || kb.downArrowKey.isPressed) throttle -= 1f;
-            if (kb.dKey.isPressed || kb.rightArrowKey.isPressed) steer += 1f;
-            if (kb.aKey.isPressed || kb.leftArrowKey.isPressed) steer -= 1f;
-            boost = kb.leftShiftKey.isPressed;
-            brake = kb.spaceKey.isPressed;
+            var a = GaleInput.Controls.Rover;
+            throttle = Mathf.Clamp(a.Throttle.ReadValue<float>(), -1f, 1f);
+            steer = Mathf.Clamp(a.Steer.ReadValue<float>(), -1f, 1f);
+            boost = a.Boost.IsPressed();
+            brake = a.Brake.IsPressed();
         }
 
         rb.AddForce(Vector3.down * gravity, ForceMode.Acceleration);

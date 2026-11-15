@@ -147,6 +147,9 @@ public static class GaleSceneBuilder
             var minimap = cam.gameObject.AddComponent<MinimapHUD>();
             minimap.circleMaterial = CircleMaskMaterial();
             cam.gameObject.AddComponent<NavInstrumentHUD>();
+            var router = cam.GetComponent<InputRouter>() ?? cam.gameObject.AddComponent<InputRouter>();
+            router.chase = chase;
+            router.minimap = minimap;
             BuildPauseMenu(chase, minimap);
             cam.transform.position = spawn + new Vector3(0f, 6f, 10f);
             cam.transform.LookAt(spawn);
