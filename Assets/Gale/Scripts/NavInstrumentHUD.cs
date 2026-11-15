@@ -135,15 +135,23 @@ public class NavInstrumentHUD : MonoBehaviour
         string g = $"g = {chase.target.gravity:0.00} m/s²";
 
         Rect r = map.MapRect();
-        if (map.Interactive)
+        if (map.Interactive || !map.circleVisible)
         {
-            // Barra inferior con los mismos datos.
+            // Barra inferior con los mismos datos (en el mapa, o con el minimapa oculto desde el menú).
             float h = 34f * s;
             var bar = new Rect(0, Screen.height - h, Screen.width, h);
             Fill(bar, new Color(0.08f, 0.05f, 0.04f, 0.85f));
+            string extra = "";
+            if (!map.Interactive)
+            {
+                string guide = GuidanceText();
+                extra = (guide != null ? "     " + guide : routeText != null ? "     " + routeText : "") +
+                        (GaleInput.UsingGamepad ? "     R3 mapa" : "     M mapa · G menú · H ayuda");
+            }
             Text(new Rect(bar.x + 12 * s, bar.y, bar.width - 24 * s, h),
                 $"Rumbo <b>{heading:000}° {card}</b>     Vel. <b>{speed} m/s</b>     Elev. <b>{elev} m</b>     " +
-                $"{latS}  {lonS}     Escala {map.ScaleText(r)}     {g}", small, textColor, TextAnchor.MiddleLeft);
+                $"{latS}  {lonS}     " + (map.Interactive ? $"Escala {map.ScaleText(r)}     " : "") + g + extra,
+                small, textColor, TextAnchor.MiddleLeft);
         }
         else
         {
@@ -163,7 +171,7 @@ public class NavInstrumentHUD : MonoBehaviour
             Text(new Rect(c.x - 170 * s, r.yMax + 36 * s, 340 * s, 20 * s),
                 $"escala {map.ScaleText(r)}  ·  {g}", small, dimTextColor, TextAnchor.MiddleCenter);
             Text(new Rect(c.x - 170 * s, r.yMax + 54 * s, 340 * s, 20 * s),
-                GaleInput.UsingGamepad ? "R3 mapa · cruceta → ayuda" : "M mapa · − / + zoom · H ayuda",
+                GaleInput.UsingGamepad ? "R3 mapa · cruceta → ayuda" : "M mapa · G menú · − / + zoom · H ayuda",
                 small, dimTextColor, TextAnchor.MiddleCenter);
             if (routeText != null)
                 Text(new Rect(c.x - 190 * s, r.yMax + 72 * s, 380 * s, 20 * s), routeText, small,

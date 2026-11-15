@@ -188,6 +188,9 @@ public static class GaleSceneBuilder
         NavGridBaker.Bake();
         NavigationBuilder.Install();
 
+        // Menú de exploración (barra lateral flotante: capas, geodesia, rocas, radiación, ajustes).
+        ExplorerMenuBuilder.Install();
+
         EditorSceneManager.MarkSceneDirty(scene);
         EditorSceneManager.SaveScene(scene);
         Debug.Log($"[Gale] scene built and saved: {scene.path}");
