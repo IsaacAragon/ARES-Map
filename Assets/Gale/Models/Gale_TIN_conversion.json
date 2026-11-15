@@ -1,0 +1,36 @@
+{
+  "input": "C:/Users/isaac/dev/TIFFdetallado/Mars_MGS_MOLA_DEM_mosaic_global_463m_Gale_detallado.dxf",
+  "points": 132603,
+  "layers": {
+    "MDT_P008": 2916,
+    "MDT_P001": 88434,
+    "MDT_P002": 32531,
+    "MDT_P004": 8722
+  },
+  "other_entities": {},
+  "vertices": 132603,
+  "duplicates_merged": 0,
+  "triangles": 263480,
+  "flipped": 0,
+  "removed_xy_offset": [
+    8168043.8858655,
+    -319997.63721099996
+  ],
+  "scale": 1.0,
+  "bounds_min": [
+    -99796.65625,
+    -99796.65625,
+    -4607.0
+  ],
+  "bounds_max": [
+    99796.65625,
+    99796.65625,
+    1347.0
+  ],
+  "highest_vertex": [
+    -6714.8564453125,
+    -76641.984375,
+    1347.0
+  ],
+  "fbx_bytes": 6510700
+}

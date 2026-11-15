@@ -1,0 +1,4 @@
+Gale_Albedo.png: derived from USGS Astrogeology WMS (planetarymaps.usgs.gov, mars_simp_cyl.map),
+  layers MDIM21_color (Viking MDIM 2.1 colorized, NASA/USGS, public domain) and THEMIS (THEMIS day IR, ASU/NASA).
+  BBOX lon 136.11621087545228..139.48347084890932, lat -7.082183679637354..-3.7149237061972213 (DXF point extent, R=3396190 m).
+Detail_Rocks015_*: ambientCG Rocks015 (CC0), https://ambientcg.com/view?id=Rocks015
