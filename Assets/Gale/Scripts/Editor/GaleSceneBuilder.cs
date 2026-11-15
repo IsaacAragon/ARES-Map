@@ -138,10 +138,15 @@ public static class GaleSceneBuilder
             chase.aerialSouthLimit = 2150f;
             chase.aerialEastLimit = 5000f;
             chase.aerialWestLimit = 6800f;
-            // Se recrea para que tome los valores del código (p. ej. rótulos nuevos) y no los guardados en la escena.
+            // Se recrean para que tomen los valores del código (p. ej. rótulos nuevos) y no los guardados
+            // en la escena. Primero el instrumento, que depende del minimapa.
+            var oldNav = cam.GetComponent<NavInstrumentHUD>();
+            if (oldNav) Object.DestroyImmediate(oldNav);
             var oldMap = cam.GetComponent<MinimapHUD>();
             if (oldMap) Object.DestroyImmediate(oldMap);
             var minimap = cam.gameObject.AddComponent<MinimapHUD>();
+            minimap.circleMaterial = CircleMaskMaterial();
+            cam.gameObject.AddComponent<NavInstrumentHUD>();
             BuildPauseMenu(chase, minimap);
             cam.transform.position = spawn + new Vector3(0f, 6f, 10f);
             cam.transform.LookAt(spawn);
@@ -172,6 +177,19 @@ public static class GaleSceneBuilder
         EditorSceneManager.MarkSceneDirty(scene);
         EditorSceneManager.SaveScene(scene);
         Debug.Log($"[Gale] scene built and saved: {scene.path}");
+    }
+
+    // Material de la máscara circular del minimapa (asset, para que el shader entre en la build).
+    static Material CircleMaskMaterial()
+    {
+        const string path = MatDir + "/Minimap_CircleMask.mat";
+        var mat = AssetDatabase.LoadAssetAtPath<Material>(path);
+        if (!mat)
+        {
+            mat = new Material(Shader.Find("Hidden/Gale/CircleMask"));
+            AssetDatabase.CreateAsset(mat, path);
+        }
+        return mat;
     }
 
     // ---------- Menú de pausa (UI Toolkit) ----------
