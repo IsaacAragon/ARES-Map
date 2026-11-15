@@ -1,0 +1,17 @@
+{
+  "comment": "Mosaico de terreno alrededor de Gale. Rectángulos en Equirectangular Marte (m), bordes en líneas de centros de píxel MOLA 463 m. Ver Tools/build_mosaic_block.py.",
+  "georef": "Assets/Gale/Models/Sectores_georef.json",
+  "gale_dxf": "Mars_MGS_MOLA_DEM_mosaic_global_463m_Gale_detallado.dxf",
+  "mola": "Mars_MGS_MOLA_DEM_mosaic_global_463m.tif",
+  "layer": "COTAS_DEM_200M",
+  "blend_m": 2000.0,
+  "sectors": {
+    "6": {"dxf": "6. Gale_sector_sur_Farah_Vallis_Civil3D.dxf", "step": 1, "name": "Sector sur / Farah Vallis"}
+  },
+  "blocks": {
+    "Gale": {"rect": [8068247.227661, 8267840.54407, -419794.295415, -220200.979007], "base": "gale", "sectors": ["6"]},
+    "GaleNorte": {"rect": [8068247.227661, 8267840.54407, -220200.979007, -172039.2506859632], "base": "points:Gale_franja_norte_points.dxf", "sectors": [],
+                  "comment": "Construida con Tools/build_north_band_points.py (sector 4 Babati + MOLA)."},
+    "GaleSur": {"rect": [8068247.227661, 8267840.54407, -426740.6985382556, -419794.295415], "base": "mola", "sectors": ["6"]}
+  }
+}
