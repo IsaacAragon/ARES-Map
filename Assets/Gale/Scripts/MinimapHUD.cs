@@ -349,6 +349,9 @@ public class MinimapHUD : MonoBehaviour
             if (InMap(fp, r, 8f)) Marker(fp, "✚", Color.yellow, 0f);
         }
 
+        // Recorrido del rover (RoverTrackRecorder), como línea.
+        if (Event.current.type == EventType.Repaint) DrawRecordedPath(r);
+
         // Lugares con nombre.
         if (places != null)
             foreach (var pl in places)
@@ -382,6 +385,46 @@ public class MinimapHUD : MonoBehaviour
                 hintStyle);
         }
         GUI.color = old;
+    }
+
+    [Header("Recorrido")]
+    public bool showPath = true;
+    public Color pathColor = new Color(0.35f, 0.95f, 1f, 0.9f);
+    RoverTrackRecorder recorder;
+
+    void DrawRecordedPath(Rect r)
+    {
+        if (!showPath) return;
+        if (!recorder && chase && chase.target) recorder = chase.target.GetComponent<RoverTrackRecorder>();
+        if (!recorder) return;
+        var s = recorder.Samples;
+        int n = s.Count;
+        if (n < 2) return;
+        int stride = Mathf.Max(1, n / 600);
+        var old = GUI.color;
+        GUI.color = pathColor;
+        Vector2 prev = WorldToMap(s[0].unity, r);
+        int prevSeg = s[0].segment;
+        for (int i = stride; i < n + stride - 1; i += stride)
+        {
+            int k = Mathf.Min(i, n - 1);
+            Vector2 cur = WorldToMap(s[k].unity, r);
+            if (s[k].segment == prevSeg && InMap(prev, r, 2f) && InMap(cur, r, 2f))
+                Line(prev, cur, 2f);
+            prev = cur; prevSeg = s[k].segment;
+        }
+        GUI.color = old;
+    }
+
+    static void Line(Vector2 a, Vector2 b, float w)
+    {
+        Vector2 d = b - a;
+        float len = d.magnitude;
+        if (len < 0.5f) return;
+        var m = GUI.matrix;
+        GUIUtility.RotateAroundPivot(Mathf.Atan2(d.y, d.x) * Mathf.Rad2Deg, a);
+        GUI.DrawTexture(new Rect(a.x, a.y - w * 0.5f, len, w), Texture2D.whiteTexture);
+        GUI.matrix = m;
     }
 
     /// <summary>Distancia real que abarca un cuarto del ancho del mapa (la barra de escala).</summary>
