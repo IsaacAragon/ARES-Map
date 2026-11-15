@@ -29,11 +29,23 @@ public static class GaleInput
         }
     }
 
+    /// <summary>Escribiendo en un campo de texto (buscador): ninguna acción del juego lee el teclado.</summary>
+    public static bool Typing { get; private set; }
+
+    public static void SetTyping(bool on)
+    {
+        if (on == Typing) return;
+        Typing = on;
+        if (controls == null) return;
+        if (on) controls.Disable();
+        else { controls.Global.Enable(); Apply(Current, force: true); }
+    }
+
     public static void SetContext(Context c)
     {
         if (c == Current && controls != null) return;
         Current = c;
-        if (controls != null) Apply(c, force: false);
+        if (controls != null && !Typing) Apply(c, force: false);
     }
 
     static void Apply(Context c, bool force)
@@ -77,6 +89,7 @@ public static class GaleInput
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
     static void ResetStatics()
     {
+        Typing = false;
         if (controls != null)
         {
             InputSystem.onActionChange -= OnActionChange;

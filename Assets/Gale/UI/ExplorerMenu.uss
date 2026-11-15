@@ -383,3 +383,60 @@
 .ex-scroll .unity-scroller--vertical .unity-base-slider__drag-container {
     margin: 0;
 }
+
+
+/* ---------- Buscador ---------- */
+.ex-search {
+    margin: 4px 0 6px 0;
+}
+
+.ex-search > .unity-text-field__input {
+    background-color: rgba(255, 255, 255, 0.10);
+    border-width: 1px;
+    border-color: rgba(255, 255, 255, 0.18);
+    border-radius: 20px;
+    padding: 6px 14px;
+    font-size: 15px;
+    color: rgb(232, 234, 237);
+    min-height: 36px;
+}
+
+.ex-search:focus > .unity-text-field__input {
+    border-color: rgb(138, 180, 248);
+}
+
+/* ---------- Ventana del lugar (derecha) ---------- */
+.ex-popup {
+    position: absolute;
+    right: 16px;
+    top: 330px;
+    bottom: 50px;
+    width: 440px;
+    background-color: rgba(32, 33, 36, 0.80);
+    border-radius: 14px;
+    border-width: 1px;
+    border-color: rgba(255, 255, 255, 0.10);
+}
+
+.ex-photo {
+    height: 300px;
+    flex-shrink: 0;
+    border-radius: 10px;
+    margin: 4px 0 4px 0;
+    background-color: rgba(0, 0, 0, 0.3);
+}
+
+.ex-action {
+    flex-grow: 1;
+    height: 34px;
+    margin: 0 6px 0 0;
+    border-radius: 17px;
+    border-width: 0;
+    background-color: rgba(138, 180, 248, 0.25);
+    color: rgb(232, 234, 237);
+    font-size: 13px;
+}
+
+.ex-action:hover {
+    background-color: rgba(138, 180, 248, 0.45);
+}
