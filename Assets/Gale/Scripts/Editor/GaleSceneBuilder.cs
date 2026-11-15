@@ -184,6 +184,10 @@ public static class GaleSceneBuilder
         // Capas temáticas (geología, material del suelo) y su leyenda.
         GeoLayersBuilder.Install();
 
+        // Navegación A→B: malla horneada desde los colliders recién colocados y su objeto en la escena.
+        NavGridBaker.Bake();
+        NavigationBuilder.Install();
+
         EditorSceneManager.MarkSceneDirty(scene);
         EditorSceneManager.SaveScene(scene);
         Debug.Log($"[Gale] scene built and saved: {scene.path}");

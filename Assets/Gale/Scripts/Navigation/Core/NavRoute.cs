@@ -49,12 +49,62 @@ namespace Gale.Navigation
         public readonly NavGrid Grid;
         readonly NavPathfinder astar;
         public float snapMaxMeters = 500f;
+        /// <summary>Ver NavPathfinder.heuristicWeight (1 = óptimo exacto).</summary>
+        public float HeuristicWeight { get => astar.heuristicWeight; set => astar.heuristicWeight = value; }
         public float smoothTolerance = 1.02f;
 
         public NavPlanner(NavGrid grid)
         {
             Grid = grid;
             astar = new NavPathfinder(grid);
+        }
+
+        // Componentes conexas del terreno transitable (con los límites del perfil): si origen y destino no
+        // comparten componente no hay ruta segura, y se sabe sin explorar toda la región. 0 = bloqueada.
+        int[] comp;
+        float compSMax = float.NaN;
+        public int ComponentCount { get; private set; }
+        public double ComponentsMs { get; private set; }
+
+        public void PrepareComponents(NavProfile p, CancellationToken ct = default)
+        {
+            if (comp != null && compSMax == p.sMaxDeg) return;
+            var sw = System.Diagnostics.Stopwatch.StartNew();
+            var m = new NavCostModel(p, new NavWeights(), NavConditions.None);
+            var c = new int[Grid.NodeCount];
+            var nb = new int[Grid.MaxNeighbors];
+            var stack = new Stack<int>(1 << 16);
+            int id = 0;
+            for (int s = 0; s < c.Length; s++)
+            {
+                if (c[s] != 0 || (!Grid.IsL1(s) && Grid.Covered(s % Grid.L0.W, s / Grid.L0.W))) continue;
+                var cs = Grid.Cell(s);
+                if (!m.Passable(cs)) continue;
+                if ((s & 0xFFFF) == 0 && ct.IsCancellationRequested) return;
+                c[s] = ++id;
+                stack.Push(s);
+                while (stack.Count > 0)
+                {
+                    int u = stack.Pop();
+                    Grid.Center(u, out float ux, out float uz);
+                    float hu = Grid.Cell(u).h;
+                    int k = Grid.Neighbors(u, nb);
+                    for (int j = 0; j < k; j++)
+                    {
+                        int v = nb[j];
+                        if (c[v] != 0) continue;
+                        var cv = Grid.Cell(v);
+                        Grid.Center(v, out float vx, out float vz);
+                        if (float.IsInfinity(m.Cost(cv, Dist(ux, uz, vx, vz), cv.h - hu)) || NavPathfinder.CornerBlocked(Grid, u, v, m)) continue;
+                        c[v] = id;
+                        stack.Push(v);
+                    }
+                }
+            }
+            comp = c;
+            compSMax = p.sMaxDeg;
+            ComponentCount = id;
+            ComponentsMs = sw.Elapsed.TotalMilliseconds;
         }
 
         /// <summary>Ruta por los puntos dados (m: x, z), el primero es el origen. Con allowRelax, si no hay
@@ -86,6 +136,8 @@ namespace Gale.Navigation
             var route = new NavRoute();
             var nodes = new List<int>();
             var legOf = new List<int>();
+            int startComp = 0;
+            bool useComp = comp != null && !m.Relaxed && compSMax == m.P.sMaxDeg;
             for (int i = 0; i < pts.Count; i++)
             {
                 int n = Grid.NodeAt(pts[i].x, pts[i].z);
@@ -96,9 +148,17 @@ namespace Gale.Navigation
                     return res;
                 }
                 // El origen puede estar en una celda bloqueada (se le deja salir); las paradas se ajustan.
+                if (i == 0 && useComp) startComp = comp[n];   // 0 si el rover está en una celda bloqueada
                 if (i > 0)
                 {
-                    int s = astar.NearestPassable(n, m, snapMaxMeters, out float moved);
+                    int s = astar.NearestPassable(n, m, snapMaxMeters, out float moved, startComp != 0 ? comp : null, startComp);
+                    if (s < 0 && startComp != 0 && astar.NearestPassable(n, m, snapMaxMeters, out _) >= 0)
+                    {
+                        // Hay terreno transitable, pero ningún camino seguro llega hasta él desde el rover.
+                        res.status = NavStatus.NoPath;
+                        res.message = $"El destino está en una zona aislada: no se llega sin pendientes de más de {m.P.sMaxDeg:0}°.";
+                        return res;
+                    }
                     if (s < 0)
                     {
                         res.status = NavStatus.NoPath;

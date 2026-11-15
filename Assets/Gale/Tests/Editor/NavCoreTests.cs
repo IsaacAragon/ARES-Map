@@ -159,6 +159,75 @@ namespace Gale.Navigation.Tests
             Assert.AreEqual(dj, a.cost, dj * 1e-4f);
         }
 
+        // Lo mismo con subida neta hacia el destino, valles y crestas (pone a prueba la cota de tracción).
+        [Test]
+        public void AStar_MatchesDijkstra_Uphill([Values(11, 12, 13, 14)] int seed)
+        {
+            var rnd = new Random(seed);
+            var g = Flat(25, 25);
+            for (int y = 0; y < 25; y++)
+                for (int x = 0; x < 25; x++)
+                {
+                    int i = y * 25 + x;
+                    g.L0.Height[i] = x * 6f + y * 3f + 25f * (float)Math.Sin(x * 0.9 + seed) * (float)Math.Cos(y * 0.7) + (float)rnd.NextDouble() * 8f;
+                    g.Soil[i] = (byte)rnd.Next(1, 5);
+                    if (rnd.NextDouble() < 0.08) g.L0.Height[i] = float.NaN;
+                }
+            g.ComputeSlopes();
+            int s = g.NodeAt(C(1), C(1)), t = g.NodeAt(C(23), C(22));
+            g.L0.Height[s] = 0f; g.L0.Height[t] = 200f;
+            g.ComputeSlopes();
+            foreach (var w in NavWeights.Defaults())
+            {
+                var m = new NavCostModel(NavProfile.Rover(), w, NavConditions.None);
+                var a = new NavPathfinder(g).Search(s, t, m);
+                float dj = Dijkstra(g, s, t, m);
+                if (float.IsInfinity(dj)) { Assert.AreEqual(NavStatus.NoPath, a.status); continue; }
+                Assert.AreEqual(NavStatus.Ok, a.status, w.id);
+                Assert.AreEqual(dj, a.cost, dj * 1e-4f, w.id);
+            }
+        }
+
+        // A* = Dijkstra en una malla de dos niveles, con destino dentro y fuera del detalle (cota regional).
+        [Test]
+        public void AStar_MatchesDijkstra_TwoLevels([Values(21, 22, 23)] int seed)
+        {
+            var rnd = new Random(seed);
+            var g = Flat(16, 12);
+            for (int i = 0; i < g.L0.Count; i++) { g.L0.Height[i] = (float)rnd.NextDouble() * 30f; g.Soil[i] = (byte)rnd.Next(1, 5); }
+            g.CreateDetail(5, 3, 4, 5, 5);
+            for (int i = 0; i < g.L1.Count; i++) g.L1.Height[i] = (float)rnd.NextDouble() * 6f + 10f;
+            g.ComputeSlopes();
+            var m = new NavCostModel(NavProfile.Rover(), new NavWeights(), NavConditions.None);
+            foreach (var (a, b) in new[] { ((C(1), C(1)), (C(14), C(10))), ((C(1), C(6)), (C(7), C(5))), ((C(7), C(5)), (C(15), C(0))) })
+            {
+                int s = g.NodeAt(a.Item1, a.Item2), t = g.NodeAt(b.Item1, b.Item2);
+                var r = new NavPathfinder(g).Search(s, t, m);
+                float dj = Dijkstra(g, s, t, m);
+                Assert.AreEqual(NavStatus.Ok, r.status);
+                Assert.AreEqual(dj, r.cost, dj * 1e-4f);
+            }
+        }
+
+        [Test]
+        public void Heuristic_IsBelowEveryEdgeCost()
+        {
+            var rnd = new Random(3);
+            foreach (var w in NavWeights.Defaults())
+            {
+                var m = new NavCostModel(NavProfile.Rover(), w, NavConditions.None);
+                for (int i = 0; i < 20000; i++)
+                {
+                    float d = 1f + (float)rnd.NextDouble() * 200f, dz = ((float)rnd.NextDouble() * 2f - 1f) * d * 0.5f;
+                    var c = new NavCell { h = 0f, slopeDeg = (float)rnd.NextDouble() * 25f, soil = (byte)rnd.Next(0, 5), geo = (byte)rnd.Next(0, 7),
+                                          thermo = (byte)rnd.Next(0, 256), level = (byte)rnd.Next(0, 2), proven = rnd.Next(2) == 0 };
+                    float cost = m.Cost(c, d, dz);
+                    if (float.IsInfinity(cost)) continue;
+                    Assert.LessOrEqual(m.Heuristic(d, dz), cost * (1f + 1e-5f), $"d={d} dz={dz} {w.id}");
+                }
+            }
+        }
+
         static float Dijkstra(NavGrid g, int s, int t, NavCostModel m)
         {
             var dist = new float[g.NodeCount];
@@ -193,12 +262,12 @@ namespace Gale.Navigation.Tests
         public void Unreachable_ReportsNoPath_AndRelaxedIsUnsafe()
         {
             var g = Flat(30, 30);
-            // Isla en un pozo con paredes de 400 m por celda.
+            // Isla en un pozo con paredes de 150 m por celda de 100 m (56°: más que s_max, menos que el tope relajado).
             for (int y = 0; y < 30; y++)
                 for (int x = 0; x < 30; x++)
                 {
                     int dx = Math.Abs(x - 22), dy = Math.Abs(y - 15);
-                    g.L0.Height[y * 30 + x] = Math.Max(dx, dy) <= 3 ? -1200f + 400f * Math.Max(dx, dy) : 0f;
+                    g.L0.Height[y * 30 + x] = Math.Max(dx, dy) <= 3 ? -450f + 150f * Math.Max(dx, dy) : 0f;
                 }
             var strict = Plan(g, (C(3), C(15)), (C(22), C(15)));
             Assert.AreEqual(NavStatus.NoPath, strict.status);
@@ -207,6 +276,53 @@ namespace Gale.Navigation.Tests
             Assert.AreEqual(NavStatus.Ok, relaxed.status);
             Assert.IsTrue(relaxed.route.Unsafe);
             Assert.Greater(relaxed.route.UnsafeM, 0f);
+        }
+
+        [Test]
+        public void Components_DetectIsolatedDestination_WithoutSearching()
+        {
+            var g = Flat(30, 30);
+            for (int y = 0; y < 30; y++)
+                for (int x = 0; x < 30; x++)
+                {
+                    int dx = Math.Abs(x - 22), dy = Math.Abs(y - 15);
+                    g.L0.Height[y * 30 + x] = Math.Max(dx, dy) <= 3 ? -1200f + 400f * Math.Max(dx, dy) : 0f;
+                }
+            g.ComputeSlopes();
+            var planner = new NavPlanner(g);
+            planner.PrepareComponents(NavProfile.Rover());
+            Assert.GreaterOrEqual(planner.ComponentCount, 2);
+            // El fondo del pozo es transitable pero aislado: con 500 m de margen el destino se ajusta al borde…
+            var snapped = planner.Plan(new List<(float x, float z)> { (C(3), C(15)), (C(22), C(15)) }, NavProfile.Rover(), new NavWeights(), NavConditions.None, false);
+            Assert.AreEqual(NavStatus.Ok, snapped.status);
+            Assert.AreEqual(4 * Cell, snapped.route.SnapMeters, 1f);
+            // …y con menos margen no hay ruta, y se sabe sin explorar.
+            planner.snapMaxMeters = 200f;
+            var res = planner.Plan(new List<(float x, float z)> { (C(3), C(15)), (C(22), C(15)) }, NavProfile.Rover(), new NavWeights(), NavConditions.None, false);
+            Assert.AreEqual(NavStatus.NoPath, res.status);
+            StringAssert.Contains("aislada", res.message);
+            // Con componentes, un destino alcanzable da la misma ruta que sin ellas.
+            planner.snapMaxMeters = 500f;
+            var a = planner.Plan(new List<(float x, float z)> { (C(3), C(3)), (C(10), C(27)) }, NavProfile.Rover(), new NavWeights(), NavConditions.None, false);
+            var b = new NavPlanner(g).Plan(new List<(float x, float z)> { (C(3), C(3)), (C(10), C(27)) }, NavProfile.Rover(), new NavWeights(), NavConditions.None, false);
+            Assert.AreEqual(NavStatus.Ok, a.status);
+            Assert.AreEqual(b.route.Cost, a.route.Cost, 1e-3f);
+        }
+
+        [Test]
+        public void WeightedHeuristic_StaysWithinBound()
+        {
+            var rnd = new Random(5);
+            var g = Flat(60, 60);
+            for (int i = 0; i < g.L0.Count; i++) { g.L0.Height[i] = (float)rnd.NextDouble() * 30f; g.Soil[i] = (byte)rnd.Next(1, 5); }
+            g.ComputeSlopes();
+            var m = new NavCostModel(NavProfile.Rover(), new NavWeights(), NavConditions.None);
+            int s = g.NodeAt(C(2), C(3)), t = g.NodeAt(C(57), C(55));
+            var exact = new NavPathfinder(g).Search(s, t, m);
+            var fast = new NavPathfinder(g) { heuristicWeight = 1.3f }.Search(s, t, m);
+            Assert.AreEqual(NavStatus.Ok, fast.status);
+            Assert.LessOrEqual(fast.cost, exact.cost * 1.3f + 1e-3f);
+            Assert.LessOrEqual(fast.expanded, exact.expanded);
         }
 
         [Test]

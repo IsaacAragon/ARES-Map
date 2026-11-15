@@ -56,6 +56,10 @@ namespace Gale.Navigation
             heapN = 0;
         }
 
+        /// <summary>Factor de la heurística. 1 = A* admisible (óptimo exacto sobre la malla). Mayor que 1 =
+        /// A* ponderado: mucho más rápido y con coste garantizado ≤ factor × óptimo.</summary>
+        public float heuristicWeight = 1f;
+
         public NavSearchResult Search(int start, int goal, NavCostModel m, CancellationToken ct = default, Action<int> progress = null)
         {
             var res = new NavSearchResult();
@@ -63,13 +67,27 @@ namespace Gale.Navigation
             if (start < 0 || goal < 0) { res.status = NavStatus.OutsideGrid; return res; }
             Ensure();
             Reset();
-            float hk = m.MinCostPerMeter;
+            float hw = Math.Max(1f, heuristicWeight);
             g.Center(goal, out float gx, out float gz);
+            float hg = g.Cell(goal).h;
+            if (float.IsNaN(hg)) hg = float.NegativeInfinity;   // sin cota de destino: sin término de subida
+            // Tramo que seguro queda en el nivel regional: hasta el destino si no hay detalle; si el destino
+            // está en el detalle, la distancia al rectángulo; si no, min(distancia al destino, la del destino
+            // al rectángulo). Las tres son 1-lipschitzianas, así que la heurística sigue siendo consistente.
+            float cr = m.MinCoarsePerMeter;
+            bool goalL1 = g.IsL1(goal);
+            float rg = g.HasDetail && !goalL1 ? RectDist(gx, gz) : 0f;
+            float H(float x, float z, float h)
+            {
+                float dist = Dist(x, z, gx, gz);
+                float coarse = !g.HasDetail ? dist : goalL1 ? RectDist(x, z) : Math.Min(dist, rg);
+                return hw * (m.Heuristic(dist, hg - h) + cr * coarse);
+            }
 
             gScore[start] = 0f;
             touched.Add(start);
             g.Center(start, out float sx, out float sz);
-            Push(Dist(sx, sz, gx, gz) * hk, start);
+            Push(H(sx, sz, g.Cell(start).h), start);
 
             res.status = NavStatus.NoPath;
             while (heapN > 0)
@@ -105,7 +123,7 @@ namespace Gale.Navigation
                     if (float.IsPositiveInfinity(gScore[v])) touched.Add(v);
                     gScore[v] = ng;
                     parent[v] = u;
-                    Push(ng + Dist(vx, vz, gx, gz) * hk, v);
+                    Push(ng + H(vx, vz, cv.h), v);
                 }
             }
 
@@ -135,12 +153,14 @@ namespace Gale.Navigation
         /// <summary>Coste acumulado de A* hasta un nodo de la última búsqueda (∞ si no se alcanzó).</summary>
         public float LastG(int n) => gScore != null ? gScore[n] : float.PositiveInfinity;
 
-        /// <summary>Celda transitable más cercana (en planta) dentro de maxMeters; el mismo nodo si ya lo es.</summary>
-        public int NearestPassable(int n, NavCostModel m, float maxMeters, out float meters)
+        /// <summary>Celda transitable más cercana (en planta) dentro de maxMeters; el mismo nodo si ya lo es.
+        /// Con comp, solo vale una celda de esa componente conexa (comp[v] == compId).</summary>
+        public int NearestPassable(int n, NavCostModel m, float maxMeters, out float meters, int[] comp = null, int compId = 0)
         {
             meters = 0f;
             if (n < 0) return -1;
-            if (m.Passable(g.Cell(n))) return n;
+            bool Ok(int v) => m.Passable(g.Cell(v)) && (comp == null || comp[v] == compId);
+            if (Ok(n)) return n;
             g.Center(n, out float x0, out float z0);
             var seen = new HashSet<int> { n };
             var q = new Queue<int>();
@@ -158,12 +178,20 @@ namespace Gale.Navigation
                     g.Center(v, out float x, out float z);
                     float d2 = (x - x0) * (x - x0) + (z - z0) * (z - z0);
                     if (d2 > lim) continue;
-                    if (m.Passable(g.Cell(v))) { if (d2 < bd) { bd = d2; best = v; } }
+                    if (Ok(v)) { if (d2 < bd) { bd = d2; best = v; } }
                     else q.Enqueue(v);
                 }
             }
             meters = best >= 0 ? (float)Math.Sqrt(bd) : 0f;
             return best;
+        }
+
+        float RectDist(float x, float z)
+        {
+            var l = g.L1;
+            float dx = Math.Max(0f, Math.Max(l.X0 - x, x - (l.X0 + l.W * l.CellX)));
+            float dz = Math.Max(0f, Math.Max(l.Z0 - z, z - (l.Z0 + l.H * l.CellZ)));
+            return (float)Math.Sqrt(dx * dx + dz * dz);
         }
 
         static float Dist(float ax, float az, float bx, float bz)

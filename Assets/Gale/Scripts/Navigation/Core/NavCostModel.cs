@@ -28,8 +28,11 @@ namespace Gale.Navigation
         public readonly NavWeights W;
         public readonly NavConditions C;
         public readonly bool Relaxed;
+        /// <summary>Con los límites relajados, pendiente máxima de una arista (más, ni a pie).</summary>
+        public const float RelaxedEdgeDeg = 60f;
 
-        readonly float vRef, t0, e0, kEnv, pTotal, minPerMeter, nightMul;
+        readonly float vRef, t0, e0, kEnv, pTotal, nightMul, tanMax;
+        readonly float hLinear, hTraction, hRoll, cosLim;
 
         public NavCostModel(NavProfile p, NavWeights w, NavConditions c, bool relaxed = false)
         {
@@ -44,13 +47,38 @@ namespace Gale.Navigation
             float kDust = c.hasClimate ? 1f - p.dustSlow * Clamp01((c.tau - 0.5f) / 1.5f) : 1f;
             kEnv = kLight * kDust;
             nightMul = c.Daylight ? 0f : w.nightPenalty;
-            // Cota inferior del coste por metro (heurística admisible): todos los factores de velocidad ≤ 1,
-            // la energía nunca baja de P_base·t y el riesgo nunca es negativo.
-            minPerMeter = w.wTime + w.wEnergy * (p.basePowerW / vRef) / e0 + w.wDose;
+            // Pendiente máxima de una arista: s_max, o RelaxedEdgeDeg con los límites relajados (nada se conduce a más).
+            double edgeMax = relaxed ? Math.Max(p.sMaxDeg, RelaxedEdgeDeg) : p.sMaxDeg;
+            tanMax = (float)Math.Tan(edgeMax * Math.PI / 180.0);
+
+            // Heurística admisible (cota inferior del coste hasta el destino), ver Heuristic:
+            //  - tiempo y dosis: todos los factores de velocidad son ≤ 1 → t/t₀ ≥ D;
+            //  - energía fija: (P_base + P_calef)·t ≥ (P_base + P_calef)·D/v_ref;
+            //  - tracción: sin aristas de más de s_max, Σ d·max(0, C_rr·cos θ + sin θ) ≥ c·max(0, C_rr,mín·c·D + Δh)
+            //    con c = cos de la pendiente máxima de arista (se baja gratis, pero cada metro de bajada hay que
+            //    haberlo subido antes);
+            //  - riesgo ≥ 0.
+            hLinear = w.wTime + w.wDose + w.wEnergy * (pTotal / vRef) / e0;
+            cosLim = (float)Math.Cos(edgeMax * Math.PI / 180.0);
+            float crrMin = float.MaxValue;
+            foreach (float k in p.crr) crrMin = Math.Min(crrMin, k);
+            hRoll = Math.Max(0f, crrMin) * cosLim;
+            hTraction = w.wEnergy * p.massKg * p.gravity / p.efficiency / e0 * cosLim;
         }
 
-        /// <summary>Coste mínimo por metro horizontal (para la heurística de A*).</summary>
-        public float MinCostPerMeter => minPerMeter;
+        /// <summary>Cota inferior del coste para recorrer dist m en planta con una subida neta dh (puede ser negativa).</summary>
+        public float Heuristic(float dist, float dh)
+        {
+            float tr = hRoll * dist + dh;
+            return hLinear * dist + (tr > 0f ? hTraction * tr : 0f);
+        }
+
+        /// <summary>Coste mínimo por metro recorrido en el nivel regional (riesgo de relieve impreciso, con el
+        /// descuento de terreno probado). La heurística lo cobra sobre el tramo que seguro queda fuera del detalle.</summary>
+        public float MinCoarsePerMeter => W.wRisk * P.coarseRisk * (1f - P.provenDiscount);
+
+        /// <summary>Coste mínimo por metro horizontal en llano (la parte lineal de la heurística).</summary>
+        public float MinCostPerMeter => hLinear + hTraction * hRoll;
 
         public bool Passable(in NavCell b) =>
             !float.IsNaN(b.h) && !float.IsNaN(b.slopeDeg) && (Relaxed || b.slopeDeg <= P.sMaxDeg);
@@ -72,8 +100,16 @@ namespace Gale.Navigation
                 return;
             }
             float slope = b.slopeDeg;
+            float dd = Math.Max(d, 1e-3f);
+            // Una arista más empinada que s_max tampoco se recorre (lo exige la cota de tracción de la heurística).
+            if (Math.Abs(dz) > tanMax * dd)
+            {
+                s.blocked = true;
+                s.cost = float.PositiveInfinity;
+                return;
+            }
             s.d3 = (float)Math.Sqrt(d * d + dz * dz);
-            float theta = (float)(Math.Atan2(dz, Math.Max(d, 1e-3f)) * 180.0 / Math.PI);
+            float theta = AtanDeg(dz / dd);   // pendiente en el sentido de la marcha
 
             // Velocidad.
             float f = Clamp01(Math.Abs(theta) / P.sMaxDeg);
@@ -84,8 +120,7 @@ namespace Gale.Navigation
             s.t = s.d3 / v;
 
             // Energía: tracción (sin regeneración bajando) + consumo fijo y calefacción durante el tramo.
-            double thr = theta * Math.PI / 180.0;
-            float traction = (float)Math.Max(0.0, P.Crr(b.soil) * Math.Cos(thr) + Math.Sin(thr));
+            float traction = Math.Max(0f, (P.Crr(b.soil) * dd + dz) / s.d3);   // C_rr·cos θ + sin θ
             s.energy = d * P.massKg * P.gravity * traction / P.efficiency + pTotal * s.t;
 
             // Riesgo.
@@ -115,5 +150,16 @@ namespace Gale.Navigation
         }
 
         static float Clamp01(float x) => x < 0f ? 0f : x > 1f ? 1f : x;
+
+        /// <summary>atan en grados, aproximada (error &lt; 0,1°): evita la trigonometría en el bucle de A*.</summary>
+        public static float AtanDeg(float x)
+        {
+            const float R = 57.29578f;
+            float a = Math.Abs(x);
+            float r = a <= 1f ? Core(a) : 1.5707963f - Core(1f / a);
+            return (x < 0f ? -r : r) * R;
+        }
+
+        static float Core(float a) => 0.7853982f * a - a * (a - 1f) * (0.2447f + 0.0663f * a);
     }
 }
