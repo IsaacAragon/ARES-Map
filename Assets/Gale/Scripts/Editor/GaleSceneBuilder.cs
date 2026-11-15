@@ -190,6 +190,7 @@ public static class GaleSceneBuilder
 
         // Menú de exploración (barra lateral flotante: capas, geodesia, rocas, radiación, ajustes).
         ExplorerMenuBuilder.Install();
+        PlaceAtlasBuilder.Install();   // lugares con nombre IAU: buscador, nodos y ficha
 
         EditorSceneManager.MarkSceneDirty(scene);
         EditorSceneManager.SaveScene(scene);
