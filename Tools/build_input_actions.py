@@ -13,6 +13,7 @@ Reparto del mando (resuelve los choques de la propuesta original):
            L3 rápido · X rover · Y cráter
   Map    : stick izq. mover · gatillos zoom · LB/RB girar · stick dcho. cursor virtual · A seleccionar
            cruceta ↑/↓ zoom por pasos · X rover · Y cráter · B salir · L3 rápido
+           navegación (teclado): Retroceso cancelar · Supr quitar punto · Intro iniciar · Ctrl+Z/Y · P perfil · V vista aérea
 
 Uso:  python Tools/build_input_actions.py
 """
@@ -127,6 +128,15 @@ def build():
     m.action("FocusRover", "button"); m.bind("FocusRover", "<Keyboard>/f", KM); m.bind("FocusRover", "<Gamepad>/buttonWest", GP)
     m.action("FocusCrater", "button"); m.bind("FocusCrater", "<Keyboard>/c", KM); m.bind("FocusCrater", "<Gamepad>/buttonNorth", GP)
     m.action("Exit", "button"); m.bind("Exit", "<Keyboard>/escape", KM); m.bind("Exit", "<Gamepad>/buttonEast", GP)
+    # Navegación A→B (NavigationSystem). Mayús + clic (Fast + Select) añade una parada. En el mando estas
+    # acciones irán en un menú junto al cursor (no quedan botones libres en Map).
+    m.action("RouteCancel", "button"); m.bind("RouteCancel", "<Keyboard>/backspace", KM)
+    m.action("RemovePoint", "button"); m.bind("RemovePoint", "<Keyboard>/delete", KM)
+    m.action("RouteConfirm", "button"); m.bind("RouteConfirm", "<Keyboard>/enter", KM); m.bind("RouteConfirm", "<Keyboard>/numpadEnter", KM)
+    m.action("Undo", "button"); m.composite("Undo", "OneModifier", [("modifier", "<Keyboard>/ctrl"), ("binding", "<Keyboard>/z")], KM, "CtrlZ")
+    m.action("Redo", "button"); m.composite("Redo", "OneModifier", [("modifier", "<Keyboard>/ctrl"), ("binding", "<Keyboard>/y")], KM, "CtrlY")
+    m.action("CycleProfile", "button"); m.bind("CycleProfile", "<Keyboard>/p", KM)
+    m.action("ViewAerial", "button"); m.bind("ViewAerial", "<Keyboard>/v", KM)
 
     return [g, r, c, a, m]
 

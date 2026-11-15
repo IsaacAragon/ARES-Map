@@ -13,7 +13,8 @@ using UnityEngine.Rendering;
 //   WASD = desplazar · Q/E / LB-RB = girar · F / X = rover · C / Y = cráter · M / Esc / B = salir
 //   Con mando, el stick derecho mueve un cursor virtual y A selecciona (acciones del mapa Map).
 // Fuera del mapa, - / + siguen acercando y alejando.
-// Preparado para la navegación A→B: MapToWorld / WorldToMap y el evento MapClicked (clic izquierdo).
+// Navegación A→B (NavMapOverlay): MapToWorld / WorldToMap, el evento MapClicked (clic izquierdo) y
+// OverlayGUI, que dibuja encima del mapa (después del recorrido y antes del rover) con Line / Marker / ClipLine.
 [RequireComponent(typeof(ChaseCamera))]
 public class MinimapHUD : MonoBehaviour
 {
@@ -60,6 +61,13 @@ public class MinimapHUD : MonoBehaviour
 
     /// <summary>Clic izquierdo dentro del mapa interactivo, en coordenadas de mundo (sobre el terreno).</summary>
     public event Action<Vector3> MapClicked;
+    /// <summary>Dibujo extra sobre el mapa (IMGUI, Rect del mapa), tras el recorrido y antes del rover.</summary>
+    public event Action<Rect> OverlayGUI;
+    /// <summary>Texto extra para la línea de ayuda del mapa interactivo (lo pone la navegación).</summary>
+    public string extraHint;
+    /// <summary>Mientras es true (menú de un punto abierto, arrastre de un pin), el mapa no lee clic,
+    /// desplazamiento ni zoom.</summary>
+    [NonSerialized] public bool suspendInput;
 
     public bool Interactive { get; private set; }
     public float MapYaw => rotateWithRover && !Interactive && chase && chase.target
@@ -223,6 +231,7 @@ public class MinimapHUD : MonoBehaviour
         }
         Vector2 gui = MapCursor;
         bool inside = InMap(gui, r);
+        if (suspendInput) { dragging = false; return; }
 
         // Rueda / gatillos: zoom manteniendo fijo el punto del terreno bajo el cursor.
         float scroll = GaleInput.Delta(a.Zoom, 700f);
@@ -233,7 +242,7 @@ public class MinimapHUD : MonoBehaviour
         if (!a.Drag.IsPressed()) dragging = false;
         if (dragging) Pan(a.PointerDelta.ReadValue<Vector2>(), r);
 
-        // Clic izquierdo / A: punto en el mundo (para la futura navegación A→B).
+        // Clic izquierdo / A: punto en el mundo (destino de la navegación A→B).
         if (a.Select.WasPressedThisFrame() && inside) MapClicked?.Invoke(MapToWorld(gui));
     }
 
@@ -282,7 +291,7 @@ public class MinimapHUD : MonoBehaviour
 
     public Vector2 WorldToMap(Vector3 world) => WorldToMap(world, MapRect());
 
-    Vector2 WorldToMap(Vector3 world, Rect r)
+    public Vector2 WorldToMap(Vector3 world, Rect r)
     {
         Vector3 d = Quaternion.Euler(0f, -MapYaw, 0f) * (world - MapCenter);
         return new Vector2(r.center.x + d.x / Half * r.width * 0.5f,
@@ -360,6 +369,7 @@ public class MinimapHUD : MonoBehaviour
         // Ruta real de Curiosity (CuriosityRoute) y recorrido del rover (RoverTrackRecorder), como líneas.
         DrawCuriosityRoute(r);
         if (Event.current.type == EventType.Repaint) DrawRecordedPath(r);
+        OverlayGUI?.Invoke(r);
 
         // Lugares con nombre.
         if (places != null)
@@ -394,6 +404,8 @@ public class MinimapHUD : MonoBehaviour
                     ? "MAPA · stick izq. mover · gatillos zoom · stick dcho. cursor · A seleccionar · LB/RB girar · X rover · Y cráter · B salir"
                     : "MAPA · clic dcho+arrastrar mover · rueda zoom · WASD · Q/E girar · F rover · C cráter · M/Esc salir",
                 hintStyle);
+            if (!string.IsNullOrEmpty(extraHint))
+                GUI.Label(new Rect(r.x + 8, r.y + 42, r.width - 16, 40), extraHint, hintStyle);
             if (useVirtualCursor) Marker(virtualCursor, "✛", new Color(1f, 0.95f, 0.4f), 0f);
         }
         GUI.color = old;
@@ -422,7 +434,8 @@ public class MinimapHUD : MonoBehaviour
             for (int i = stride; i < pts.Count + stride - 1; i += stride)
             {
                 Vector2 cur = WorldToMap(pts[Mathf.Min(i, pts.Count - 1)], r);
-                if (InMap(prev, r, 2f) && InMap(cur, r, 2f)) Line(prev, cur, 2.5f);
+                Vector2 ca = prev, cb = cur;
+                if (ClipLine(ref ca, ref cb, r)) Line(ca, cb, 2.5f);
                 prev = cur;
             }
         }
@@ -477,14 +490,53 @@ public class MinimapHUD : MonoBehaviour
         {
             int k = Mathf.Min(i, n - 1);
             Vector2 cur = WorldToMap(s[k].unity, r);
-            if (s[k].segment == prevSeg && InMap(prev, r, 2f) && InMap(cur, r, 2f))
-                Line(prev, cur, 2f);
+            Vector2 ca = prev, cb = cur;
+            if (s[k].segment == prevSeg && ClipLine(ref ca, ref cb, r)) Line(ca, cb, 2f);
             prev = cur; prevSeg = s[k].segment;
         }
         GUI.color = old;
     }
 
-    static void Line(Vector2 a, Vector2 b, float w)
+    /// <summary>Recorta el segmento a–b al mapa visible (cuadrado en modo interactivo, círculo si no).
+    /// Devuelve false si queda fuera entero.</summary>
+    public bool ClipLine(ref Vector2 a, ref Vector2 b, Rect r, float inset = 2f)
+    {
+        Vector2 d = b - a;
+        float t0 = 0f, t1 = 1f;
+        if (Interactive)
+        {
+            // Liang–Barsky contra el rectángulo.
+            float[] p = { -d.x, d.x, -d.y, d.y };
+            float[] q = { a.x - r.xMin, r.xMax - a.x, a.y - r.yMin, r.yMax - a.y };
+            for (int i = 0; i < 4; i++)
+            {
+                if (Mathf.Abs(p[i]) < 1e-6f) { if (q[i] < 0f) return false; continue; }
+                float t = q[i] / p[i];
+                if (p[i] < 0f) { if (t > t1) return false; if (t > t0) t0 = t; }
+                else { if (t < t0) return false; if (t < t1) t1 = t; }
+            }
+        }
+        else
+        {
+            // Intersección con el círculo.
+            Vector2 c = r.center, f = a - c;
+            float rad = r.width * 0.5f - inset;
+            float A = Vector2.Dot(d, d), B = 2f * Vector2.Dot(f, d), C = Vector2.Dot(f, f) - rad * rad;
+            if (A < 1e-6f) return C <= 0f;
+            float disc = B * B - 4f * A * C;
+            if (disc < 0f) return false;
+            float sq = Mathf.Sqrt(disc);
+            t0 = Mathf.Max(0f, (-B - sq) / (2f * A));
+            t1 = Mathf.Min(1f, (-B + sq) / (2f * A));
+            if (t0 > t1) return false;
+        }
+        Vector2 a0 = a;
+        a = a0 + d * t0;
+        b = a0 + d * t1;
+        return true;
+    }
+
+    public static void Line(Vector2 a, Vector2 b, float w)
     {
         Vector2 d = b - a;
         float len = d.magnitude;
@@ -511,8 +563,9 @@ public class MinimapHUD : MonoBehaviour
         return transform.position;
     }
 
-    static void Marker(Vector2 pos, string glyph, Color color, float angleDeg)
+    public static void Marker(Vector2 pos, string glyph, Color color, float angleDeg)
     {
+        markerStyle ??= new GUIStyle(GUI.skin.label) { alignment = TextAnchor.MiddleCenter, fontSize = 16, padding = new RectOffset() };
         var m = GUI.matrix;
         var old = GUI.color;
         GUIUtility.RotateAroundPivot(angleDeg, pos);
