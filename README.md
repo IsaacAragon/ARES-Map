@@ -1,31 +1,33 @@
 # ARES Map
 
-Simulador del cráter Gale para planear un recorrido en la superficie de Marte. Junta relieve, geología, material del suelo, nombres oficiales y la ruta de Curiosity, y se recorre con un rover.
+**English** · [Español](README-es.md)
 
-Proyecto del equipo [Salomonsters](https://www.spaceappschallenge.org/2026/find-a-team/salomonsters/) (Universidad Americana, Managua) para el reto [Interplanetary Survival Guide: Martian Map](https://www.spaceappschallenge.org/2026/challenges/interplanetary-survival-guide-martian-map/) del NASA Space Apps Challenge 2026.
+A simulator of Gale crater for planning a traverse on the surface of Mars. It brings together terrain, geology, surface material, official place names, and Curiosity's route, and you drive it with a rover.
 
-![Vista aérea de Farah Vallis, con el buscador de lugares y la ficha del valle](docs/screenshots/vista-aerea-farah-vallis.png)
+Built by [Salomonsters](https://www.spaceappschallenge.org/2026/find-a-team/salomonsters/) (Universidad Americana, Managua) for the [Interplanetary Survival Guide: Martian Map](https://www.spaceappschallenge.org/2026/challenges/interplanetary-survival-guide-martian-map/) challenge at the 2026 NASA Space Apps Challenge.
 
-![Ficha del cráter Gale sobre el mapa de la región](docs/screenshots/ficha-crater-gale.png)
+![Aerial view of Farah Vallis, with the place search and the valley's info card](docs/screenshots/vista-aerea-farah-vallis.png)
 
-![Capa de material del suelo (THEMIS) en la vista del rover](docs/screenshots/capa-material-del-suelo.png)
+![Gale crater info card over the regional map](docs/screenshots/ficha-crater-gale.png)
 
-## Abrirlo en Unity
+![Surface-material layer (THEMIS) in the rover view](docs/screenshots/capa-material-del-suelo.png)
 
-Hace falta **Unity 6000.6.8f1** (Unity 6.6).
+## Open it in Unity
 
-1. Clona el repositorio.
-2. En Unity Hub, **Add** → **Add project from disk** y elige esta carpeta.
-3. Espera a que termine de importar.
-4. Abre `Assets/Scenes/SampleScene.unity`.
-5. Pulsa **Play**.
+Requires **Unity 6000.6.8f1** (Unity 6.6).
 
-## Controles
+1. Clone the repository.
+2. In Unity Hub, choose **Add** → **Add project from disk** and select this folder.
+3. Wait for the import to finish.
+4. Open `Assets/Scenes/SampleScene.unity`.
+5. Press **Play**.
 
-| | Teclado | Mando |
+## Controls
+
+| | Keyboard | Gamepad |
 |---|---|---|
-| Conducir | W/S acelerar, A/D girar. Shift rápido, Espacio freno, R enderezar | Gatillos, stick izquierdo. A rápido, B freno, Y enderezar |
-| Cámara del rover | Rueda del ratón | Cruceta arriba/abajo |
-| Vista aérea | Tab. WASD mover, Q/E girar, rueda altura, clic derecho arrastrar para mirar, Shift rápido. F al rover, C al cráter | Select. Stick izquierdo, LB/RB, stick derecho. L3 rápido. X al rover, Y al cráter |
-| Mapa | M. Clic elige destino, Shift+clic añade parada. Enter confirma, Retroceso cancela, Supr quita un punto, Ctrl+Z / Ctrl+Y, P cambia el perfil, V muestra la ruta en vista aérea. Rueda zoom, clic derecho arrastra, Q/E gira. Esc sale | R3. Stick izquierdo mueve, gatillos zoom, stick derecho cursor, A selecciona. B sale |
-| General | G menú, L cambia la capa, H ayuda, Esc pausa | Cruceta izquierda cambia la capa, cruceta derecha ayuda, Start pausa |
+| Drive | W/S throttle, A/D steer. Shift boost, Space brake, R level the rover | Triggers, left stick. A boost, B brake, Y level |
+| Rover camera | Mouse wheel | D-pad up/down |
+| Aerial view | Tab. WASD pan, Q/E rotate, wheel changes height, right-drag to look, Shift moves faster. F focuses the rover, C the crater | Select. Left stick, LB/RB, right stick. L3 faster. X rover, Y crater |
+| Map | M. Click sets a destination, Shift+click adds a stop. Enter confirms, Backspace cancels, Delete removes a point, Ctrl+Z / Ctrl+Y, P cycles the profile, V shows the route in the aerial view. Wheel zooms, right-drag pans, Q/E rotates. Esc leaves | R3. Left stick pans, triggers zoom, right stick moves the cursor, A selects. B leaves |
+| General | G menu, L cycles the map layer, H help, Esc pauses | D-pad left cycles the layer, D-pad right opens help, Start pauses |
