@@ -1,6 +1,6 @@
 # PLAN — Módulo de navegación de ARES Map (ruta óptima A→B)
 
-Estado: propuesta, sin implementar · Fecha: 2026-11-15 · Rama prevista: `feature/navegacion-ruta-optima` (sale de `dev`)
+Estado: **fases 0–4 implementadas y probadas; fase 5 en parte** (ver §12) · Fecha: 2026-11-15 · Rama: `feature/navegacion-ruta-optima` (sale de `dev`)
 
 ## 1. Objetivo
 
@@ -352,3 +352,56 @@ Las fases 0–4 son el mínimo que cumple lo pedido; 5–6 lo completan.
 - **Hilos**: en una build WebGL no hay `Task.Run`; habría que repartir la búsqueda entre fotogramas.
 - **Otra sesión en la misma copia**: el árbol de trabajo tiene cambios sin confirmar de otras ramas. La rama
   nueva debe salir de `dev` sin mover el HEAD de esta copia, y no se guarda la escena sin avisar.
+
+## 12. Estado de la implementación (2026-11-15)
+
+### Hecho
+
+| Fase | Qué hay | Cómo se comprobó |
+|---|---|---|
+| 0 | `GeoLayers` (IndexData, ThermoData, AddRuntimeLayer), `MinimapHUD` (OverlayGUI, ClipLine, suspendInput), `ClimateService`, acciones del mapa, test-framework | Compila sin avisos; el juego se comporta igual |
+| 1 | `NavGridBaker` (menú *Gale/Bake de navegación* y en `GaleSceneBuilder`), capa **Transitabilidad** | 8,04 M rayos en 2,6 s; L0 3823 × 2003 (5,63 M con relieve), L1 1060 × 2260 de 8,14 m; `nav_grid.bytes` 13,5 MB (LFS). Cota frente a `MarsGeo.GroundY` en 200 puntos: error máx. **0,018 m (L1)** y **0,051 m (L0)**. Con L: rojo en las paredes del cráter y del monte Sharp, verde en Aeolis Palus |
+| 2 | Núcleo `Gale.Navigation.Core` (C# puro) | **31 pruebas EditMode en verde** (§10 + heurística frente a 20 000 aristas, A* = Dijkstra con subida neta y con dos niveles, componentes, A* ponderado) |
+| 3 | `NavigationSystem`, `NavMapOverlay` | En juego: clic → ruta en 0,1 s (Bradbury → Pahrump), resumen, pines, inspección bajo el cursor, Retroceso la quita |
+| 4 | `GroundRibbon` (también la usa `CuriosityRoute`), `NavRouteRibbon`, `_Reveal`, `FrameBounds` | Cinta a 0,04 u del suelo en todos los vértices medidos (0 enterrados, 0 flotando); `_Reveal` 57 → 93 → 115 → 122 u en 1,5 s; V encuadra la ruta |
+| 5 (parte) | Paradas (Mayús + clic), arrastre de pines, Supr, deshacer/rehacer, perfiles (P), guiado con desvío y llegada, línea de guiado en el instrumento, reinicio en Bradbury recalcula | Prueba en juego: parada 6,1 → 8,8 km, deshacer y rehacer, perfil cambia el trazado (8 810 → 8 858 m), desvío de 600 m recalcula en ~3 s, llegada → "Has llegado" y se retira a los 5 s, destino fuera del terreno → mensaje |
+
+Cambios respecto al diseño, con su motivo:
+
+- **Heurística más ajustada y consistente** (sigue siendo admisible): cota de tracción para todo el trayecto,
+  `cos s · max(0, C_rr,mín · cos s · D + Δh)`, más el riesgo mínimo del tramo que seguro queda en el nivel regional.
+  Para que valga, una arista más empinada que `s_max` (60° con los límites relajados) no se recorre.
+- **Componentes conexas** del terreno transitable (521, 3,3 s en segundo plano al cargar): un destino aislado se
+  detecta sin explorar toda la región.
+- **A\* ponderado** (`heuristicWeight`, 1,3 por defecto en la escena): coste garantizado ≤ 1,3 × óptimo; en las
+  rutas de prueba, igual o hasta un 1,6 % peor. Con 1,0 es el óptimo exacto.
+- Si no hay ruta segura, se calcula **directamente** la relajada y se marca como NO SEGURA (en vez de preguntar).
+- Se quitó un `MinimapHUD` **duplicado** que ya había en la escena de `dev` (M abría dos mapas y el segundo
+  tapaba la ruta); `GaleSceneBuilder` borraba solo uno de los antiguos.
+
+### Tiempos medidos (perfil Equilibrada, editor, i.e. el peor caso; memoria de búsqueda ~110–120 MB)
+
+| Ruta | Distancia | Exacto (1,0) | Ponderado (1,3) |
+|---|---|---|---|
+| Bradbury → Yellowknife Bay | 0,95 km | 35 ms | 28 ms |
+| Bradbury → base del monte Sharp (Pahrump) | 6,1 km | 0,36 s | 5 ms |
+| Bradbury → último punto de Curiosity (+1 100 m) | 14,8 km | 2,9 s | 0,84 s |
+| Bradbury → pared del cráter | 18,4 km | 0,71 s | 0,12 s |
+| Bradbury → borde O de Gale | 26 km | 2,4 s | 1,6 s |
+| Bradbury → Aeolis Mons | 45 km | 4,0 s | 4,0 s |
+| Gale → Babati (no segura: 2 km > 25°) | 144 km | 5,3 s | 5,0 s |
+| Bradbury → Robert Sharp | 268 km | 6,2 s | 5,5 s |
+| Destino fuera del terreno | — | inmediato, con mensaje | |
+
+Objetivo "< 1 s hasta 50 km": **se cumple hasta ~20 km**; de 25 a 50 km tarda 1,6–4 s. El cálculo va en un hilo
+y no bloquea el juego. Lo que lo frena es la zona de detalle (8 m): A* la recorre casi entera cuando la ruta
+sale de ella. Mejora candidata: búsqueda jerárquica (corredor en L0 y refinado en L1 solo dentro del corredor).
+
+### Pendiente
+
+- Fase 5: menú de punto para el **mando** (hoy con mando solo se elige el destino; el resto es con teclado),
+  panel de UI Toolkit con **perfil de elevación** (hoy el resumen es IMGUI junto al mapa), tres alternativas a la
+  vez, destinos rápidos, exportar CSV/GeoJSON, guardar la última ruta, "Cancelar ruta" en el menú de pausa.
+- Fase 6: clima por hora estimada de paso (hoy se usan las condiciones de la hora de salida).
+- Fase 7 (opcional) y la búsqueda jerárquica de arriba.
+- Decisiones del §3: se aplicaron los valores por defecto; siguen pendientes de confirmar.
