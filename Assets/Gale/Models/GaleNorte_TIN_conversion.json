@@ -1,10 +1,9 @@
 {
-  "input": "C:/Users/isaac/dev/TIFFdetallado/Gale_franja_norte_points.dxf",
+  "input": "C:\\Users\\isaac\\AppData\\Local\\Temp/mosaic/s9/GaleNorte_points.dxf",
   "points": 94122,
   "layers": {
-    "SECTOR": 59989,
-    "MOLA": 33701,
-    "BORDE_GALE": 432
+    "BASE": 93052,
+    "BORDE": 1070
   },
   "other_entities": {},
   "vertices": 94122,
@@ -31,5 +30,5 @@
     128508.4609375,
     560.0
   ],
-  "fbx_bytes": 4480012
+  "fbx_bytes": 5062204
 }

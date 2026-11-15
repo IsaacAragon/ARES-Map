@@ -44,6 +44,7 @@ public class MinimapHUD : MonoBehaviour
         new Place("Gale", 137.80, -5.40),
         new Place("Aeolis Mons", 137.85, -5.08),
         new Place("Babati", 137.93, -3.16),
+        new Place("Robert Sharp", 133.59, -4.12),
     };
 
     [Header("Mapa interactivo")]

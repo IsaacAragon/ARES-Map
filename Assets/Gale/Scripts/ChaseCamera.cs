@@ -27,6 +27,10 @@ public class ChaseCamera : MonoBehaviour
     public float transitionSpeed = 4f;
     [Tooltip("Hasta dónde puede desplazarse la vista aérea hacia el norte (u Unity desde el centro de Gale).")]
     public float aerialNorthLimit = 3000f;
+    [Tooltip("Límites de la vista aérea al sur, este y oeste (u Unity desde el centro de Gale); cubren los bloques del mosaico.")]
+    public float aerialSouthLimit = 2150f;
+    public float aerialEastLimit = 5000f;
+    public float aerialWestLimit = 6800f;
 
     [Header("Atmósfera (polvo en suspensión)")]
     public float chaseFogDensity = 0.0005f;
@@ -118,8 +122,8 @@ public class ChaseCamera : MonoBehaviour
             float speed = aerialHeight * 0.6f * (kb.leftShiftKey.isPressed ? 3f : 1f);
             aerialFocus += yawRot * move.normalized * speed * dt;
             // Gale ±2000 u (200 km) y hacia el norte hasta el sector de Babati (borde norte ≈ +2954 u).
-            aerialFocus.x = Mathf.Clamp(aerialFocus.x, craterCenter.x - 2000f, craterCenter.x + 2000f);
-            aerialFocus.z = Mathf.Clamp(aerialFocus.z, craterCenter.z - 2000f, craterCenter.z + aerialNorthLimit);
+            aerialFocus.x = Mathf.Clamp(aerialFocus.x, craterCenter.x - aerialWestLimit, craterCenter.x + aerialEastLimit);
+            aerialFocus.z = Mathf.Clamp(aerialFocus.z, craterCenter.z - aerialSouthLimit, craterCenter.z + aerialNorthLimit);
 
             if (kb.qKey.isPressed) aerialYaw -= 60f * dt;
             if (kb.eKey.isPressed) aerialYaw += 60f * dt;
