@@ -1,0 +1,16 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements">
+    <Style src="GeoLegend.uss" />
+    <ui:VisualElement name="legend" class="legend" picking-mode="Ignore">
+        <ui:Label name="legend-title" class="legend-title" picking-mode="Ignore" />
+        <ui:Label name="legend-source" class="legend-small" enable-rich-text="false" picking-mode="Ignore" />
+        <ui:VisualElement name="legend-rows" class="legend-rows" picking-mode="Ignore" />
+        <ui:Label name="legend-zone" class="legend-small" enable-rich-text="false" picking-mode="Ignore" />
+        <ui:VisualElement name="legend-here" class="legend-here" picking-mode="Ignore">
+            <ui:Label text="BAJO EL ROVER" class="legend-heading" picking-mode="Ignore" />
+            <ui:Label name="here-class" class="legend-here-class" enable-rich-text="false" picking-mode="Ignore" />
+            <ui:Label name="here-description" class="legend-text" enable-rich-text="false" picking-mode="Ignore" />
+            <ui:Label name="here-other" class="legend-text" enable-rich-text="false" picking-mode="Ignore" />
+        </ui:VisualElement>
+        <ui:Label name="legend-hint" class="legend-hint" enable-rich-text="false" picking-mode="Ignore" />
+    </ui:VisualElement>
+</ui:UXML>

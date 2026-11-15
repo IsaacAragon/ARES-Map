@@ -1,0 +1,2771 @@
+{
+ "generado": "2026-11-15T14:20:05Z",
+ "solActual": 5075,
+ "fuentes": {
+  "mcd": "Mars Climate Database v6.2 (c) LMD/OU/IAA/ESA/CNES, www-mars.lmd.jussieu.fr/mcd_python",
+  "mcdAviso": "Modelo climático: valores típicos de esa estación, hora y lugar, no una medición ni un pronóstico del tiempo real.",
+  "rad": "MSL RAD Dosimetry (msl_rad_dosimetry), NASA CCMC ISWA HAPI, iswa.ccmc.gsfc.nasa.gov/hapi",
+  "radAviso": "Medidas reales del rover Curiosity en su posición; llegan con ~1 día de retraso."
+ },
+ "unidades": {
+  "temperatura": "K",
+  "presion": "Pa",
+  "flujoSolar": "W/m2",
+  "viento": "m/s",
+  "polvo": "profundidad óptica visible (tau)",
+  "dosis": "uGy/dia",
+  "hora": "hora marciana (1/24 de sol)"
+ },
+ "escenarios": {
+  "normal": "climatología, sol medio",
+  "polvo": "cálido (con polvo, sol máximo)",
+  "tormenta": "tormenta de polvo, sol medio"
+ },
+ "mcd": {
+  "puntos": [
+   {
+    "nombre": "Curiosity (último punto de la ruta)",
+    "lat": -4.8260233,
+    "lon": 137.388886,
+    "hoy": {
+     "sol": 5075,
+     "inicioUtc": "2026-11-15T02:16:07Z",
+     "finUtc": "2026-11-16T02:55:42Z",
+     "ls": 22.282,
+     "distanciaSolUA": 1.6096,
+     "ecuacionTiempoH": -0.403,
+     "escenarioPolvo": 1,
+     "escenarioNombre": "climatología, sol medio",
+     "resumen": {
+      "tAireMin": 188.22,
+      "tAireMax": 241.72,
+      "tSueloMin": 182.69,
+      "tSueloMax": 271.73,
+      "presionMedia": 796.0,
+      "flujoSolarMax": 486.41,
+      "vientoMax": 18.94,
+      "polvo": 0.37
+     },
+     "horas": [
+      {
+       "horaLocal": 0.0,
+       "utc": "2026-11-15T02:40:58Z",
+       "tSuelo": 190.67,
+       "tAire": 197.29,
+       "presion": 807.92,
+       "flujoSolar": 0.0,
+       "viento": 18.35,
+       "vientoDesde": 128.6,
+       "polvo": 0.38
+      },
+      {
+       "horaLocal": 1.0,
+       "utc": "2026-11-15T03:42:37Z",
+       "tSuelo": 188.8,
+       "tAire": 195.2,
+       "presion": 813.32,
+       "flujoSolar": 0.0,
+       "viento": 17.92,
+       "vientoDesde": 132.7,
+       "polvo": 0.383
+      },
+      {
+       "horaLocal": 2.0,
+       "utc": "2026-11-15T04:44:16Z",
+       "tSuelo": 187.14,
+       "tAire": 193.23,
+       "presion": 814.53,
+       "flujoSolar": 0.0,
+       "viento": 18.03,
+       "vientoDesde": 134.2,
+       "polvo": 0.383
+      },
+      {
+       "horaLocal": 3.0,
+       "utc": "2026-11-15T05:45:55Z",
+       "tSuelo": 185.52,
+       "tAire": 191.28,
+       "presion": 814.96,
+       "flujoSolar": 0.0,
+       "viento": 18.26,
+       "vientoDesde": 135.2,
+       "polvo": 0.384
+      },
+      {
+       "horaLocal": 4.0,
+       "utc": "2026-11-15T06:47:34Z",
+       "tSuelo": 184.09,
+       "tAire": 189.72,
+       "presion": 813.86,
+       "flujoSolar": 0.0,
+       "viento": 18.58,
+       "vientoDesde": 134.9,
+       "polvo": 0.383
+      },
+      {
+       "horaLocal": 5.0,
+       "utc": "2026-11-15T07:49:13Z",
+       "tSuelo": 182.69,
+       "tAire": 188.22,
+       "presion": 812.47,
+       "flujoSolar": 0.0,
+       "viento": 18.94,
+       "vientoDesde": 134.4,
+       "polvo": 0.382
+      },
+      {
+       "horaLocal": 6.0,
+       "utc": "2026-11-15T08:50:52Z",
+       "tSuelo": 187.0,
+       "tAire": 189.76,
+       "presion": 813.62,
+       "flujoSolar": 0.0,
+       "viento": 17.73,
+       "vientoDesde": 136.4,
+       "polvo": 0.383
+      },
+      {
+       "horaLocal": 7.0,
+       "utc": "2026-11-15T09:52:31Z",
+       "tSuelo": 192.38,
+       "tAire": 191.88,
+       "presion": 815.26,
+       "flujoSolar": 94.21,
+       "viento": 16.28,
+       "vientoDesde": 139.2,
+       "polvo": 0.384
+      },
+      {
+       "horaLocal": 8.0,
+       "utc": "2026-11-15T10:54:10Z",
+       "tSuelo": 210.57,
+       "tAire": 202.74,
+       "presion": 814.05,
+       "flujoSolar": 215.46,
+       "viento": 10.34,
+       "vientoDesde": 160.3,
+       "polvo": 0.383
+      },
+      {
+       "horaLocal": 9.0,
+       "utc": "2026-11-15T11:55:49Z",
+       "tSuelo": 231.18,
+       "tAire": 215.33,
+       "presion": 812.31,
+       "flujoSolar": 327.0,
+       "viento": 9.17,
+       "vientoDesde": 172.3,
+       "polvo": 0.382
+      },
+      {
+       "horaLocal": 10.0,
+       "utc": "2026-11-15T12:57:28Z",
+       "tSuelo": 246.8,
+       "tAire": 223.24,
+       "presion": 802.77,
+       "flujoSolar": 412.45,
+       "viento": 6.64,
+       "vientoDesde": 180.6,
+       "polvo": 0.378
+      },
+      {
+       "horaLocal": 11.0,
+       "utc": "2026-11-15T13:59:07Z",
+       "tSuelo": 261.48,
+       "tAire": 230.37,
+       "presion": 791.85,
+       "flujoSolar": 468.88,
+       "viento": 3.94,
+       "vientoDesde": 199.8,
+       "polvo": 0.373
+      },
+      {
+       "horaLocal": 12.0,
+       "utc": "2026-11-15T15:00:46Z",
+       "tSuelo": 267.43,
+       "tAire": 235.04,
+       "presion": 784.9,
+       "flujoSolar": 486.41,
+       "viento": 2.76,
+       "vientoDesde": 248.0,
+       "polvo": 0.37
+      },
+      {
+       "horaLocal": 13.0,
+       "utc": "2026-11-15T16:02:25Z",
+       "tSuelo": 271.73,
+       "tAire": 239.2,
+       "presion": 778.8,
+       "flujoSolar": 469.15,
+       "viento": 3.12,
+       "vientoDesde": 291.3,
+       "polvo": 0.367
+      },
+      {
+       "horaLocal": 14.0,
+       "utc": "2026-11-15T17:04:04Z",
+       "tSuelo": 267.7,
+       "tAire": 240.73,
+       "presion": 773.42,
+       "flujoSolar": 413.52,
+       "viento": 3.76,
+       "vientoDesde": 319.6,
+       "polvo": 0.364
+      },
+      {
+       "horaLocal": 15.0,
+       "utc": "2026-11-15T18:05:43Z",
+       "tSuelo": 262.1,
+       "tAire": 241.72,
+       "presion": 768.2,
+       "flujoSolar": 328.03,
+       "viento": 4.93,
+       "vientoDesde": 337.2,
+       "polvo": 0.362
+      },
+      {
+       "horaLocal": 16.0,
+       "utc": "2026-11-15T19:07:22Z",
+       "tSuelo": 248.52,
+       "tAire": 238.52,
+       "presion": 766.17,
+       "flujoSolar": 218.5,
+       "viento": 4.55,
+       "vientoDesde": 33.4,
+       "polvo": 0.361
+      },
+      {
+       "horaLocal": 17.0,
+       "utc": "2026-11-15T20:09:01Z",
+       "tSuelo": 233.42,
+       "tAire": 234.54,
+       "presion": 764.74,
+       "flujoSolar": 93.33,
+       "viento": 4.97,
+       "vientoDesde": 45.0,
+       "polvo": 0.36
+      },
+      {
+       "horaLocal": 18.0,
+       "utc": "2026-11-15T21:10:40Z",
+       "tSuelo": 220.53,
+       "tAire": 225.16,
+       "presion": 771.53,
+       "flujoSolar": 0.0,
+       "viento": 8.48,
+       "vientoDesde": 89.1,
+       "polvo": 0.363
+      },
+      {
+       "horaLocal": 19.0,
+       "utc": "2026-11-15T22:12:19Z",
+       "tSuelo": 208.07,
+       "tAire": 214.74,
+       "presion": 779.9,
+       "flujoSolar": 0.0,
+       "viento": 15.01,
+       "vientoDesde": 105.8,
+       "polvo": 0.367
+      },
+      {
+       "horaLocal": 20.0,
+       "utc": "2026-11-15T23:13:58Z",
+       "tSuelo": 202.45,
+       "tAire": 209.75,
+       "presion": 788.55,
+       "flujoSolar": 0.0,
+       "viento": 16.64,
+       "vientoDesde": 112.4,
+       "polvo": 0.371
+      },
+      {
+       "horaLocal": 21.0,
+       "utc": "2026-11-16T00:15:36Z",
+       "tSuelo": 198.12,
+       "tAire": 205.89,
+       "presion": 797.27,
+       "flujoSolar": 0.0,
+       "viento": 17.44,
+       "vientoDesde": 118.1,
+       "polvo": 0.375
+      },
+      {
+       "horaLocal": 22.0,
+       "utc": "2026-11-16T01:17:15Z",
+       "tSuelo": 195.26,
+       "tAire": 202.66,
+       "presion": 800.64,
+       "flujoSolar": 0.0,
+       "viento": 18.03,
+       "vientoDesde": 121.7,
+       "polvo": 0.377
+      },
+      {
+       "horaLocal": 23.0,
+       "utc": "2026-11-16T02:18:54Z",
+       "tSuelo": 192.66,
+       "tAire": 199.54,
+       "presion": 803.01,
+       "flujoSolar": 0.0,
+       "viento": 18.68,
+       "vientoDesde": 124.9,
+       "polvo": 0.378
+      }
+     ]
+    },
+    "manana": {
+     "sol": 5076,
+     "inicioUtc": "2026-11-16T02:55:42Z",
+     "finUtc": "2026-11-17T03:35:18Z",
+     "ls": 22.763,
+     "distanciaSolUA": 1.6106,
+     "ecuacionTiempoH": -0.397,
+     "escenarioPolvo": 1,
+     "escenarioNombre": "climatología, sol medio",
+     "resumen": {
+      "tAireMin": 188.16,
+      "tAireMax": 241.61,
+      "tSueloMin": 182.62,
+      "tSueloMax": 271.57,
+      "presionMedia": 796.6,
+      "flujoSolarMax": 485.47,
+      "vientoMax": 18.95,
+      "polvo": 0.378
+     },
+     "horas": [
+      {
+       "horaLocal": 0.0,
+       "utc": "2026-11-16T03:20:10Z",
+       "tSuelo": 190.59,
+       "tAire": 197.21,
+       "presion": 808.43,
+       "flujoSolar": 0.0,
+       "viento": 18.37,
+       "vientoDesde": 128.6,
+       "polvo": 0.389
+      },
+      {
+       "horaLocal": 1.0,
+       "utc": "2026-11-16T04:21:49Z",
+       "tSuelo": 188.72,
+       "tAire": 195.12,
+       "presion": 813.84,
+       "flujoSolar": 0.0,
+       "viento": 17.95,
+       "vientoDesde": 132.7,
+       "polvo": 0.392
+      },
+      {
+       "horaLocal": 2.0,
+       "utc": "2026-11-16T05:23:28Z",
+       "tSuelo": 187.06,
+       "tAire": 193.15,
+       "presion": 815.04,
+       "flujoSolar": 0.0,
+       "viento": 18.06,
+       "vientoDesde": 134.2,
+       "polvo": 0.392
+      },
+      {
+       "horaLocal": 3.0,
+       "utc": "2026-11-16T06:25:07Z",
+       "tSuelo": 185.44,
+       "tAire": 191.21,
+       "presion": 815.46,
+       "flujoSolar": 0.0,
+       "viento": 18.28,
+       "vientoDesde": 135.2,
+       "polvo": 0.392
+      },
+      {
+       "horaLocal": 4.0,
+       "utc": "2026-11-16T07:26:46Z",
+       "tSuelo": 184.01,
+       "tAire": 189.65,
+       "presion": 814.36,
+       "flujoSolar": 0.0,
+       "viento": 18.6,
+       "vientoDesde": 134.9,
+       "polvo": 0.392
+      },
+      {
+       "horaLocal": 5.0,
+       "utc": "2026-11-16T08:28:25Z",
+       "tSuelo": 182.62,
+       "tAire": 188.16,
+       "presion": 812.97,
+       "flujoSolar": 0.0,
+       "viento": 18.95,
+       "vientoDesde": 134.4,
+       "polvo": 0.391
+      },
+      {
+       "horaLocal": 6.0,
+       "utc": "2026-11-16T09:30:04Z",
+       "tSuelo": 186.92,
+       "tAire": 189.69,
+       "presion": 814.13,
+       "flujoSolar": 0.0,
+       "viento": 17.75,
+       "vientoDesde": 136.4,
+       "polvo": 0.392
+      },
+      {
+       "horaLocal": 7.0,
+       "utc": "2026-11-16T10:31:43Z",
+       "tSuelo": 192.29,
+       "tAire": 191.81,
+       "presion": 815.78,
+       "flujoSolar": 93.97,
+       "viento": 16.31,
+       "vientoDesde": 139.2,
+       "polvo": 0.392
+      },
+      {
+       "horaLocal": 8.0,
+       "utc": "2026-11-16T11:33:22Z",
+       "tSuelo": 210.45,
+       "tAire": 202.65,
+       "presion": 814.58,
+       "flujoSolar": 215.0,
+       "viento": 10.35,
+       "vientoDesde": 160.2,
+       "polvo": 0.392
+      },
+      {
+       "horaLocal": 9.0,
+       "utc": "2026-11-16T12:35:01Z",
+       "tSuelo": 231.04,
+       "tAire": 215.22,
+       "presion": 812.83,
+       "flujoSolar": 326.35,
+       "viento": 9.19,
+       "vientoDesde": 172.2,
+       "polvo": 0.391
+      },
+      {
+       "horaLocal": 10.0,
+       "utc": "2026-11-16T13:36:40Z",
+       "tSuelo": 246.65,
+       "tAire": 223.14,
+       "presion": 803.34,
+       "flujoSolar": 411.64,
+       "viento": 6.67,
+       "vientoDesde": 180.2,
+       "polvo": 0.386
+      },
+      {
+       "horaLocal": 11.0,
+       "utc": "2026-11-16T14:38:19Z",
+       "tSuelo": 261.32,
+       "tAire": 230.28,
+       "presion": 792.45,
+       "flujoSolar": 467.97,
+       "viento": 3.94,
+       "vientoDesde": 199.0,
+       "polvo": 0.381
+      },
+      {
+       "horaLocal": 12.0,
+       "utc": "2026-11-16T15:39:58Z",
+       "tSuelo": 267.27,
+       "tAire": 234.94,
+       "presion": 785.53,
+       "flujoSolar": 485.47,
+       "viento": 2.73,
+       "vientoDesde": 247.2,
+       "polvo": 0.378
+      },
+      {
+       "horaLocal": 13.0,
+       "utc": "2026-11-16T16:41:37Z",
+       "tSuelo": 271.57,
+       "tAire": 239.09,
+       "presion": 779.45,
+       "flujoSolar": 468.24,
+       "viento": 3.07,
+       "vientoDesde": 291.1,
+       "polvo": 0.375
+      },
+      {
+       "horaLocal": 14.0,
+       "utc": "2026-11-16T17:43:16Z",
+       "tSuelo": 267.55,
+       "tAire": 240.62,
+       "presion": 774.08,
+       "flujoSolar": 412.73,
+       "viento": 3.71,
+       "vientoDesde": 319.8,
+       "polvo": 0.372
+      },
+      {
+       "horaLocal": 15.0,
+       "utc": "2026-11-16T18:44:55Z",
+       "tSuelo": 261.96,
+       "tAire": 241.61,
+       "presion": 768.87,
+       "flujoSolar": 327.4,
+       "viento": 4.88,
+       "vientoDesde": 337.5,
+       "polvo": 0.37
+      },
+      {
+       "horaLocal": 16.0,
+       "utc": "2026-11-16T19:46:34Z",
+       "tSuelo": 248.38,
+       "tAire": 238.4,
+       "presion": 766.83,
+       "flujoSolar": 218.06,
+       "viento": 4.53,
+       "vientoDesde": 33.9,
+       "polvo": 0.369
+      },
+      {
+       "horaLocal": 17.0,
+       "utc": "2026-11-16T20:48:13Z",
+       "tSuelo": 233.3,
+       "tAire": 234.44,
+       "presion": 765.39,
+       "flujoSolar": 93.12,
+       "viento": 4.96,
+       "vientoDesde": 45.4,
+       "polvo": 0.368
+      },
+      {
+       "horaLocal": 18.0,
+       "utc": "2026-11-16T21:49:52Z",
+       "tSuelo": 220.43,
+       "tAire": 225.06,
+       "presion": 772.14,
+       "flujoSolar": 0.0,
+       "viento": 8.5,
+       "vientoDesde": 89.4,
+       "polvo": 0.371
+      },
+      {
+       "horaLocal": 19.0,
+       "utc": "2026-11-16T22:51:31Z",
+       "tSuelo": 207.98,
+       "tAire": 214.65,
+       "presion": 780.45,
+       "flujoSolar": 0.0,
+       "viento": 15.04,
+       "vientoDesde": 105.9,
+       "polvo": 0.375
+      },
+      {
+       "horaLocal": 20.0,
+       "utc": "2026-11-16T23:53:10Z",
+       "tSuelo": 202.36,
+       "tAire": 209.66,
+       "presion": 789.05,
+       "flujoSolar": 0.0,
+       "viento": 16.68,
+       "vientoDesde": 112.4,
+       "polvo": 0.38
+      },
+      {
+       "horaLocal": 21.0,
+       "utc": "2026-11-17T00:54:49Z",
+       "tSuelo": 198.04,
+       "tAire": 205.8,
+       "presion": 797.73,
+       "flujoSolar": 0.0,
+       "viento": 17.49,
+       "vientoDesde": 118.1,
+       "polvo": 0.384
+      },
+      {
+       "horaLocal": 22.0,
+       "utc": "2026-11-17T01:56:28Z",
+       "tSuelo": 195.17,
+       "tAire": 202.57,
+       "presion": 801.11,
+       "flujoSolar": 0.0,
+       "viento": 18.07,
+       "vientoDesde": 121.7,
+       "polvo": 0.385
+      },
+      {
+       "horaLocal": 23.0,
+       "utc": "2026-11-17T02:58:07Z",
+       "tSuelo": 192.58,
+       "tAire": 199.46,
+       "presion": 803.51,
+       "flujoSolar": 0.0,
+       "viento": 18.7,
+       "vientoDesde": 124.9,
+       "polvo": 0.387
+      }
+     ]
+    },
+    "hoyPolvo": {
+     "sol": 5075,
+     "inicioUtc": "2026-11-15T02:16:07Z",
+     "finUtc": "2026-11-16T02:55:42Z",
+     "ls": 22.282,
+     "distanciaSolUA": 1.6096,
+     "ecuacionTiempoH": -0.403,
+     "escenarioPolvo": 7,
+     "escenarioNombre": "cálido (con polvo, sol máximo)",
+     "resumen": {
+      "tAireMin": 189.47,
+      "tAireMax": 243.11,
+      "tSueloMin": 184.42,
+      "tSueloMax": 269.28,
+      "presionMedia": 795.4,
+      "flujoSolarMax": 457.4,
+      "vientoMax": 17.83,
+      "polvo": 0.718
+     },
+     "horas": [
+      {
+       "horaLocal": 0.0,
+       "utc": "2026-11-15T02:40:58Z",
+       "tSuelo": 192.28,
+       "tAire": 198.6,
+       "presion": 812.22,
+       "flujoSolar": 0.0,
+       "viento": 17.11,
+       "vientoDesde": 130.1,
+       "polvo": 0.747
+      },
+      {
+       "horaLocal": 1.0,
+       "utc": "2026-11-15T03:42:37Z",
+       "tSuelo": 190.34,
+       "tAire": 196.41,
+       "presion": 816.34,
+       "flujoSolar": 0.0,
+       "viento": 16.71,
+       "vientoDesde": 134.7,
+       "polvo": 0.75
+      },
+      {
+       "horaLocal": 2.0,
+       "utc": "2026-11-15T04:44:16Z",
+       "tSuelo": 188.67,
+       "tAire": 194.38,
+       "presion": 815.6,
+       "flujoSolar": 0.0,
+       "viento": 16.88,
+       "vientoDesde": 136.0,
+       "polvo": 0.75
+      },
+      {
+       "horaLocal": 3.0,
+       "utc": "2026-11-15T05:45:55Z",
+       "tSuelo": 187.05,
+       "tAire": 192.38,
+       "presion": 813.97,
+       "flujoSolar": 0.0,
+       "viento": 17.16,
+       "vientoDesde": 136.6,
+       "polvo": 0.748
+      },
+      {
+       "horaLocal": 4.0,
+       "utc": "2026-11-15T06:47:34Z",
+       "tSuelo": 185.71,
+       "tAire": 190.88,
+       "presion": 812.0,
+       "flujoSolar": 0.0,
+       "viento": 17.48,
+       "vientoDesde": 136.1,
+       "polvo": 0.746
+      },
+      {
+       "horaLocal": 5.0,
+       "utc": "2026-11-15T07:49:13Z",
+       "tSuelo": 184.42,
+       "tAire": 189.47,
+       "presion": 809.98,
+       "flujoSolar": 0.0,
+       "viento": 17.83,
+       "vientoDesde": 135.3,
+       "polvo": 0.745
+      },
+      {
+       "horaLocal": 6.0,
+       "utc": "2026-11-15T08:50:52Z",
+       "tSuelo": 187.75,
+       "tAire": 190.59,
+       "presion": 812.03,
+       "flujoSolar": 0.0,
+       "viento": 17.0,
+       "vientoDesde": 136.5,
+       "polvo": 0.746
+      },
+      {
+       "horaLocal": 7.0,
+       "utc": "2026-11-15T09:52:31Z",
+       "tSuelo": 191.95,
+       "tAire": 192.2,
+       "presion": 814.85,
+       "flujoSolar": 75.74,
+       "viento": 15.97,
+       "vientoDesde": 138.3,
+       "polvo": 0.749
+      },
+      {
+       "horaLocal": 8.0,
+       "utc": "2026-11-15T10:54:10Z",
+       "tSuelo": 208.78,
+       "tAire": 202.25,
+       "presion": 813.89,
+       "flujoSolar": 188.93,
+       "viento": 10.28,
+       "vientoDesde": 159.7,
+       "polvo": 0.748
+      },
+      {
+       "horaLocal": 9.0,
+       "utc": "2026-11-15T11:55:49Z",
+       "tSuelo": 228.0,
+       "tAire": 213.96,
+       "presion": 812.22,
+       "flujoSolar": 296.19,
+       "viento": 9.52,
+       "vientoDesde": 171.7,
+       "polvo": 0.747
+      },
+      {
+       "horaLocal": 10.0,
+       "utc": "2026-11-15T12:57:28Z",
+       "tSuelo": 243.62,
+       "tAire": 222.41,
+       "presion": 801.65,
+       "flujoSolar": 381.42,
+       "viento": 6.94,
+       "vientoDesde": 184.8,
+       "polvo": 0.737
+      },
+      {
+       "horaLocal": 11.0,
+       "utc": "2026-11-15T13:59:07Z",
+       "tSuelo": 258.56,
+       "tAire": 230.35,
+       "presion": 789.49,
+       "flujoSolar": 440.25,
+       "viento": 4.64,
+       "vientoDesde": 203.3,
+       "polvo": 0.726
+      },
+      {
+       "horaLocal": 12.0,
+       "utc": "2026-11-15T15:00:46Z",
+       "tSuelo": 264.75,
+       "tAire": 235.66,
+       "presion": 781.4,
+       "flujoSolar": 457.4,
+       "viento": 3.66,
+       "vientoDesde": 249.9,
+       "polvo": 0.718
+      },
+      {
+       "horaLocal": 13.0,
+       "utc": "2026-11-15T16:02:25Z",
+       "tSuelo": 269.28,
+       "tAire": 240.44,
+       "presion": 774.2,
+       "flujoSolar": 440.91,
+       "viento": 4.09,
+       "vientoDesde": 287.1,
+       "polvo": 0.712
+      },
+      {
+       "horaLocal": 14.0,
+       "utc": "2026-11-15T17:04:04Z",
+       "tSuelo": 265.14,
+       "tAire": 242.09,
+       "presion": 767.68,
+       "flujoSolar": 383.78,
+       "viento": 4.93,
+       "vientoDesde": 311.9,
+       "polvo": 0.706
+      },
+      {
+       "horaLocal": 15.0,
+       "utc": "2026-11-15T18:05:43Z",
+       "tSuelo": 259.37,
+       "tAire": 243.11,
+       "presion": 761.3,
+       "flujoSolar": 297.98,
+       "viento": 6.27,
+       "vientoDesde": 328.0,
+       "polvo": 0.7
+      },
+      {
+       "horaLocal": 16.0,
+       "utc": "2026-11-15T19:07:22Z",
+       "tSuelo": 246.0,
+       "tAire": 239.0,
+       "presion": 760.22,
+       "flujoSolar": 193.92,
+       "viento": 4.33,
+       "vientoDesde": 15.0,
+       "polvo": 0.699
+      },
+      {
+       "horaLocal": 17.0,
+       "utc": "2026-11-15T20:09:01Z",
+       "tSuelo": 231.2,
+       "tAire": 233.95,
+       "presion": 760.13,
+       "flujoSolar": 76.58,
+       "viento": 4.62,
+       "vientoDesde": 45.0,
+       "polvo": 0.699
+      },
+      {
+       "horaLocal": 18.0,
+       "utc": "2026-11-15T21:10:40Z",
+       "tSuelo": 219.66,
+       "tAire": 225.09,
+       "presion": 770.52,
+       "flujoSolar": 0.0,
+       "viento": 8.18,
+       "vientoDesde": 90.7,
+       "polvo": 0.708
+      },
+      {
+       "horaLocal": 19.0,
+       "utc": "2026-11-15T22:12:19Z",
+       "tSuelo": 208.73,
+       "tAire": 215.49,
+       "presion": 782.91,
+       "flujoSolar": 0.0,
+       "viento": 14.47,
+       "vientoDesde": 106.7,
+       "polvo": 0.72
+      },
+      {
+       "horaLocal": 20.0,
+       "utc": "2026-11-15T23:13:58Z",
+       "tSuelo": 203.66,
+       "tAire": 210.56,
+       "presion": 792.26,
+       "flujoSolar": 0.0,
+       "viento": 16.1,
+       "vientoDesde": 113.4,
+       "polvo": 0.728
+      },
+      {
+       "horaLocal": 21.0,
+       "utc": "2026-11-16T00:15:36Z",
+       "tSuelo": 199.7,
+       "tAire": 206.75,
+       "presion": 801.07,
+       "flujoSolar": 0.0,
+       "viento": 16.99,
+       "vientoDesde": 119.2,
+       "polvo": 0.736
+      },
+      {
+       "horaLocal": 22.0,
+       "utc": "2026-11-16T01:17:15Z",
+       "tSuelo": 196.9,
+       "tAire": 203.75,
+       "presion": 805.11,
+       "flujoSolar": 0.0,
+       "viento": 17.26,
+       "vientoDesde": 122.8,
+       "polvo": 0.74
+      },
+      {
+       "horaLocal": 23.0,
+       "utc": "2026-11-16T02:18:54Z",
+       "tSuelo": 194.32,
+       "tAire": 200.88,
+       "presion": 808.27,
+       "flujoSolar": 0.0,
+       "viento": 17.48,
+       "vientoDesde": 125.9,
+       "polvo": 0.743
+      }
+     ]
+    }
+   },
+   {
+    "nombre": "Bradbury (aterrizaje)",
+    "lat": -4.5895,
+    "lon": 137.4416,
+    "hoy": {
+     "sol": 5075,
+     "inicioUtc": "2026-11-15T02:15:54Z",
+     "finUtc": "2026-11-16T02:55:29Z",
+     "ls": 22.282,
+     "distanciaSolUA": 1.6096,
+     "ecuacionTiempoH": -0.403,
+     "escenarioPolvo": 1,
+     "escenarioNombre": "climatología, sol medio",
+     "resumen": {
+      "tAireMin": 188.16,
+      "tAireMax": 241.92,
+      "tSueloMin": 182.78,
+      "tSueloMax": 271.6,
+      "presionMedia": 874.8,
+      "flujoSolarMax": 486.72,
+      "vientoMax": 15.42,
+      "polvo": 0.407
+     },
+     "horas": [
+      {
+       "horaLocal": 0.0,
+       "utc": "2026-11-15T02:40:45Z",
+       "tSuelo": 190.77,
+       "tAire": 197.27,
+       "presion": 887.54,
+       "flujoSolar": 0.0,
+       "viento": 15.11,
+       "vientoDesde": 133.4,
+       "polvo": 0.419
+      },
+      {
+       "horaLocal": 1.0,
+       "utc": "2026-11-15T03:42:24Z",
+       "tSuelo": 188.9,
+       "tAire": 195.19,
+       "presion": 894.06,
+       "flujoSolar": 0.0,
+       "viento": 14.73,
+       "vientoDesde": 138.6,
+       "polvo": 0.422
+      },
+      {
+       "horaLocal": 2.0,
+       "utc": "2026-11-15T04:44:03Z",
+       "tSuelo": 187.24,
+       "tAire": 193.2,
+       "presion": 896.07,
+       "flujoSolar": 0.0,
+       "viento": 14.8,
+       "vientoDesde": 140.6,
+       "polvo": 0.423
+      },
+      {
+       "horaLocal": 3.0,
+       "utc": "2026-11-15T05:45:42Z",
+       "tSuelo": 185.62,
+       "tAire": 191.23,
+       "presion": 897.23,
+       "flujoSolar": 0.0,
+       "viento": 14.95,
+       "vientoDesde": 142.0,
+       "polvo": 0.424
+      },
+      {
+       "horaLocal": 4.0,
+       "utc": "2026-11-15T06:47:21Z",
+       "tSuelo": 184.18,
+       "tAire": 189.66,
+       "presion": 896.61,
+       "flujoSolar": 0.0,
+       "viento": 15.16,
+       "vientoDesde": 141.7,
+       "polvo": 0.423
+      },
+      {
+       "horaLocal": 5.0,
+       "utc": "2026-11-15T07:49:00Z",
+       "tSuelo": 182.78,
+       "tAire": 188.16,
+       "presion": 895.66,
+       "flujoSolar": 0.0,
+       "viento": 15.39,
+       "vientoDesde": 141.0,
+       "polvo": 0.423
+      },
+      {
+       "horaLocal": 6.0,
+       "utc": "2026-11-15T08:50:39Z",
+       "tSuelo": 187.08,
+       "tAire": 189.73,
+       "presion": 897.23,
+       "flujoSolar": 0.0,
+       "viento": 14.59,
+       "vientoDesde": 143.2,
+       "polvo": 0.424
+      },
+      {
+       "horaLocal": 7.0,
+       "utc": "2026-11-15T09:52:18Z",
+       "tSuelo": 192.49,
+       "tAire": 191.9,
+       "presion": 899.29,
+       "flujoSolar": 94.44,
+       "viento": 13.63,
+       "vientoDesde": 146.2,
+       "polvo": 0.425
+      },
+      {
+       "horaLocal": 8.0,
+       "utc": "2026-11-15T10:53:57Z",
+       "tSuelo": 210.57,
+       "tAire": 202.78,
+       "presion": 897.86,
+       "flujoSolar": 215.59,
+       "viento": 10.72,
+       "vientoDesde": 158.5,
+       "polvo": 0.424
+      },
+      {
+       "horaLocal": 9.0,
+       "utc": "2026-11-15T11:55:36Z",
+       "tSuelo": 231.12,
+       "tAire": 215.44,
+       "presion": 895.75,
+       "flujoSolar": 327.18,
+       "viento": 9.51,
+       "vientoDesde": 169.1,
+       "polvo": 0.423
+      },
+      {
+       "horaLocal": 10.0,
+       "utc": "2026-11-15T12:57:15Z",
+       "tSuelo": 246.72,
+       "tAire": 223.47,
+       "presion": 884.44,
+       "flujoSolar": 412.69,
+       "viento": 6.65,
+       "vientoDesde": 180.0,
+       "polvo": 0.418
+      },
+      {
+       "horaLocal": 11.0,
+       "utc": "2026-11-15T13:58:54Z",
+       "tSuelo": 261.35,
+       "tAire": 230.71,
+       "presion": 871.48,
+       "flujoSolar": 469.17,
+       "viento": 4.14,
+       "vientoDesde": 184.4,
+       "polvo": 0.412
+      },
+      {
+       "horaLocal": 12.0,
+       "utc": "2026-11-15T15:00:33Z",
+       "tSuelo": 267.32,
+       "tAire": 235.39,
+       "presion": 862.61,
+       "flujoSolar": 486.72,
+       "viento": 1.94,
+       "vientoDesde": 188.9,
+       "polvo": 0.407
+      },
+      {
+       "horaLocal": 13.0,
+       "utc": "2026-11-15T16:02:12Z",
+       "tSuelo": 271.6,
+       "tAire": 239.53,
+       "presion": 854.68,
+       "flujoSolar": 469.45,
+       "viento": 0.09,
+       "vientoDesde": 298.8,
+       "polvo": 0.404
+      },
+      {
+       "horaLocal": 14.0,
+       "utc": "2026-11-15T17:03:51Z",
+       "tSuelo": 267.61,
+       "tAire": 241.01,
+       "presion": 847.97,
+       "flujoSolar": 413.79,
+       "viento": 1.83,
+       "vientoDesde": 8.1,
+       "polvo": 0.4
+      },
+      {
+       "horaLocal": 15.0,
+       "utc": "2026-11-15T18:05:30Z",
+       "tSuelo": 262.0,
+       "tAire": 241.92,
+       "presion": 841.55,
+       "flujoSolar": 328.23,
+       "viento": 3.6,
+       "vientoDesde": 10.1,
+       "polvo": 0.397
+      },
+      {
+       "horaLocal": 16.0,
+       "utc": "2026-11-15T19:07:09Z",
+       "tSuelo": 248.47,
+       "tAire": 238.62,
+       "presion": 839.17,
+       "flujoSolar": 218.69,
+       "viento": 4.5,
+       "vientoDesde": 34.6,
+       "polvo": 0.396
+      },
+      {
+       "horaLocal": 17.0,
+       "utc": "2026-11-15T20:08:48Z",
+       "tSuelo": 233.39,
+       "tAire": 234.52,
+       "presion": 837.58,
+       "flujoSolar": 93.5,
+       "viento": 4.76,
+       "vientoDesde": 43.2,
+       "polvo": 0.396
+      },
+      {
+       "horaLocal": 18.0,
+       "utc": "2026-11-15T21:10:27Z",
+       "tSuelo": 220.55,
+       "tAire": 225.14,
+       "presion": 845.15,
+       "flujoSolar": 0.0,
+       "viento": 7.24,
+       "vientoDesde": 86.9,
+       "polvo": 0.399
+      },
+      {
+       "horaLocal": 19.0,
+       "utc": "2026-11-15T22:12:06Z",
+       "tSuelo": 208.15,
+       "tAire": 214.72,
+       "presion": 854.53,
+       "flujoSolar": 0.0,
+       "viento": 12.59,
+       "vientoDesde": 106.2,
+       "polvo": 0.404
+      },
+      {
+       "horaLocal": 20.0,
+       "utc": "2026-11-15T23:13:45Z",
+       "tSuelo": 202.52,
+       "tAire": 209.69,
+       "presion": 864.26,
+       "flujoSolar": 0.0,
+       "viento": 13.92,
+       "vientoDesde": 113.8,
+       "polvo": 0.408
+      },
+      {
+       "horaLocal": 21.0,
+       "utc": "2026-11-16T00:15:24Z",
+       "tSuelo": 198.22,
+       "tAire": 205.83,
+       "presion": 874.09,
+       "flujoSolar": 0.0,
+       "viento": 14.59,
+       "vientoDesde": 120.4,
+       "polvo": 0.413
+      },
+      {
+       "horaLocal": 22.0,
+       "utc": "2026-11-16T01:17:02Z",
+       "tSuelo": 195.35,
+       "tAire": 202.62,
+       "presion": 878.36,
+       "flujoSolar": 0.0,
+       "viento": 14.99,
+       "vientoDesde": 124.8,
+       "polvo": 0.415
+      },
+      {
+       "horaLocal": 23.0,
+       "utc": "2026-11-16T02:18:41Z",
+       "tSuelo": 192.76,
+       "tAire": 199.52,
+       "presion": 881.58,
+       "flujoSolar": 0.0,
+       "viento": 15.42,
+       "vientoDesde": 128.7,
+       "polvo": 0.416
+      }
+     ]
+    },
+    "manana": {
+     "sol": 5076,
+     "inicioUtc": "2026-11-16T02:55:29Z",
+     "finUtc": "2026-11-17T03:35:05Z",
+     "ls": 22.762,
+     "distanciaSolUA": 1.6106,
+     "ecuacionTiempoH": -0.397,
+     "escenarioPolvo": 1,
+     "escenarioNombre": "climatología, sol medio",
+     "resumen": {
+      "tAireMin": 188.1,
+      "tAireMax": 241.81,
+      "tSueloMin": 182.71,
+      "tSueloMax": 271.44,
+      "presionMedia": 875.4,
+      "flujoSolarMax": 485.79,
+      "vientoMax": 15.43,
+      "polvo": 0.417
+     },
+     "horas": [
+      {
+       "horaLocal": 0.0,
+       "utc": "2026-11-16T03:19:57Z",
+       "tSuelo": 190.69,
+       "tAire": 197.19,
+       "presion": 888.11,
+       "flujoSolar": 0.0,
+       "viento": 15.12,
+       "vientoDesde": 133.4,
+       "polvo": 0.429
+      },
+      {
+       "horaLocal": 1.0,
+       "utc": "2026-11-16T04:21:36Z",
+       "tSuelo": 188.82,
+       "tAire": 195.1,
+       "presion": 894.64,
+       "flujoSolar": 0.0,
+       "viento": 14.75,
+       "vientoDesde": 138.6,
+       "polvo": 0.432
+      },
+      {
+       "horaLocal": 2.0,
+       "utc": "2026-11-16T05:23:15Z",
+       "tSuelo": 187.16,
+       "tAire": 193.12,
+       "presion": 896.65,
+       "flujoSolar": 0.0,
+       "viento": 14.81,
+       "vientoDesde": 140.6,
+       "polvo": 0.433
+      },
+      {
+       "horaLocal": 3.0,
+       "utc": "2026-11-16T06:24:54Z",
+       "tSuelo": 185.54,
+       "tAire": 191.15,
+       "presion": 897.79,
+       "flujoSolar": 0.0,
+       "viento": 14.96,
+       "vientoDesde": 142.0,
+       "polvo": 0.434
+      },
+      {
+       "horaLocal": 4.0,
+       "utc": "2026-11-16T07:26:33Z",
+       "tSuelo": 184.11,
+       "tAire": 189.59,
+       "presion": 897.17,
+       "flujoSolar": 0.0,
+       "viento": 15.18,
+       "vientoDesde": 141.6,
+       "polvo": 0.433
+      },
+      {
+       "horaLocal": 5.0,
+       "utc": "2026-11-16T08:28:12Z",
+       "tSuelo": 182.71,
+       "tAire": 188.1,
+       "presion": 896.23,
+       "flujoSolar": 0.0,
+       "viento": 15.4,
+       "vientoDesde": 141.0,
+       "polvo": 0.433
+      },
+      {
+       "horaLocal": 6.0,
+       "utc": "2026-11-16T09:29:51Z",
+       "tSuelo": 187.0,
+       "tAire": 189.66,
+       "presion": 897.81,
+       "flujoSolar": 0.0,
+       "viento": 14.6,
+       "vientoDesde": 143.1,
+       "polvo": 0.434
+      },
+      {
+       "horaLocal": 7.0,
+       "utc": "2026-11-16T10:31:30Z",
+       "tSuelo": 192.4,
+       "tAire": 191.82,
+       "presion": 899.88,
+       "flujoSolar": 94.21,
+       "viento": 13.64,
+       "vientoDesde": 146.1,
+       "polvo": 0.435
+      },
+      {
+       "horaLocal": 8.0,
+       "utc": "2026-11-16T11:33:09Z",
+       "tSuelo": 210.46,
+       "tAire": 202.69,
+       "presion": 898.45,
+       "flujoSolar": 215.15,
+       "viento": 10.74,
+       "vientoDesde": 158.4,
+       "polvo": 0.434
+      },
+      {
+       "horaLocal": 9.0,
+       "utc": "2026-11-16T12:34:48Z",
+       "tSuelo": 230.99,
+       "tAire": 215.34,
+       "presion": 896.34,
+       "flujoSolar": 326.54,
+       "viento": 9.54,
+       "vientoDesde": 169.0,
+       "polvo": 0.433
+      },
+      {
+       "horaLocal": 10.0,
+       "utc": "2026-11-16T13:36:27Z",
+       "tSuelo": 246.57,
+       "tAire": 223.37,
+       "presion": 885.08,
+       "flujoSolar": 411.89,
+       "viento": 6.66,
+       "vientoDesde": 179.8,
+       "polvo": 0.428
+      },
+      {
+       "horaLocal": 11.0,
+       "utc": "2026-11-16T14:38:06Z",
+       "tSuelo": 261.19,
+       "tAire": 230.61,
+       "presion": 872.17,
+       "flujoSolar": 468.27,
+       "viento": 4.16,
+       "vientoDesde": 183.8,
+       "polvo": 0.421
+      },
+      {
+       "horaLocal": 12.0,
+       "utc": "2026-11-16T15:39:45Z",
+       "tSuelo": 267.16,
+       "tAire": 235.29,
+       "presion": 863.32,
+       "flujoSolar": 485.79,
+       "viento": 1.96,
+       "vientoDesde": 187.7,
+       "polvo": 0.417
+      },
+      {
+       "horaLocal": 13.0,
+       "utc": "2026-11-16T16:41:24Z",
+       "tSuelo": 271.44,
+       "tAire": 239.43,
+       "presion": 855.42,
+       "flujoSolar": 468.55,
+       "viento": 0.04,
+       "vientoDesde": 293.1,
+       "polvo": 0.413
+      },
+      {
+       "horaLocal": 14.0,
+       "utc": "2026-11-16T17:43:03Z",
+       "tSuelo": 267.45,
+       "tAire": 240.9,
+       "presion": 848.73,
+       "flujoSolar": 413.0,
+       "viento": 1.81,
+       "vientoDesde": 9.3,
+       "polvo": 0.41
+      },
+      {
+       "horaLocal": 15.0,
+       "utc": "2026-11-16T18:44:42Z",
+       "tSuelo": 261.86,
+       "tAire": 241.81,
+       "presion": 842.31,
+       "flujoSolar": 327.61,
+       "viento": 3.57,
+       "vientoDesde": 10.7,
+       "polvo": 0.407
+      },
+      {
+       "horaLocal": 16.0,
+       "utc": "2026-11-16T19:46:21Z",
+       "tSuelo": 248.34,
+       "tAire": 238.51,
+       "presion": 839.93,
+       "flujoSolar": 218.26,
+       "viento": 4.49,
+       "vientoDesde": 35.1,
+       "polvo": 0.406
+      },
+      {
+       "horaLocal": 17.0,
+       "utc": "2026-11-16T20:48:00Z",
+       "tSuelo": 233.28,
+       "tAire": 234.41,
+       "presion": 838.32,
+       "flujoSolar": 93.3,
+       "viento": 4.75,
+       "vientoDesde": 43.6,
+       "polvo": 0.405
+      },
+      {
+       "horaLocal": 18.0,
+       "utc": "2026-11-16T21:49:39Z",
+       "tSuelo": 220.45,
+       "tAire": 225.04,
+       "presion": 845.84,
+       "flujoSolar": 0.0,
+       "viento": 7.25,
+       "vientoDesde": 87.2,
+       "polvo": 0.409
+      },
+      {
+       "horaLocal": 19.0,
+       "utc": "2026-11-16T22:51:18Z",
+       "tSuelo": 208.05,
+       "tAire": 214.63,
+       "presion": 855.17,
+       "flujoSolar": 0.0,
+       "viento": 12.61,
+       "vientoDesde": 106.3,
+       "polvo": 0.413
+      },
+      {
+       "horaLocal": 20.0,
+       "utc": "2026-11-16T23:52:57Z",
+       "tSuelo": 202.43,
+       "tAire": 209.6,
+       "presion": 864.84,
+       "flujoSolar": 0.0,
+       "viento": 13.95,
+       "vientoDesde": 113.9,
+       "polvo": 0.418
+      },
+      {
+       "horaLocal": 21.0,
+       "utc": "2026-11-17T00:54:36Z",
+       "tSuelo": 198.13,
+       "tAire": 205.74,
+       "presion": 874.61,
+       "flujoSolar": 0.0,
+       "viento": 14.63,
+       "vientoDesde": 120.4,
+       "polvo": 0.423
+      },
+      {
+       "horaLocal": 22.0,
+       "utc": "2026-11-17T01:56:15Z",
+       "tSuelo": 195.26,
+       "tAire": 202.53,
+       "presion": 878.89,
+       "flujoSolar": 0.0,
+       "viento": 15.02,
+       "vientoDesde": 124.8,
+       "polvo": 0.425
+      },
+      {
+       "horaLocal": 23.0,
+       "utc": "2026-11-17T02:57:54Z",
+       "tSuelo": 192.68,
+       "tAire": 199.44,
+       "presion": 882.14,
+       "flujoSolar": 0.0,
+       "viento": 15.43,
+       "vientoDesde": 128.7,
+       "polvo": 0.426
+      }
+     ]
+    },
+    "hoyPolvo": {
+     "sol": 5075,
+     "inicioUtc": "2026-11-15T02:15:54Z",
+     "finUtc": "2026-11-16T02:55:29Z",
+     "ls": 22.282,
+     "distanciaSolUA": 1.6096,
+     "ecuacionTiempoH": -0.403,
+     "escenarioPolvo": 7,
+     "escenarioNombre": "cálido (con polvo, sol máximo)",
+     "resumen": {
+      "tAireMin": 189.46,
+      "tAireMax": 243.18,
+      "tSueloMin": 184.56,
+      "tSueloMax": 269.13,
+      "presionMedia": 874.0,
+      "flujoSolarMax": 457.4,
+      "vientoMax": 14.54,
+      "polvo": 0.791
+     },
+     "horas": [
+      {
+       "horaLocal": 0.0,
+       "utc": "2026-11-15T02:40:45Z",
+       "tSuelo": 192.42,
+       "tAire": 198.6,
+       "presion": 892.27,
+       "flujoSolar": 0.0,
+       "viento": 14.1,
+       "vientoDesde": 135.2,
+       "polvo": 0.822
+      },
+      {
+       "horaLocal": 1.0,
+       "utc": "2026-11-15T03:42:24Z",
+       "tSuelo": 190.48,
+       "tAire": 196.44,
+       "presion": 897.5,
+       "flujoSolar": 0.0,
+       "viento": 13.79,
+       "vientoDesde": 141.0,
+       "polvo": 0.827
+      },
+      {
+       "horaLocal": 2.0,
+       "utc": "2026-11-15T04:44:03Z",
+       "tSuelo": 188.81,
+       "tAire": 194.4,
+       "presion": 897.47,
+       "flujoSolar": 0.0,
+       "viento": 13.91,
+       "vientoDesde": 142.7,
+       "polvo": 0.827
+      },
+      {
+       "horaLocal": 3.0,
+       "utc": "2026-11-15T05:45:42Z",
+       "tSuelo": 187.19,
+       "tAire": 192.39,
+       "presion": 896.43,
+       "flujoSolar": 0.0,
+       "viento": 14.1,
+       "vientoDesde": 143.6,
+       "polvo": 0.826
+      },
+      {
+       "horaLocal": 4.0,
+       "utc": "2026-11-15T06:47:21Z",
+       "tSuelo": 185.85,
+       "tAire": 190.87,
+       "presion": 894.87,
+       "flujoSolar": 0.0,
+       "viento": 14.32,
+       "vientoDesde": 142.9,
+       "polvo": 0.825
+      },
+      {
+       "horaLocal": 5.0,
+       "utc": "2026-11-15T07:49:00Z",
+       "tSuelo": 184.56,
+       "tAire": 189.46,
+       "presion": 893.21,
+       "flujoSolar": 0.0,
+       "viento": 14.54,
+       "vientoDesde": 142.0,
+       "polvo": 0.823
+      },
+      {
+       "horaLocal": 6.0,
+       "utc": "2026-11-15T08:50:39Z",
+       "tSuelo": 187.88,
+       "tAire": 190.6,
+       "presion": 895.72,
+       "flujoSolar": 0.0,
+       "viento": 14.0,
+       "vientoDesde": 143.2,
+       "polvo": 0.825
+      },
+      {
+       "horaLocal": 7.0,
+       "utc": "2026-11-15T09:52:18Z",
+       "tSuelo": 192.09,
+       "tAire": 192.25,
+       "presion": 899.04,
+       "flujoSolar": 75.84,
+       "viento": 13.32,
+       "vientoDesde": 144.9,
+       "polvo": 0.829
+      },
+      {
+       "horaLocal": 8.0,
+       "utc": "2026-11-15T10:53:57Z",
+       "tSuelo": 208.8,
+       "tAire": 202.31,
+       "presion": 897.78,
+       "flujoSolar": 188.81,
+       "viento": 9.63,
+       "vientoDesde": 164.2,
+       "polvo": 0.827
+      },
+      {
+       "horaLocal": 9.0,
+       "utc": "2026-11-15T11:55:36Z",
+       "tSuelo": 227.94,
+       "tAire": 214.06,
+       "presion": 895.63,
+       "flujoSolar": 296.06,
+       "viento": 9.82,
+       "vientoDesde": 168.6,
+       "polvo": 0.825
+      },
+      {
+       "horaLocal": 10.0,
+       "utc": "2026-11-15T12:57:15Z",
+       "tSuelo": 243.53,
+       "tAire": 222.59,
+       "presion": 883.12,
+       "flujoSolar": 381.32,
+       "viento": 6.94,
+       "vientoDesde": 182.3,
+       "polvo": 0.814
+      },
+      {
+       "horaLocal": 11.0,
+       "utc": "2026-11-15T13:58:54Z",
+       "tSuelo": 258.42,
+       "tAire": 230.6,
+       "presion": 868.75,
+       "flujoSolar": 440.22,
+       "viento": 4.64,
+       "vientoDesde": 191.5,
+       "polvo": 0.801
+      },
+      {
+       "horaLocal": 12.0,
+       "utc": "2026-11-15T15:00:33Z",
+       "tSuelo": 264.62,
+       "tAire": 235.92,
+       "presion": 858.45,
+       "flujoSolar": 457.4,
+       "viento": 2.38,
+       "vientoDesde": 211.7,
+       "polvo": 0.791
+      },
+      {
+       "horaLocal": 13.0,
+       "utc": "2026-11-15T16:02:12Z",
+       "tSuelo": 269.13,
+       "tAire": 240.66,
+       "presion": 849.13,
+       "flujoSolar": 440.9,
+       "viento": 1.32,
+       "vientoDesde": 282.2,
+       "polvo": 0.783
+      },
+      {
+       "horaLocal": 14.0,
+       "utc": "2026-11-15T17:03:51Z",
+       "tSuelo": 265.03,
+       "tAire": 242.25,
+       "presion": 841.12,
+       "flujoSolar": 383.76,
+       "viento": 2.69,
+       "vientoDesde": 333.2,
+       "polvo": 0.775
+      },
+      {
+       "horaLocal": 15.0,
+       "utc": "2026-11-15T18:05:30Z",
+       "tSuelo": 259.25,
+       "tAire": 243.18,
+       "presion": 833.41,
+       "flujoSolar": 297.91,
+       "viento": 4.66,
+       "vientoDesde": 345.4,
+       "polvo": 0.768
+      },
+      {
+       "horaLocal": 16.0,
+       "utc": "2026-11-15T19:07:09Z",
+       "tSuelo": 245.95,
+       "tAire": 239.0,
+       "presion": 832.1,
+       "flujoSolar": 193.91,
+       "viento": 4.27,
+       "vientoDesde": 13.9,
+       "polvo": 0.767
+      },
+      {
+       "horaLocal": 17.0,
+       "utc": "2026-11-15T20:08:48Z",
+       "tSuelo": 231.18,
+       "tAire": 233.87,
+       "presion": 832.02,
+       "flujoSolar": 76.68,
+       "viento": 4.3,
+       "vientoDesde": 39.2,
+       "polvo": 0.767
+      },
+      {
+       "horaLocal": 18.0,
+       "utc": "2026-11-15T21:10:27Z",
+       "tSuelo": 219.69,
+       "tAire": 225.04,
+       "presion": 843.5,
+       "flujoSolar": 0.0,
+       "viento": 6.76,
+       "vientoDesde": 88.0,
+       "polvo": 0.777
+      },
+      {
+       "horaLocal": 19.0,
+       "utc": "2026-11-15T22:12:06Z",
+       "tSuelo": 208.83,
+       "tAire": 215.48,
+       "presion": 857.25,
+       "flujoSolar": 0.0,
+       "viento": 12.03,
+       "vientoDesde": 107.1,
+       "polvo": 0.79
+      },
+      {
+       "horaLocal": 20.0,
+       "utc": "2026-11-15T23:13:45Z",
+       "tSuelo": 203.77,
+       "tAire": 210.55,
+       "presion": 867.87,
+       "flujoSolar": 0.0,
+       "viento": 13.37,
+       "vientoDesde": 114.9,
+       "polvo": 0.8
+      },
+      {
+       "horaLocal": 21.0,
+       "utc": "2026-11-16T00:15:24Z",
+       "tSuelo": 199.83,
+       "tAire": 206.77,
+       "presion": 877.92,
+       "flujoSolar": 0.0,
+       "viento": 14.07,
+       "vientoDesde": 121.7,
+       "polvo": 0.809
+      },
+      {
+       "horaLocal": 22.0,
+       "utc": "2026-11-16T01:17:02Z",
+       "tSuelo": 197.04,
+       "tAire": 203.75,
+       "presion": 883.04,
+       "flujoSolar": 0.0,
+       "viento": 14.26,
+       "vientoDesde": 126.1,
+       "polvo": 0.814
+      },
+      {
+       "horaLocal": 23.0,
+       "utc": "2026-11-16T02:18:41Z",
+       "tSuelo": 194.46,
+       "tAire": 200.88,
+       "presion": 887.24,
+       "flujoSolar": 0.0,
+       "viento": 14.42,
+       "vientoDesde": 130.0,
+       "polvo": 0.818
+      }
+     ]
+    }
+   }
+  ]
+ },
+ "rad": {
+  "ultimaLectura": "2026-11-14T17:20:25Z",
+  "ultimaDosisE": 188.15811,
+  "ultimaDosisB": 131.2193,
+  "retrasoHoras": 21.0,
+  "ultimas24h": {
+   "media": 185.8,
+   "min": 178.08,
+   "max": 200.8,
+   "n": 84
+  },
+  "previas24h": {
+   "media": 188.36,
+   "min": 181.18,
+   "max": 195.36,
+   "n": 82
+  },
+  "tendencia": -2.56,
+  "lecturas": [
+   {
+    "utc": "2026-11-12T17:33:34Z",
+    "dosisE": 188.91022,
+    "dosisB": 132.12627,
+    "dosisBBruta": 189.06642
+   },
+   {
+    "utc": "2026-11-12T17:50:39Z",
+    "dosisE": 190.04381,
+    "dosisB": 135.94427,
+    "dosisBBruta": 192.88441
+   },
+   {
+    "utc": "2026-11-12T18:07:43Z",
+    "dosisE": 192.00327,
+    "dosisB": 126.17546,
+    "dosisBBruta": 183.11562
+   },
+   {
+    "utc": "2026-11-12T18:24:49Z",
+    "dosisE": 190.20186,
+    "dosisB": 135.98608,
+    "dosisBBruta": 192.92624
+   },
+   {
+    "utc": "2026-11-12T18:41:55Z",
+    "dosisE": 193.19629,
+    "dosisB": 123.18078,
+    "dosisBBruta": 180.12093
+   },
+   {
+    "utc": "2026-11-12T18:58:58Z",
+    "dosisE": 189.75314,
+    "dosisB": 135.75424,
+    "dosisBBruta": 192.6944
+   },
+   {
+    "utc": "2026-11-12T19:16:03Z",
+    "dosisE": 192.70203,
+    "dosisB": 120.1793,
+    "dosisBBruta": 177.11945
+   },
+   {
+    "utc": "2026-11-12T19:33:08Z",
+    "dosisE": 192.01619,
+    "dosisB": 131.35367,
+    "dosisBBruta": 188.29382
+   },
+   {
+    "utc": "2026-11-12T19:50:13Z",
+    "dosisE": 186.28311,
+    "dosisB": 130.02217,
+    "dosisBBruta": 186.96233
+   },
+   {
+    "utc": "2026-11-12T20:07:19Z",
+    "dosisE": 191.38068,
+    "dosisB": 132.31056,
+    "dosisBBruta": 189.25072
+   },
+   {
+    "utc": "2026-11-12T20:24:25Z",
+    "dosisE": 185.83432,
+    "dosisB": 144.62984,
+    "dosisBBruta": 201.56999
+   },
+   {
+    "utc": "2026-11-12T20:41:27Z",
+    "dosisE": 191.43759,
+    "dosisB": 122.95825,
+    "dosisBBruta": 179.8984
+   },
+   {
+    "utc": "2026-11-12T20:58:33Z",
+    "dosisE": 187.55305,
+    "dosisB": 121.62971,
+    "dosisBBruta": 178.56985
+   },
+   {
+    "utc": "2026-11-12T21:15:39Z",
+    "dosisE": 187.5571,
+    "dosisB": 128.44164,
+    "dosisBBruta": 185.38179
+   },
+   {
+    "utc": "2026-11-12T21:32:42Z",
+    "dosisE": 191.90895,
+    "dosisB": 127.165695,
+    "dosisBBruta": 184.10585
+   },
+   {
+    "utc": "2026-11-12T21:49:48Z",
+    "dosisE": 190.01979,
+    "dosisB": 139.30568,
+    "dosisBBruta": 196.24582
+   },
+   {
+    "utc": "2026-11-12T22:06:54Z",
+    "dosisE": 184.54291,
+    "dosisB": 119.383026,
+    "dosisBBruta": 176.32318
+   },
+   {
+    "utc": "2026-11-12T22:24:00Z",
+    "dosisE": 189.32747,
+    "dosisB": 136.67566,
+    "dosisBBruta": 193.61581
+   },
+   {
+    "utc": "2026-11-12T22:41:01Z",
+    "dosisE": 190.29478,
+    "dosisB": 147.36938,
+    "dosisBBruta": 204.30954
+   },
+   {
+    "utc": "2026-11-12T22:58:07Z",
+    "dosisE": 185.25206,
+    "dosisB": 130.61288,
+    "dosisBBruta": 187.55302
+   },
+   {
+    "utc": "2026-11-12T23:15:13Z",
+    "dosisE": 185.7284,
+    "dosisB": 135.70021,
+    "dosisBBruta": 192.64035
+   },
+   {
+    "utc": "2026-11-12T23:32:15Z",
+    "dosisE": 186.80562,
+    "dosisB": 127.77528,
+    "dosisBBruta": 184.71544
+   },
+   {
+    "utc": "2026-11-12T23:49:21Z",
+    "dosisE": 186.02037,
+    "dosisB": 127.958176,
+    "dosisBBruta": 184.89833
+   },
+   {
+    "utc": "2026-11-13T00:06:27Z",
+    "dosisE": 185.69061,
+    "dosisB": 116.6198,
+    "dosisBBruta": 173.55995
+   },
+   {
+    "utc": "2026-11-13T00:23:33Z",
+    "dosisE": 187.23186,
+    "dosisB": 124.63626,
+    "dosisBBruta": 181.57642
+   },
+   {
+    "utc": "2026-11-13T00:40:39Z",
+    "dosisE": 189.57652,
+    "dosisB": 132.21739,
+    "dosisBBruta": 189.15755
+   },
+   {
+    "utc": "2026-11-13T00:57:45Z",
+    "dosisE": 181.44432,
+    "dosisB": 127.65707,
+    "dosisBBruta": 184.5954
+   },
+   {
+    "utc": "2026-11-13T01:14:51Z",
+    "dosisE": 184.75131,
+    "dosisB": 126.5973,
+    "dosisBBruta": 183.53561
+   },
+   {
+    "utc": "2026-11-13T01:31:57Z",
+    "dosisE": 184.26761,
+    "dosisB": 133.75475,
+    "dosisBBruta": 190.69307
+   },
+   {
+    "utc": "2026-11-13T01:49:03Z",
+    "dosisE": 188.94481,
+    "dosisB": 134.04175,
+    "dosisBBruta": 190.98007
+   },
+   {
+    "utc": "2026-11-13T02:06:09Z",
+    "dosisE": 186.72832,
+    "dosisB": 117.44013,
+    "dosisBBruta": 174.37845
+   },
+   {
+    "utc": "2026-11-13T02:23:15Z",
+    "dosisE": 186.61488,
+    "dosisB": 130.8876,
+    "dosisBBruta": 187.82593
+   },
+   {
+    "utc": "2026-11-13T02:40:21Z",
+    "dosisE": 184.95515,
+    "dosisB": 129.46823,
+    "dosisBBruta": 186.40656
+   },
+   {
+    "utc": "2026-11-13T03:15:42Z",
+    "dosisE": 187.81418,
+    "dosisB": 159.92407,
+    "dosisBBruta": 216.8624
+   },
+   {
+    "utc": "2026-11-13T03:32:47Z",
+    "dosisE": 186.6724,
+    "dosisB": 129.73088,
+    "dosisBBruta": 186.6692
+   },
+   {
+    "utc": "2026-11-13T03:49:53Z",
+    "dosisE": 186.33835,
+    "dosisB": 142.1841,
+    "dosisBBruta": 199.12242
+   },
+   {
+    "utc": "2026-11-13T04:06:59Z",
+    "dosisE": 188.52376,
+    "dosisB": 129.12137,
+    "dosisBBruta": 186.0597
+   },
+   {
+    "utc": "2026-11-13T04:24:05Z",
+    "dosisE": 188.8484,
+    "dosisB": 128.89278,
+    "dosisBBruta": 185.83112
+   },
+   {
+    "utc": "2026-11-13T04:41:11Z",
+    "dosisE": 188.52882,
+    "dosisB": 130.67897,
+    "dosisBBruta": 187.6173
+   },
+   {
+    "utc": "2026-11-13T04:58:17Z",
+    "dosisE": 190.25926,
+    "dosisB": 141.24797,
+    "dosisBBruta": 198.18631
+   },
+   {
+    "utc": "2026-11-13T05:15:23Z",
+    "dosisE": 184.0733,
+    "dosisB": 143.97055,
+    "dosisBBruta": 200.90887
+   },
+   {
+    "utc": "2026-11-13T05:32:29Z",
+    "dosisE": 194.41121,
+    "dosisB": 127.57985,
+    "dosisBBruta": 184.51817
+   },
+   {
+    "utc": "2026-11-13T05:49:35Z",
+    "dosisE": 185.65828,
+    "dosisB": 131.2851,
+    "dosisBBruta": 188.22342
+   },
+   {
+    "utc": "2026-11-13T06:06:41Z",
+    "dosisE": 184.38884,
+    "dosisB": 125.90475,
+    "dosisBBruta": 182.84308
+   },
+   {
+    "utc": "2026-11-13T06:23:47Z",
+    "dosisE": 182.79459,
+    "dosisB": 155.35063,
+    "dosisBBruta": 212.28896
+   },
+   {
+    "utc": "2026-11-13T06:40:53Z",
+    "dosisE": 185.73303,
+    "dosisB": 117.84239,
+    "dosisBBruta": 174.78072
+   },
+   {
+    "utc": "2026-11-13T06:57:59Z",
+    "dosisE": 190.0613,
+    "dosisB": 132.00093,
+    "dosisBBruta": 188.93925
+   },
+   {
+    "utc": "2026-11-13T07:15:05Z",
+    "dosisE": 190.13115,
+    "dosisB": 131.02707,
+    "dosisBBruta": 187.9654
+   },
+   {
+    "utc": "2026-11-13T07:32:11Z",
+    "dosisE": 183.22601,
+    "dosisB": 143.50423,
+    "dosisBBruta": 200.44255
+   },
+   {
+    "utc": "2026-11-13T07:49:17Z",
+    "dosisE": 186.65973,
+    "dosisB": 129.1989,
+    "dosisBBruta": 186.13722
+   },
+   {
+    "utc": "2026-11-13T08:06:23Z",
+    "dosisE": 190.4401,
+    "dosisB": 128.68138,
+    "dosisBBruta": 185.6197
+   },
+   {
+    "utc": "2026-11-13T08:23:29Z",
+    "dosisE": 187.07733,
+    "dosisB": 146.61296,
+    "dosisBBruta": 203.55128
+   },
+   {
+    "utc": "2026-11-13T08:40:35Z",
+    "dosisE": 189.81691,
+    "dosisB": 135.75957,
+    "dosisBBruta": 192.69789
+   },
+   {
+    "utc": "2026-11-13T08:57:41Z",
+    "dosisE": 189.04198,
+    "dosisB": 115.47497,
+    "dosisBBruta": 172.4133
+   },
+   {
+    "utc": "2026-11-13T09:14:47Z",
+    "dosisE": 181.17754,
+    "dosisB": 127.01858,
+    "dosisBBruta": 183.95691
+   },
+   {
+    "utc": "2026-11-13T09:31:53Z",
+    "dosisE": 184.28026,
+    "dosisB": 125.10667,
+    "dosisBBruta": 182.045
+   },
+   {
+    "utc": "2026-11-13T09:48:59Z",
+    "dosisE": 187.38559,
+    "dosisB": 129.6735,
+    "dosisBBruta": 186.61182
+   },
+   {
+    "utc": "2026-11-13T10:06:05Z",
+    "dosisE": 186.27995,
+    "dosisB": 140.87366,
+    "dosisBBruta": 197.812
+   },
+   {
+    "utc": "2026-11-13T10:23:11Z",
+    "dosisE": 187.09431,
+    "dosisB": 125.36276,
+    "dosisBBruta": 182.30109
+   },
+   {
+    "utc": "2026-11-13T10:40:17Z",
+    "dosisE": 186.18665,
+    "dosisB": 140.5861,
+    "dosisBBruta": 197.52443
+   },
+   {
+    "utc": "2026-11-13T10:57:23Z",
+    "dosisE": 188.39612,
+    "dosisB": 128.30417,
+    "dosisBBruta": 185.2425
+   },
+   {
+    "utc": "2026-11-13T11:14:29Z",
+    "dosisE": 187.2544,
+    "dosisB": 124.638756,
+    "dosisBBruta": 181.57709
+   },
+   {
+    "utc": "2026-11-13T11:31:08Z",
+    "dosisE": 187.8494,
+    "dosisB": 138.02412,
+    "dosisBBruta": 194.96245
+   },
+   {
+    "utc": "2026-11-13T11:48:13Z",
+    "dosisE": 192.1597,
+    "dosisB": 138.97816,
+    "dosisBBruta": 195.91649
+   },
+   {
+    "utc": "2026-11-13T12:05:18Z",
+    "dosisE": 191.07639,
+    "dosisB": 124.13989,
+    "dosisBBruta": 181.07822
+   },
+   {
+    "utc": "2026-11-13T12:22:23Z",
+    "dosisE": 187.94159,
+    "dosisB": 129.23793,
+    "dosisBBruta": 186.17627
+   },
+   {
+    "utc": "2026-11-13T12:39:27Z",
+    "dosisE": 191.48422,
+    "dosisB": 136.08665,
+    "dosisBBruta": 193.02498
+   },
+   {
+    "utc": "2026-11-13T12:56:33Z",
+    "dosisE": 186.75208,
+    "dosisB": 130.69363,
+    "dosisBBruta": 187.63197
+   },
+   {
+    "utc": "2026-11-13T13:13:39Z",
+    "dosisE": 192.05711,
+    "dosisB": 135.65536,
+    "dosisBBruta": 192.59369
+   },
+   {
+    "utc": "2026-11-13T13:30:45Z",
+    "dosisE": 187.7181,
+    "dosisB": 123.37441,
+    "dosisBBruta": 180.31273
+   },
+   {
+    "utc": "2026-11-13T13:47:51Z",
+    "dosisE": 189.27586,
+    "dosisB": 123.72949,
+    "dosisBBruta": 180.66782
+   },
+   {
+    "utc": "2026-11-13T14:04:57Z",
+    "dosisE": 190.15727,
+    "dosisB": 130.54507,
+    "dosisBBruta": 187.4834
+   },
+   {
+    "utc": "2026-11-13T14:22:03Z",
+    "dosisE": 195.3572,
+    "dosisB": 133.00946,
+    "dosisBBruta": 189.94778
+   },
+   {
+    "utc": "2026-11-13T14:39:09Z",
+    "dosisE": 188.22026,
+    "dosisB": 128.9418,
+    "dosisBBruta": 185.88014
+   },
+   {
+    "utc": "2026-11-13T14:56:06Z",
+    "dosisE": 190.24089,
+    "dosisB": 131.84988,
+    "dosisBBruta": 188.78821
+   },
+   {
+    "utc": "2026-11-13T15:13:11Z",
+    "dosisE": 184.99567,
+    "dosisB": 144.5635,
+    "dosisBBruta": 201.50183
+   },
+   {
+    "utc": "2026-11-13T15:30:15Z",
+    "dosisE": 194.31477,
+    "dosisB": 138.40517,
+    "dosisBBruta": 195.34349
+   },
+   {
+    "utc": "2026-11-13T15:47:20Z",
+    "dosisE": 188.38599,
+    "dosisB": 123.61272,
+    "dosisBBruta": 180.55104
+   },
+   {
+    "utc": "2026-11-13T16:04:26Z",
+    "dosisE": 191.65196,
+    "dosisB": 121.57011,
+    "dosisBBruta": 178.50844
+   },
+   {
+    "utc": "2026-11-13T16:21:32Z",
+    "dosisE": 192.22998,
+    "dosisB": 121.82519,
+    "dosisBBruta": 178.76352
+   },
+   {
+    "utc": "2026-11-13T16:38:38Z",
+    "dosisE": 192.08873,
+    "dosisB": 128.7553,
+    "dosisBBruta": 185.69362
+   },
+   {
+    "utc": "2026-11-13T17:14:00Z",
+    "dosisE": 193.6815,
+    "dosisB": 130.95233,
+    "dosisBBruta": 187.89066
+   },
+   {
+    "utc": "2026-11-13T17:31:05Z",
+    "dosisE": 200.79668,
+    "dosisB": 148.84439,
+    "dosisBBruta": 205.78271
+   },
+   {
+    "utc": "2026-11-13T17:48:11Z",
+    "dosisE": 191.7854,
+    "dosisB": 135.0932,
+    "dosisBBruta": 192.03152
+   },
+   {
+    "utc": "2026-11-13T18:05:17Z",
+    "dosisE": 192.102,
+    "dosisB": 122.71873,
+    "dosisBBruta": 179.65706
+   },
+   {
+    "utc": "2026-11-13T18:22:23Z",
+    "dosisE": 186.8986,
+    "dosisB": 131.33537,
+    "dosisBBruta": 188.2737
+   },
+   {
+    "utc": "2026-11-13T18:39:29Z",
+    "dosisE": 189.85075,
+    "dosisB": 144.73401,
+    "dosisBBruta": 201.67233
+   },
+   {
+    "utc": "2026-11-13T18:56:35Z",
+    "dosisE": 189.21971,
+    "dosisB": 142.79207,
+    "dosisBBruta": 199.7304
+   },
+   {
+    "utc": "2026-11-13T19:13:41Z",
+    "dosisE": 192.93658,
+    "dosisB": 134.598,
+    "dosisBBruta": 191.53635
+   },
+   {
+    "utc": "2026-11-13T19:30:47Z",
+    "dosisE": 185.06833,
+    "dosisB": 141.2446,
+    "dosisBBruta": 198.18292
+   },
+   {
+    "utc": "2026-11-13T19:47:53Z",
+    "dosisE": 188.02187,
+    "dosisB": 126.229225,
+    "dosisBBruta": 183.16756
+   },
+   {
+    "utc": "2026-11-13T20:04:59Z",
+    "dosisE": 190.23988,
+    "dosisB": 133.50288,
+    "dosisBBruta": 190.44121
+   },
+   {
+    "utc": "2026-11-13T20:22:05Z",
+    "dosisE": 186.66446,
+    "dosisB": 128.22722,
+    "dosisBBruta": 185.16554
+   },
+   {
+    "utc": "2026-11-13T20:39:11Z",
+    "dosisE": 190.89297,
+    "dosisB": 135.27567,
+    "dosisBBruta": 192.21399
+   },
+   {
+    "utc": "2026-11-13T20:56:17Z",
+    "dosisE": 190.04167,
+    "dosisB": 130.91359,
+    "dosisBBruta": 187.85191
+   },
+   {
+    "utc": "2026-11-13T21:13:23Z",
+    "dosisE": 190.94873,
+    "dosisB": 126.75653,
+    "dosisBBruta": 183.69485
+   },
+   {
+    "utc": "2026-11-13T21:30:29Z",
+    "dosisE": 186.51299,
+    "dosisB": 133.29716,
+    "dosisBBruta": 190.23549
+   },
+   {
+    "utc": "2026-11-13T21:47:35Z",
+    "dosisE": 185.83206,
+    "dosisB": 129.08209,
+    "dosisBBruta": 186.02042
+   },
+   {
+    "utc": "2026-11-13T22:04:41Z",
+    "dosisE": 184.53561,
+    "dosisB": 151.14058,
+    "dosisBBruta": 208.0789
+   },
+   {
+    "utc": "2026-11-13T22:21:47Z",
+    "dosisE": 185.52763,
+    "dosisB": 132.14407,
+    "dosisBBruta": 189.0824
+   },
+   {
+    "utc": "2026-11-13T22:38:53Z",
+    "dosisE": 185.40834,
+    "dosisB": 133.54811,
+    "dosisBBruta": 190.48643
+   },
+   {
+    "utc": "2026-11-13T22:55:59Z",
+    "dosisE": 186.53452,
+    "dosisB": 118.84519,
+    "dosisBBruta": 175.78352
+   },
+   {
+    "utc": "2026-11-13T23:13:05Z",
+    "dosisE": 184.40123,
+    "dosisB": 128.4154,
+    "dosisBBruta": 185.35373
+   },
+   {
+    "utc": "2026-11-13T23:30:11Z",
+    "dosisE": 183.6813,
+    "dosisB": 127.10863,
+    "dosisBBruta": 184.04695
+   },
+   {
+    "utc": "2026-11-13T23:47:17Z",
+    "dosisE": 184.71568,
+    "dosisB": 141.67763,
+    "dosisBBruta": 198.61595
+   },
+   {
+    "utc": "2026-11-14T00:04:23Z",
+    "dosisE": 183.95291,
+    "dosisB": 128.2922,
+    "dosisBBruta": 185.23053
+   },
+   {
+    "utc": "2026-11-14T00:21:30Z",
+    "dosisE": 185.09233,
+    "dosisB": 123.81647,
+    "dosisBBruta": 180.75479
+   },
+   {
+    "utc": "2026-11-14T00:38:36Z",
+    "dosisE": 189.5504,
+    "dosisB": 131.2393,
+    "dosisBBruta": 188.17763
+   },
+   {
+    "utc": "2026-11-14T00:55:42Z",
+    "dosisE": 188.357,
+    "dosisB": 142.22372,
+    "dosisBBruta": 199.16205
+   },
+   {
+    "utc": "2026-11-14T01:12:48Z",
+    "dosisE": 184.27458,
+    "dosisB": 142.19481,
+    "dosisBBruta": 199.13313
+   },
+   {
+    "utc": "2026-11-14T01:29:54Z",
+    "dosisE": 185.14963,
+    "dosisB": 120.55013,
+    "dosisBBruta": 177.48846
+   },
+   {
+    "utc": "2026-11-14T01:47:00Z",
+    "dosisE": 183.62238,
+    "dosisB": 126.22563,
+    "dosisBBruta": 183.16212
+   },
+   {
+    "utc": "2026-11-14T02:04:06Z",
+    "dosisE": 188.84752,
+    "dosisB": 135.60094,
+    "dosisBBruta": 192.53745
+   },
+   {
+    "utc": "2026-11-14T02:21:12Z",
+    "dosisE": 180.71266,
+    "dosisB": 127.661026,
+    "dosisBBruta": 184.59752
+   },
+   {
+    "utc": "2026-11-14T02:38:18Z",
+    "dosisE": 185.7324,
+    "dosisB": 127.919525,
+    "dosisBBruta": 184.85602
+   },
+   {
+    "utc": "2026-11-14T02:55:24Z",
+    "dosisE": 180.11253,
+    "dosisB": 123.40278,
+    "dosisBBruta": 180.33928
+   },
+   {
+    "utc": "2026-11-14T03:12:30Z",
+    "dosisE": 190.32289,
+    "dosisB": 137.07224,
+    "dosisBBruta": 194.00874
+   },
+   {
+    "utc": "2026-11-14T03:29:36Z",
+    "dosisE": 181.42906,
+    "dosisB": 126.36338,
+    "dosisBBruta": 183.29988
+   },
+   {
+    "utc": "2026-11-14T03:46:42Z",
+    "dosisE": 184.27794,
+    "dosisB": 135.557,
+    "dosisBBruta": 192.49352
+   },
+   {
+    "utc": "2026-11-14T04:03:48Z",
+    "dosisE": 184.081,
+    "dosisB": 134.14314,
+    "dosisBBruta": 191.07964
+   },
+   {
+    "utc": "2026-11-14T04:20:54Z",
+    "dosisE": 191.25482,
+    "dosisB": 130.048,
+    "dosisBBruta": 186.9845
+   },
+   {
+    "utc": "2026-11-14T04:38:00Z",
+    "dosisE": 185.88214,
+    "dosisB": 135.9508,
+    "dosisBBruta": 192.88731
+   },
+   {
+    "utc": "2026-11-14T05:05:44Z",
+    "dosisE": 182.5647,
+    "dosisB": 129.93434,
+    "dosisBBruta": 186.87085
+   },
+   {
+    "utc": "2026-11-14T05:22:50Z",
+    "dosisE": 185.87221,
+    "dosisB": 124.8235,
+    "dosisBBruta": 181.76
+   },
+   {
+    "utc": "2026-11-14T05:39:56Z",
+    "dosisE": 182.68938,
+    "dosisB": 119.8245,
+    "dosisBBruta": 176.761
+   },
+   {
+    "utc": "2026-11-14T05:57:02Z",
+    "dosisE": 183.18195,
+    "dosisB": 136.15701,
+    "dosisBBruta": 193.0935
+   },
+   {
+    "utc": "2026-11-14T06:14:08Z",
+    "dosisE": 178.08212,
+    "dosisB": 123.62012,
+    "dosisBBruta": 180.55663
+   },
+   {
+    "utc": "2026-11-14T06:31:14Z",
+    "dosisE": 184.7314,
+    "dosisB": 126.760216,
+    "dosisBBruta": 183.69672
+   },
+   {
+    "utc": "2026-11-14T06:48:20Z",
+    "dosisE": 186.88826,
+    "dosisB": 121.98953,
+    "dosisBBruta": 178.92603
+   },
+   {
+    "utc": "2026-11-14T07:05:26Z",
+    "dosisE": 189.43437,
+    "dosisB": 132.47076,
+    "dosisBBruta": 189.40727
+   },
+   {
+    "utc": "2026-11-14T07:22:32Z",
+    "dosisE": 185.5276,
+    "dosisB": 115.05798,
+    "dosisBBruta": 171.99448
+   },
+   {
+    "utc": "2026-11-14T07:39:38Z",
+    "dosisE": 185.14455,
+    "dosisB": 137.62148,
+    "dosisBBruta": 194.55797
+   },
+   {
+    "utc": "2026-11-14T07:56:44Z",
+    "dosisE": 182.38399,
+    "dosisB": 131.10823,
+    "dosisBBruta": 188.04474
+   },
+   {
+    "utc": "2026-11-14T08:13:50Z",
+    "dosisE": 183.37724,
+    "dosisB": 126.475334,
+    "dosisBBruta": 183.41183
+   },
+   {
+    "utc": "2026-11-14T08:30:56Z",
+    "dosisE": 179.55782,
+    "dosisB": 141.57675,
+    "dosisBBruta": 198.51326
+   },
+   {
+    "utc": "2026-11-14T08:48:02Z",
+    "dosisE": 186.78714,
+    "dosisB": 128.24829,
+    "dosisBBruta": 185.18478
+   },
+   {
+    "utc": "2026-11-14T09:05:08Z",
+    "dosisE": 186.16988,
+    "dosisB": 134.58324,
+    "dosisBBruta": 191.51974
+   },
+   {
+    "utc": "2026-11-14T09:22:14Z",
+    "dosisE": 179.99968,
+    "dosisB": 122.4045,
+    "dosisBBruta": 179.341
+   },
+   {
+    "utc": "2026-11-14T09:39:20Z",
+    "dosisE": 181.72726,
+    "dosisB": 134.94383,
+    "dosisBBruta": 191.88033
+   },
+   {
+    "utc": "2026-11-14T09:56:26Z",
+    "dosisE": 186.4927,
+    "dosisB": 150.3927,
+    "dosisBBruta": 207.3292
+   },
+   {
+    "utc": "2026-11-14T10:13:32Z",
+    "dosisE": 185.52232,
+    "dosisB": 141.4586,
+    "dosisBBruta": 198.3951
+   },
+   {
+    "utc": "2026-11-14T10:30:38Z",
+    "dosisE": 182.82295,
+    "dosisB": 131.19875,
+    "dosisBBruta": 188.13525
+   },
+   {
+    "utc": "2026-11-14T10:47:44Z",
+    "dosisE": 183.99461,
+    "dosisB": 123.64768,
+    "dosisBBruta": 180.58418
+   },
+   {
+    "utc": "2026-11-14T11:04:50Z",
+    "dosisE": 184.45235,
+    "dosisB": 120.20806,
+    "dosisBBruta": 177.14456
+   },
+   {
+    "utc": "2026-11-14T11:21:56Z",
+    "dosisE": 182.75261,
+    "dosisB": 134.71037,
+    "dosisBBruta": 191.64688
+   },
+   {
+    "utc": "2026-11-14T11:39:02Z",
+    "dosisE": 187.94765,
+    "dosisB": 139.948,
+    "dosisBBruta": 196.88449
+   },
+   {
+    "utc": "2026-11-14T11:56:08Z",
+    "dosisE": 182.97426,
+    "dosisB": 121.915,
+    "dosisBBruta": 178.8515
+   },
+   {
+    "utc": "2026-11-14T12:12:49Z",
+    "dosisE": 181.31046,
+    "dosisB": 138.47266,
+    "dosisBBruta": 195.40915
+   },
+   {
+    "utc": "2026-11-14T12:29:54Z",
+    "dosisE": 181.75702,
+    "dosisB": 129.79706,
+    "dosisBBruta": 186.73355
+   },
+   {
+    "utc": "2026-11-14T12:46:59Z",
+    "dosisE": 182.73883,
+    "dosisB": 118.502304,
+    "dosisBBruta": 175.43881
+   },
+   {
+    "utc": "2026-11-14T13:04:04Z",
+    "dosisE": 181.73534,
+    "dosisB": 133.80978,
+    "dosisBBruta": 190.74628
+   },
+   {
+    "utc": "2026-11-14T13:21:08Z",
+    "dosisE": 183.60274,
+    "dosisB": 143.25838,
+    "dosisBBruta": 200.19487
+   },
+   {
+    "utc": "2026-11-14T13:38:13Z",
+    "dosisE": 183.71124,
+    "dosisB": 124.80572,
+    "dosisBBruta": 181.74222
+   },
+   {
+    "utc": "2026-11-14T13:55:18Z",
+    "dosisE": 185.33215,
+    "dosisB": 150.06927,
+    "dosisBBruta": 207.00578
+   },
+   {
+    "utc": "2026-11-14T14:12:23Z",
+    "dosisE": 181.63171,
+    "dosisB": 134.14272,
+    "dosisBBruta": 191.07922
+   },
+   {
+    "utc": "2026-11-14T14:29:28Z",
+    "dosisE": 186.44884,
+    "dosisB": 124.55732,
+    "dosisBBruta": 181.49382
+   },
+   {
+    "utc": "2026-11-14T14:46:32Z",
+    "dosisE": 184.75685,
+    "dosisB": 128.05383,
+    "dosisBBruta": 184.99034
+   },
+   {
+    "utc": "2026-11-14T15:03:37Z",
+    "dosisE": 193.28447,
+    "dosisB": 134.28694,
+    "dosisBBruta": 191.22345
+   },
+   {
+    "utc": "2026-11-14T15:20:43Z",
+    "dosisE": 186.55177,
+    "dosisB": 122.907455,
+    "dosisBBruta": 179.84396
+   },
+   {
+    "utc": "2026-11-14T15:37:49Z",
+    "dosisE": 186.52844,
+    "dosisB": 136.48944,
+    "dosisBBruta": 193.42595
+   },
+   {
+    "utc": "2026-11-14T15:54:55Z",
+    "dosisE": 186.6199,
+    "dosisB": 131.21991,
+    "dosisBBruta": 188.15642
+   },
+   {
+    "utc": "2026-11-14T16:12:01Z",
+    "dosisE": 184.66147,
+    "dosisB": 140.78008,
+    "dosisBBruta": 197.71657
+   },
+   {
+    "utc": "2026-11-14T16:29:07Z",
+    "dosisE": 186.47289,
+    "dosisB": 122.73708,
+    "dosisBBruta": 179.67358
+   },
+   {
+    "utc": "2026-11-14T16:46:13Z",
+    "dosisE": 188.57748,
+    "dosisB": 130.05232,
+    "dosisBBruta": 186.98882
+   },
+   {
+    "utc": "2026-11-14T17:03:19Z",
+    "dosisE": 186.80151,
+    "dosisB": 120.54968,
+    "dosisBBruta": 177.48619
+   },
+   {
+    "utc": "2026-11-14T17:20:25Z",
+    "dosisE": 188.15811,
+    "dosisB": 131.2193,
+    "dosisBBruta": 188.1558
+   }
+  ]
+ }
+}

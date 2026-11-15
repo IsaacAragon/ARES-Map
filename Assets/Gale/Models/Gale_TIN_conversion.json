@@ -1,15 +1,15 @@
 {
-  "input": "C:\\Users\\isaac\\AppData\\Local\\Temp/mosaic/s9/Gale_points.dxf",
-  "points": 531634,
+  "input": "C:\\Users\\isaac\\AppData\\Local\\Temp/mosaic/sR/Gale_points.dxf",
+  "points": 532095,
   "layers": {
-    "BASE": 70567,
+    "BASE": 70084,
     "SECTOR_6": 458985,
-    "BORDE": 2082
+    "BORDE": 3026
   },
   "other_entities": {},
-  "vertices": 531634,
+  "vertices": 532095,
   "duplicates_merged": 0,
-  "triangles": 1061184,
+  "triangles": 1061164,
   "flipped": 0,
   "removed_xy_offset": [
     8168043.8858655,
@@ -31,5 +31,5 @@
     -76954.578125,
     1463.0777576655385
   ],
-  "fbx_bytes": 30204012
+  "fbx_bytes": 30205084
 }

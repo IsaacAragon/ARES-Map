@@ -1,9 +1,12 @@
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UIElements;
 
 // Menú de pausa (UI Toolkit). Esc lo abre y lo cierra; si el minimapa interactivo está abierto,
 // Esc primero cierra el minimapa (por eso este script corre antes que MinimapHUD).
-//   Reanudar · Controles · Reiniciar en Bradbury · Salir (con confirmación)
+//   Reanudar · Controles · Capas del mapa · Reiniciar en Bradbury · Salir (con confirmación)
+// Capas del mapa: elige la capa temática de GeoLayers (geología, material del suelo) y muestra la
+// ficha de la zona en la que está el rover (reparto de materiales y mineralogía medida).
 [DefaultExecutionOrder(-50)]
 [RequireComponent(typeof(UIDocument))]
 public class PauseMenu : MonoBehaviour
@@ -14,7 +17,8 @@ public class PauseMenu : MonoBehaviour
     public double resetLon = 137.4417, resetLat = -4.5895;
     public float resetYaw = 180f;
 
-    VisualElement root, mainPanel, controlsPanel, confirmPanel;
+    VisualElement root, mainPanel, controlsPanel, confirmPanel, layersPanel;
+    readonly List<Button> layerButtons = new();   // [0] = imagen real, [i + 1] = capa i
 
     public bool Open => SimPause.IsPaused;
 
@@ -24,9 +28,13 @@ public class PauseMenu : MonoBehaviour
         mainPanel = root.Q("main-panel");
         controlsPanel = root.Q("controls-panel");
         confirmPanel = root.Q("confirm-panel");
+        layersPanel = root.Q("layers-panel");
+        layerButtons.Clear();
 
         root.Q<Button>("resume").clicked += () => SetOpen(false);
         root.Q<Button>("controls").clicked += () => Show(controlsPanel);
+        root.Q<Button>("layers").clicked += OpenLayers;
+        root.Q<Button>("layers-back").clicked += () => Show(mainPanel);
         root.Q<Button>("reset").clicked += ResetRover;
         root.Q<Button>("quit").clicked += () => Show(confirmPanel);
         root.Q<Button>("controls-back").clicked += () => Show(mainPanel);
@@ -71,6 +79,7 @@ public class PauseMenu : MonoBehaviour
         "F centrar en el rover · C centrar en el cráter\n\n" +
         "<b>Mapa (M)</b>\nClic derecho + arrastrar mover · rueda zoom · WASD · Q/E girar · F rover · C cráter · M/Esc salir\n" +
         "− / + zoom del minimapa · H ayuda\n\n" +
+        "<b>Capas del mapa</b>\nL cambia entre imagen real, geología y material del suelo\n\n" +
         "<b>Esc</b> pausa";
 
     const string GamepadHelp =
@@ -80,6 +89,7 @@ public class PauseMenu : MonoBehaviour
         "stick dcho. X + cruceta ↑/↓ mirar · X centrar en el rover · Y centrar en el cráter\n\n" +
         "<b>Mapa (R3)</b>\nStick izq. mover · gatillos zoom · LB/RB girar · stick dcho. cursor · A seleccionar\n" +
         "cruceta ↑/↓ zoom por pasos · X rover · Y cráter · B salir · cruceta → ayuda\n\n" +
+        "<b>Capas del mapa</b>\nCruceta ← cambia entre imagen real, geología y material del suelo\n\n" +
         "<b>Start</b> pausa · en este menú: cruceta/stick para moverse, A para elegir";
 
     void OnPauseChanged(bool paused)
@@ -88,6 +98,7 @@ public class PauseMenu : MonoBehaviour
         if (paused)
         {
             root.Q<Label>("controls-text").text = GaleInput.UsingGamepad ? GamepadHelp : KeyboardHelp;
+            root.Q<Button>("layers").style.display = GeoLayers.Instance ? DisplayStyle.Flex : DisplayStyle.None;
             Show(mainPanel);
             UnityEngine.Cursor.lockState = CursorLockMode.None;
             UnityEngine.Cursor.visible = true;
@@ -101,8 +112,40 @@ public class PauseMenu : MonoBehaviour
 
     void Show(VisualElement panel)
     {
-        foreach (var p in new[] { mainPanel, controlsPanel, confirmPanel })
+        foreach (var p in new[] { mainPanel, controlsPanel, confirmPanel, layersPanel })
             p.style.display = p == panel ? DisplayStyle.Flex : DisplayStyle.None;
+    }
+
+    // ---------- Capas del mapa ----------
+
+    void OpenLayers()
+    {
+        var geo = GeoLayers.Instance;
+        if (!geo) return;
+        if (layerButtons.Count == 0)
+        {
+            var box = root.Q("layer-buttons");
+            for (int i = -1; i < geo.LayerCount; i++)
+            {
+                int layer = i;
+                var b = new Button(() => { geo.Set(layer); MarkLayer(geo); })
+                    { text = layer < 0 ? "Imagen real" : geo.Data.capas[layer].nombre };
+                b.AddToClassList("menu-button");
+                box.Add(b);
+                layerButtons.Add(b);
+            }
+        }
+        MarkLayer(geo);
+        Vector3 at = chase && chase.target ? chase.target.transform.position : Vector3.zero;
+        root.Q<Label>("zone-text").text = geo.ZoneReport(at);
+        Show(layersPanel);
+        layerButtons[geo.Current + 1].Focus();
+    }
+
+    void MarkLayer(GeoLayers geo)
+    {
+        for (int i = 0; i < layerButtons.Count; i++)
+            layerButtons[i].EnableInClassList("selected", i == geo.Current + 1);
     }
 
     void ResetRover()

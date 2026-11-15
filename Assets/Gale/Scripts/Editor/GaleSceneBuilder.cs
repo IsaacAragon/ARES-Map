@@ -22,13 +22,16 @@ public static class GaleSceneBuilder
     static readonly (string name, string fbx, string mat, string albedo)[] Blocks =
     {
         // Franja norte (borde de Gale -> Babati): DXF Civil 3D + MOLA a los lados.
-        ("GaleNorte_TIN", "Assets/Gale/Models/GaleNorte_TIN.fbx", "GaleNorte_Terrain.mat", "Assets/Gale/Textures/GaleNorte_Albedo.png"),
+        ("GaleNorte_TIN", "Assets/Gale/Models/GaleNorte_TIN.fbx", "GaleNorte_Terrain.mat", "Assets/Gale/Textures/GaleNorte_Albedo.jpg"),
         // Franja sur (borde sur de Gale -> fin del sector 6, Farah Vallis).
-        ("GaleSur_TIN", "Assets/Gale/Models/GaleSur_TIN.fbx", "GaleSur_Terrain.mat", "Assets/Gale/Textures/GaleSur_Albedo.png"),
+        ("GaleSur_TIN", "Assets/Gale/Models/GaleSur_TIN.fbx", "GaleSur_Terrain.mat", "Assets/Gale/Textures/GaleSur_Albedo.jpg"),
         // Franja este (sector 7 a ~400 m + MOLA al sur), de la franja sur a la franja norte.
-        ("GaleEste_TIN", "Assets/Gale/Models/GaleEste_TIN.fbx", "GaleEste_Terrain.mat", "Assets/Gale/Textures/GaleEste_Albedo.png"),
+        ("GaleEste_TIN", "Assets/Gale/Models/GaleEste_TIN.fbx", "GaleEste_Terrain.mat", "Assets/Gale/Textures/GaleEste_Albedo.jpg"),
         // Franja oeste con el cráter Robert Sharp (sector 9 a ~400 m + MOLA al sur).
-        ("GaleOeste_TIN", "Assets/Gale/Models/GaleOeste_TIN.fbx", "GaleOeste_Terrain.mat", "Assets/Gale/Textures/GaleOeste_Albedo.png"),
+        ("GaleOeste_TIN", "Assets/Gale/Models/GaleOeste_TIN.fbx", "GaleOeste_Terrain.mat", "Assets/Gale/Textures/GaleOeste_Albedo.jpg"),
+        // Zona de la ruta de Curiosity, dentro de Gale (hueco en Gale_TIN): DEM MSL de 1 m (a 8 m, quadtree)
+        // y textura de color HiRISE a 2 m/px.
+        ("GaleRuta_TIN", "Assets/Gale/Models/GaleRuta_TIN.fbx", "GaleRuta_Terrain.mat", "Assets/Gale/Textures/GaleRuta_Albedo.jpg"),
     };
 
     // 1 m Unity = 50 m reales. Escala uniforme: las pendientes son las reales.
@@ -49,7 +52,7 @@ public static class GaleSceneBuilder
         }
         var scene = EditorSceneManager.GetActiveScene();
 
-        foreach (var n in new[] { "BallLeft", "BallRight", "Ground", "Gale_Terrain", "Rover", "PauseMenu" })
+        foreach (var n in new[] { "BallLeft", "BallRight", "Ground", "Gale_Terrain", "Rover", "PauseMenu", "CuriosityRoute" })
         {
             var go = GameObject.Find(n);
             if (go) Object.DestroyImmediate(go);
@@ -151,6 +154,7 @@ public static class GaleSceneBuilder
             router.chase = chase;
             router.minimap = minimap;
             BuildPauseMenu(chase, minimap);
+            BuildCuriosityRoute();
             cam.transform.position = spawn + new Vector3(0f, 6f, 10f);
             cam.transform.LookAt(spawn);
         }
@@ -177,6 +181,9 @@ public static class GaleSceneBuilder
         Debug.Log($"[Gale] relief: k={relief.reliefIntensity} sun az={relief.sunAzimuth} el={relief.sunElevation} " +
                   $"collider='{mc.sharedMesh.name}' render='{mf.sharedMesh.name}'");
 
+        // Capas temáticas (geología, material del suelo) y su leyenda.
+        GeoLayersBuilder.Install();
+
         EditorSceneManager.MarkSceneDirty(scene);
         EditorSceneManager.SaveScene(scene);
         Debug.Log($"[Gale] scene built and saved: {scene.path}");
@@ -193,6 +200,27 @@ public static class GaleSceneBuilder
             AssetDatabase.CreateAsset(mat, path);
         }
         return mat;
+    }
+
+    // ---------- Ruta real de Curiosity (JPL MMGIS, en Assets/Gale/Route) ----------
+    static void BuildCuriosityRoute()
+    {
+        var go = new GameObject("CuriosityRoute");
+        var route = go.AddComponent<CuriosityRoute>();
+        route.routeCsv = AssetDatabase.LoadAssetAtPath<TextAsset>("Assets/Gale/Route/MSL_ruta.csv");
+        route.waypointsCsv = AssetDatabase.LoadAssetAtPath<TextAsset>("Assets/Gale/Route/MSL_waypoints.csv");
+        const string matPath = MatDir + "/Curiosity_Route.mat";
+        var mat = AssetDatabase.LoadAssetAtPath<Material>(matPath);
+        if (!mat)
+        {
+            mat = new Material(Shader.Find("Gale/RouteLine"));
+            AssetDatabase.CreateAsset(mat, matPath);
+        }
+        mat.SetColor("_Color", new Color(1f, 0.6f, 0.15f, 0.7f));
+        mat.SetFloat("_Dash", 0.5f);   // rayas de ~1,3 u: se distingue de las rodadas del rover
+        EditorUtility.SetDirty(mat);
+        route.material = mat;
+        if (!route.routeCsv || !route.waypointsCsv) Debug.LogWarning("[Gale] faltan los CSV de la ruta de Curiosity");
     }
 
     // ---------- Menú de pausa (UI Toolkit) ----------
@@ -248,7 +276,7 @@ public static class GaleSceneBuilder
 
     // ------------------------------------------------------------------ terreno
 
-    const string AlbedoPath = "Assets/Gale/Textures/Gale_Albedo.png";
+    const string AlbedoPath = "Assets/Gale/Textures/Gale_Albedo.jpg";
     const string DetailAlbedoPath = "Assets/Gale/Textures/Detail_Rocks015_Albedo.png";
     const string DetailNormalPath = "Assets/Gale/Textures/Detail_Rocks015_Normal.png";
     // Un mosaico de la textura de detalle cubre ~4 m de Unity (el rover mide 3 m).
@@ -263,7 +291,10 @@ public static class GaleSceneBuilder
         ti.anisoLevel = 8;
         ti.filterMode = FilterMode.Trilinear;
         ti.wrapMode = wrap;
-        ti.maxTextureSize = 2048;
+        // Tamaño máximo = el de la imagen (potencia de 2 por encima, hasta 16384): con 2048 fijo,
+        // las texturas de los bloques grandes y la de detalle de la ruta se reducían al importarlas.
+        ti.GetSourceTextureWidthAndHeight(out int tw, out int th);
+        ti.maxTextureSize = Mathf.Clamp(Mathf.NextPowerOfTwo(Mathf.Max(tw, th, 32)), 32, 16384);
         ti.textureCompression = TextureImporterCompression.CompressedHQ;
         ti.SaveAndReimport();
     }
