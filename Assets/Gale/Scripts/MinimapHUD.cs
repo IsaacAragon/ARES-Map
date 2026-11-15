@@ -357,7 +357,8 @@ public class MinimapHUD : MonoBehaviour
             if (InMap(fp, r, 8f)) Marker(fp, "✚", Color.yellow, 0f);
         }
 
-        // Recorrido del rover (RoverTrackRecorder), como línea.
+        // Ruta real de Curiosity (CuriosityRoute) y recorrido del rover (RoverTrackRecorder), como líneas.
+        DrawCuriosityRoute(r);
         if (Event.current.type == EventType.Repaint) DrawRecordedPath(r);
 
         // Lugares con nombre.
@@ -395,6 +396,62 @@ public class MinimapHUD : MonoBehaviour
                 hintStyle);
             if (useVirtualCursor) Marker(virtualCursor, "✛", new Color(1f, 0.95f, 0.4f), 0f);
         }
+        GUI.color = old;
+    }
+
+    [Header("Ruta de Curiosity")]
+    public bool showCuriosityRoute = true;
+    public Color curiosityRouteColor = new Color(1f, 0.62f, 0.2f, 0.95f);
+    [Tooltip("Marca un waypoint cada tantos soles (con el mapa acercado).")]
+    public int solMarkEvery = 500;
+    CuriosityRoute curiosity;
+    bool curiositySearched;
+
+    void DrawCuriosityRoute(Rect r)
+    {
+        if (!showCuriosityRoute) return;
+        if (!curiositySearched) { curiosity = FindAnyObjectByType<CuriosityRoute>(); curiositySearched = true; }
+        if (!curiosity || curiosity.Points.Count < 2) return;
+        var old = GUI.color;
+        if (Event.current.type == EventType.Repaint)
+        {
+            var pts = curiosity.Points;
+            int stride = Mathf.Max(1, pts.Count / 900);
+            GUI.color = curiosityRouteColor;
+            Vector2 prev = WorldToMap(pts[0], r);
+            for (int i = stride; i < pts.Count + stride - 1; i += stride)
+            {
+                Vector2 cur = WorldToMap(pts[Mathf.Min(i, pts.Count - 1)], r);
+                if (InMap(prev, r, 2f) && InMap(cur, r, 2f)) Line(prev, cur, 2.5f);
+                prev = cur;
+            }
+        }
+        var wps = curiosity.Waypoints;
+        if (wps.Count == 0) { GUI.color = old; return; }
+        // Inicio, final y un hito cada solMarkEvery soles (solo si el mapa está acercado).
+        Label(r, wps[0].unity, "Bradbury · sol 0", curiosityRouteColor);
+        Label(r, wps[wps.Count - 1].unity, $"Curiosity · sol {wps[wps.Count - 1].sol}", curiosityRouteColor);
+        if (radiusMeters <= 12000f && solMarkEvery > 0)
+        {
+            int next = solMarkEvery;
+            foreach (var w in wps)
+                if (w.sol >= next && w.sol < wps[wps.Count - 1].sol - solMarkEvery / 4)
+                {
+                    Label(r, w.unity, $"sol {w.sol}", new Color(1f, 0.8f, 0.55f, 0.95f));
+                    next = (w.sol / solMarkEvery + 1) * solMarkEvery;
+                }
+        }
+        GUI.color = old;
+    }
+
+    void Label(Rect r, Vector3 world, string text, Color c)
+    {
+        Vector2 p = WorldToMap(world, r);
+        if (!InMap(p, r, 8f)) return;
+        Marker(p, "●", c, 0f);
+        var old = GUI.color;
+        GUI.color = Color.black; GUI.Label(new Rect(p.x + 8, p.y - 9, 160, 20), text);
+        GUI.color = c; GUI.Label(new Rect(p.x + 7, p.y - 10, 160, 20), text);
         GUI.color = old;
     }
 

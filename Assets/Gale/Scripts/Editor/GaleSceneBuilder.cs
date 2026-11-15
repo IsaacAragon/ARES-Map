@@ -52,7 +52,7 @@ public static class GaleSceneBuilder
         }
         var scene = EditorSceneManager.GetActiveScene();
 
-        foreach (var n in new[] { "BallLeft", "BallRight", "Ground", "Gale_Terrain", "Rover", "PauseMenu" })
+        foreach (var n in new[] { "BallLeft", "BallRight", "Ground", "Gale_Terrain", "Rover", "PauseMenu", "CuriosityRoute" })
         {
             var go = GameObject.Find(n);
             if (go) Object.DestroyImmediate(go);
@@ -154,6 +154,7 @@ public static class GaleSceneBuilder
             router.chase = chase;
             router.minimap = minimap;
             BuildPauseMenu(chase, minimap);
+            BuildCuriosityRoute();
             cam.transform.position = spawn + new Vector3(0f, 6f, 10f);
             cam.transform.LookAt(spawn);
         }
@@ -201,6 +202,27 @@ public static class GaleSceneBuilder
     // ---------- Menú de pausa (UI Toolkit) ----------
     const string UiDir = "Assets/Gale/UI";
     const string PanelSettingsPath = UiDir + "/GalePanelSettings.asset";
+    // ---------- Ruta real de Curiosity (JPL MMGIS, en Assets/Gale/Route) ----------
+    static void BuildCuriosityRoute()
+    {
+        var go = new GameObject("CuriosityRoute");
+        var route = go.AddComponent<CuriosityRoute>();
+        route.routeCsv = AssetDatabase.LoadAssetAtPath<TextAsset>("Assets/Gale/Route/MSL_ruta.csv");
+        route.waypointsCsv = AssetDatabase.LoadAssetAtPath<TextAsset>("Assets/Gale/Route/MSL_waypoints.csv");
+        const string matPath = MatDir + "/Curiosity_Route.mat";
+        var mat = AssetDatabase.LoadAssetAtPath<Material>(matPath);
+        if (!mat)
+        {
+            mat = new Material(Shader.Find("Gale/RouteLine"));
+            AssetDatabase.CreateAsset(mat, matPath);
+        }
+        mat.SetColor("_Color", new Color(1f, 0.6f, 0.15f, 0.7f));
+        mat.SetFloat("_Dash", 0.5f);   // rayas de ~1,3 u: se distingue de las rodadas del rover
+        EditorUtility.SetDirty(mat);
+        route.material = mat;
+        if (!route.routeCsv || !route.waypointsCsv) Debug.LogWarning("[Gale] faltan los CSV de la ruta de Curiosity");
+    }
+
 
     static void BuildPauseMenu(ChaseCamera chase, MinimapHUD minimap)
     {
