@@ -53,6 +53,17 @@ public class RoverController : MonoBehaviour
     public float Speed => rb ? rb.linearVelocity.magnitude : 0f;
     public bool Grounded => groundedWheels > 0;
 
+    /// <summary>Contacto de una rueda con el suelo, del rayo de suspensión del último FixedUpdate.</summary>
+    public struct WheelContact
+    {
+        public bool grounded;
+        public Vector3 point, normal;
+        public bool left;   // lado izquierdo del rover
+    }
+
+    /// <summary>Un contacto por rueda (mismo orden que <see cref="wheels"/>). Lo usan las huellas.</summary>
+    public WheelContact[] Contacts { get; private set; } = new WheelContact[0];
+
     void Awake()
     {
         rb = GetComponent<Rigidbody>();
@@ -71,10 +82,12 @@ public class RoverController : MonoBehaviour
         wheelRest = new Vector3[wheels.Length];
         wheelRestRot = new Quaternion[wheels.Length];
         wheelSpin = new float[wheels.Length];
+        Contacts = new WheelContact[wheels.Length];
         for (int i = 0; i < wheels.Length; i++)
         {
             wheelRest[i] = transform.InverseTransformPoint(wheels[i].position);
             wheelRestRot[i] = Quaternion.Inverse(transform.rotation) * wheels[i].rotation;
+            Contacts[i].left = wheelRest[i].x < 0f;
         }
         // Centro de masas sobre el centroide de las ruedas: con el COM adelantado, las delanteras
         // cargaban más, el rover cabeceaba ~6° y los muelles inclinados lo hacían reptar hacia atrás.
@@ -152,6 +165,9 @@ public class RoverController : MonoBehaviour
             {
                 groundedWheels++;
                 groundNormal += hit.normal;
+                Contacts[i].grounded = true;
+                Contacts[i].point = hit.point;
+                Contacts[i].normal = hit.normal;
                 float dist = hit.distance - rayHeadroom;           // negativa si el punto ya está bajo el suelo
                 float compression = maxDist - dist;
                 float vel = Vector3.Dot(rb.GetPointVelocity(origin), transform.up);
@@ -162,9 +178,10 @@ public class RoverController : MonoBehaviour
                 rb.AddForceAtPosition(transform.up * Mathf.Max(0f, force), origin);
                 if (moveWheelVisuals) wheels[i].position = hit.point + transform.up * wheelRadius;
             }
-            else if (moveWheelVisuals)
+            else
             {
-                wheels[i].position = origin + down * (maxDist - wheelRadius);
+                Contacts[i].grounded = false;
+                if (moveWheelVisuals) wheels[i].position = origin + down * (maxDist - wheelRadius);
             }
         }
 

@@ -104,6 +104,9 @@ public class PauseMenu : MonoBehaviour
         {
             chase.SetAerial(false);
             chase.target.ResetTo(MarsGeo.LonLatToUnity(resetLon, resetLat), resetYaw);
+            // El salto no se une con una rodada ni con el tramo anterior del recorrido.
+            if (chase.target.TryGetComponent<RoverTracks>(out var tracks)) tracks.BreakAll();
+            if (chase.target.TryGetComponent<RoverTrackRecorder>(out var rec)) rec.BreakSegment();
         }
         SetOpen(false);
     }
