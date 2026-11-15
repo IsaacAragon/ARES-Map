@@ -20,6 +20,13 @@ public class RoverController : MonoBehaviour
     [Tooltip("Calcula restLength para que, en reposo, las ruedas del modelo toquen el suelo exactamente.")]
     public bool autoRestLength = false;
     public Vector3 centerOfMass = new Vector3(0f, -0.3f, 0f);
+    [Tooltip("Pone X/Z del centro de masas sobre el centroide de las ruedas, para que el rover no cabecee en reposo.")]
+    public bool centerMassOverWheels = true;
+    [Tooltip("Margen (m) por encima del punto de suspensión desde el que se lanza el rayo. " +
+             "Si una rueda se hunde en un aterrizaje fuerte, el rayo sigue naciendo por encima del suelo y la recupera.")]
+    public float rayHeadroom = 1.5f;
+    [Tooltip("Rigidez extra del tope de suspensión cuando la compresión supera el recorrido normal.")]
+    public float bumpStopStrength = 40000f;
 
     [Header("Conducción")]
     public float motorForce = 5000f;
@@ -68,6 +75,15 @@ public class RoverController : MonoBehaviour
         {
             wheelRest[i] = transform.InverseTransformPoint(wheels[i].position);
             wheelRestRot[i] = Quaternion.Inverse(transform.rotation) * wheels[i].rotation;
+        }
+        // Centro de masas sobre el centroide de las ruedas: con el COM adelantado, las delanteras
+        // cargaban más, el rover cabeceaba ~6° y los muelles inclinados lo hacían reptar hacia atrás.
+        if (centerMassOverWheels && wheels.Length > 0)
+        {
+            Vector3 c = Vector3.zero;
+            foreach (var w in wheelRest) c += w;
+            c /= wheels.Length;
+            rb.centerOfMass = new Vector3(c.x, centerOfMass.y, c.z);
         }
         // En equilibrio la compresión es m·g/(n·k); si es igual a restLength la rueda queda en su sitio.
         if (autoRestLength)
@@ -119,13 +135,21 @@ public class RoverController : MonoBehaviour
             Vector3 origin = transform.TransformPoint(wheelRest[i] + Vector3.up * restLength);
             Vector3 down = -transform.up;
             float maxDist = restLength * 2f + wheelRadius;
-            if (Physics.Raycast(origin, down, out var hit, maxDist, groundMask, QueryTriggerInteraction.Ignore))
+            // El rayo nace rayHeadroom más arriba: si el punto de suspensión acaba bajo el suelo
+            // (el MeshCollider no se detecta por detrás), antes la rueda dejaba de empujar y el
+            // rover quedaba apoyado en el chasis con las ruedas enterradas para siempre.
+            Vector3 castFrom = origin - down * rayHeadroom;
+            if (Physics.Raycast(castFrom, down, out var hit, maxDist + rayHeadroom, groundMask, QueryTriggerInteraction.Ignore))
             {
                 groundedWheels++;
                 groundNormal += hit.normal;
-                float compression = (restLength * 2f + wheelRadius) - hit.distance;
+                float dist = hit.distance - rayHeadroom;           // negativa si el punto ya está bajo el suelo
+                float compression = maxDist - dist;
                 float vel = Vector3.Dot(rb.GetPointVelocity(origin), transform.up);
                 float force = compression * springStrength - vel * springDamper;
+                // Tope: pasado el recorrido normal (rueda hundida) empuja mucho más fuerte.
+                float overTravel = compression - restLength * 1.5f;
+                if (overTravel > 0f) force += overTravel * bumpStopStrength;
                 rb.AddForceAtPosition(transform.up * Mathf.Max(0f, force), origin);
                 if (moveWheelVisuals) wheels[i].position = hit.point + transform.up * wheelRadius;
             }
