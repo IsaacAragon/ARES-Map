@@ -1,0 +1,43 @@
+{
+  "sector": "G:\\dxf2\\4. Gale_Babati_sector_norte_Civil3D.dxf",
+  "gale": "C:\\Users\\isaac\\dev\\TIFFdetallado\\Mars_MGS_MOLA_DEM_mosaic_global_463m_Gale_detallado.dxf",
+  "layer": "COTAS_DEM_200M",
+  "sector_points": 96635,
+  "babati_contour_center_local": [
+    27627.05517391304,
+    84937.39704347825
+  ],
+  "babati_contour_diameter_m": 22100.020103413255,
+  "hypothesis_offset": [
+    8148131.974215715,
+    -272245.4412171259
+  ],
+  "hypothesis_score": {
+    "rms": 91.47313559447711,
+    "dz": 9.22134076221846,
+    "n": 36395,
+    "mae": 63.43072916020751
+  },
+  "fitted_offset": [
+    8147221.974215715,
+    -272175.4412171259
+  ],
+  "fitted_score": {
+    "rms": 67.26436638847798,
+    "dz_median": 7.790203771364759,
+    "n_overlap": 36395,
+    "mae": 43.57234998391896
+  },
+  "fit_minus_hypothesis_m": [
+    -910.0,
+    70.0
+  ],
+  "babati_center_equirect": [
+    8174849.029389628,
+    -187238.04417364765
+  ],
+  "babati_center_lonlat": [
+    137.91464774957913,
+    -3.1588190576599318
+  ]
+}

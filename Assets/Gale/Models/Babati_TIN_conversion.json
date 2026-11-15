@@ -1,0 +1,34 @@
+{
+  "input": "C:/Users/isaac/dev/TIFFdetallado/Gale_Babati_sector_norte_georef_points.dxf",
+  "points": 60098,
+  "layers": {
+    "SECTOR": 59989,
+    "BORDE_GALE": 109
+  },
+  "other_entities": {},
+  "vertices": 60098,
+  "duplicates_merged": 0,
+  "triangles": 119834,
+  "flipped": 0,
+  "removed_xy_offset": [
+    8168043.8858655,
+    -319997.63721099996
+  ],
+  "scale": 1.0,
+  "bounds_min": [
+    -16902.9140625,
+    99796.65625,
+    -3861.7902037713648
+  ],
+  "bounds_max": [
+    33111.1875,
+    147684.46875,
+    -1188.7902037713648
+  ],
+  "highest_vertex": [
+    33047.2421875,
+    142284.46875,
+    -1188.7902037713648
+  ],
+  "fbx_bytes": 2807068
+}

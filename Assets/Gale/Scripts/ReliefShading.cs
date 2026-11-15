@@ -20,6 +20,8 @@ public class ReliefShading : MonoBehaviour
     public Mesh sourceMesh;
 
     [Header("Luz principal rasante")]
+    [Tooltip("Desactivar en los bloques de terreno secundarios (Babati): la luz la controla un único ReliefShading.")]
+    public bool controlLighting = true;
     public Light sun;
     [Tooltip("Desde dónde llega la luz, en grados desde el norte en sentido horario. 315 = noroeste.")]
     [Range(0f, 360f)] public float sunAzimuth = 315f;
@@ -67,7 +69,7 @@ public class ReliefShading : MonoBehaviour
     public void Apply()
     {
         dirty = false;
-        ApplyLighting();
+        if (controlLighting) ApplyLighting();
         if (!sourceMesh) return;
 
         var mf = GetComponent<MeshFilter>();

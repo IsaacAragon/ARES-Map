@@ -14,6 +14,8 @@ using UnityEngine.Rendering.Universal;
 public static class GaleSceneBuilder
 {
     const string FbxPath = "Assets/Gale/Models/Gale_TIN.fbx";
+    // Sector norte Gale-Babati: mismo origen XY que Gale (ver Babati_TIN_conversion.json y Babati_georef.json).
+    const string BabatiFbxPath = "Assets/Gale/Models/Babati_TIN.fbx";
     const string MatDir = "Assets/Gale/Materials";
 
     // 1 m Unity = 50 m reales. Escala uniforme: las pendientes son las reales.
@@ -40,7 +42,8 @@ public static class GaleSceneBuilder
             if (go) Object.DestroyImmediate(go);
         }
 
-        ConfigureImporter();
+        ConfigureImporter(FbxPath);
+        ConfigureImporter(BabatiFbxPath);
 
         // ---------- terreno
         var root = new GameObject("Gale_Terrain");
@@ -55,7 +58,7 @@ public static class GaleSceneBuilder
         terrain.name = "Gale_TIN";
         var mf = terrain.GetComponentInChildren<MeshFilter>();
         var mr = terrain.GetComponentInChildren<MeshRenderer>();
-        mr.sharedMaterial = TerrainMaterial();
+        mr.sharedMaterial = TerrainMaterial("Gale_Terrain.mat", AlbedoPath);
         var mc = mf.gameObject.AddComponent<MeshCollider>();
         mc.sharedMesh = mf.sharedMesh;
 
@@ -69,6 +72,15 @@ public static class GaleSceneBuilder
         for (int i = 1; i < verts.Length; i++) { var w = l2w.MultiplyPoint3x4(verts[i]); if (w.y > hw.y) hw = w; }
         Debug.Log($"[Gale] highest vertex world={hw} -> real X={OffsetX + hw.x / WorldScale:0.0} " +
                   $"Y={OffsetY + hw.z / WorldScale:0.0} Z={hw.y / WorldScale:0.0}");
+
+        // Sector norte (Babati): segundo bloque, mismo sistema de coordenadas, comparte el borde norte de Gale.
+        var babati = (GameObject)PrefabUtility.InstantiatePrefab(AssetDatabase.LoadAssetAtPath<GameObject>(BabatiFbxPath), root.transform);
+        babati.name = "Babati_TIN";
+        var bmf = babati.GetComponentInChildren<MeshFilter>();
+        babati.GetComponentInChildren<MeshRenderer>().sharedMaterial = TerrainMaterial("Babati_Terrain.mat", BabatiAlbedoPath);
+        var bmc = bmf.gameObject.AddComponent<MeshCollider>();
+        bmc.sharedMesh = bmf.sharedMesh;
+        Debug.Log($"[Gale] Babati block verts={bmf.sharedMesh.vertexCount} worldBounds={babati.GetComponentInChildren<MeshRenderer>().bounds}");
 
         // ---------- rover
         var rover = BuildRover();
@@ -116,6 +128,12 @@ public static class GaleSceneBuilder
         relief.sunAzimuth = 315f;
         relief.sunElevation = 30f;
         relief.Apply();
+        // Babati: mismo realce de relieve; la luz la controla el de Gale.
+        var brelief = bmf.gameObject.AddComponent<ReliefShading>();
+        brelief.sourceMesh = bmf.sharedMesh;
+        brelief.controlLighting = false;
+        brelief.reliefIntensity = relief.reliefIntensity;
+        brelief.Apply();
         DynamicGI.UpdateEnvironment();
         Debug.Log($"[Gale] relief: k={relief.reliefIntensity} sun az={relief.sunAzimuth} el={relief.sunElevation} " +
                   $"collider='{mc.sharedMesh.name}' render='{mf.sharedMesh.name}'");
@@ -125,9 +143,9 @@ public static class GaleSceneBuilder
         Debug.Log($"[Gale] scene built and saved: {scene.path}");
     }
 
-    static void ConfigureImporter()
+    static void ConfigureImporter(string path)
     {
-        var imp = (ModelImporter)AssetImporter.GetAtPath(FbxPath);
+        var imp = (ModelImporter)AssetImporter.GetAtPath(path);
         bool dirty = false;
         if (imp.materialImportMode != ModelImporterMaterialImportMode.None) { imp.materialImportMode = ModelImporterMaterialImportMode.None; dirty = true; }
         if (!imp.isReadable) { imp.isReadable = true; dirty = true; }
@@ -142,6 +160,7 @@ public static class GaleSceneBuilder
     // ------------------------------------------------------------------ terreno
 
     const string AlbedoPath = "Assets/Gale/Textures/Gale_Albedo.png";
+    const string BabatiAlbedoPath = "Assets/Gale/Textures/Babati_Albedo.png";
     const string DetailAlbedoPath = "Assets/Gale/Textures/Detail_Rocks015_Albedo.png";
     const string DetailNormalPath = "Assets/Gale/Textures/Detail_Rocks015_Normal.png";
     // Un mosaico de la textura de detalle cubre ~4 m de Unity (el rover mide 3 m).
@@ -161,15 +180,15 @@ public static class GaleSceneBuilder
         ti.SaveAndReimport();
     }
 
-    static Material TerrainMaterial()
+    static Material TerrainMaterial(string matName, string albedoPath)
     {
         Directory.CreateDirectory(MatDir);
-        ConfigureTexture(AlbedoPath, true, false, TextureWrapMode.Clamp);
+        ConfigureTexture(albedoPath, true, false, TextureWrapMode.Clamp);
         // El detalle se multiplica x2 en URP: gris lineal 0,5 = neutro, por eso sRGB desactivado.
         ConfigureTexture(DetailAlbedoPath, false, false, TextureWrapMode.Repeat);
         ConfigureTexture(DetailNormalPath, false, true, TextureWrapMode.Repeat);
 
-        string matPath = MatDir + "/Gale_Terrain.mat";
+        string matPath = MatDir + "/" + matName;
         var mat = AssetDatabase.LoadAssetAtPath<Material>(matPath);
         if (!mat)
         {
@@ -178,7 +197,7 @@ public static class GaleSceneBuilder
         }
         // Color real de Gale: Viking MDIM 2.1 (color) x THEMIS (detalle), recortado al encuadre del DXF.
         mat.SetColor("_BaseColor", Color.white);
-        mat.SetTexture("_BaseMap", AssetDatabase.LoadAssetAtPath<Texture2D>(AlbedoPath));
+        mat.SetTexture("_BaseMap", AssetDatabase.LoadAssetAtPath<Texture2D>(albedoPath));
         mat.SetTextureScale("_BaseMap", Vector2.one);
         mat.SetTextureOffset("_BaseMap", Vector2.zero);
         // Detalle de cerca: guijarros y arena (ambientCG Rocks015, CC0).
