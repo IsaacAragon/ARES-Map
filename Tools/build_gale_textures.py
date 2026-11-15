@@ -28,6 +28,9 @@ ap.add_argument("--match", nargs=5, metavar=("ALBEDO", "U0", "U1", "V0", "V1"),
                      "so two adjoining terrain blocks show no seam.")
 ap.add_argument("--match-edge", choices=["south", "north"], default="south",
                 help="Which edge of the new texture touches the matched region.")
+ap.add_argument("--split-bottom", nargs=2, metavar=("ROWS", "BOTTOM_NAME"),
+                help="Process one joint image (e.g. Gale + north band) and save its bottom ROWS rows as "
+                     "BOTTOM_NAME and the rest as --name, so both blocks share colour normalisation.")
 args = ap.parse_args()
 wms, acg, out = args.wms, args.acg, args.out
 os.makedirs(out, exist_ok=True)
@@ -98,8 +101,15 @@ if args.match:
     print("[tex] colour match gain (linear RGB):", gain.round(3))
 
 img = Image.fromarray((to_srgb(albedo) * 255 + 0.5).astype(np.uint8), "RGB")
-img.save(os.path.join(out, args.name))
-print("[tex]", args.name, img.size, "mean sRGB", np.asarray(img).reshape(-1, 3).mean(0).round(1))
+if args.split_bottom:
+    rows, bottom_name = int(args.split_bottom[0]), args.split_bottom[1]
+    H = img.size[1]
+    parts = ((args.name, img.crop((0, 0, img.size[0], H - rows))), (bottom_name, img.crop((0, H - rows, img.size[0], H))))
+else:
+    parts = ((args.name, img),)
+for nm, im in parts:
+    im.save(os.path.join(out, nm))
+    print("[tex]", nm, im.size, "mean sRGB", np.asarray(im).reshape(-1, 3).mean(0).round(1))
 if acg == "-":
     sys.exit(0)
 
