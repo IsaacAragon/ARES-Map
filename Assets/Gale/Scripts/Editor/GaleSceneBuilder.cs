@@ -27,6 +27,8 @@ public static class GaleSceneBuilder
         ("GaleSur_TIN", "Assets/Gale/Models/GaleSur_TIN.fbx", "GaleSur_Terrain.mat", "Assets/Gale/Textures/GaleSur_Albedo.png"),
         // Franja este (sector 7 a ~400 m + MOLA al sur), de la franja sur a la franja norte.
         ("GaleEste_TIN", "Assets/Gale/Models/GaleEste_TIN.fbx", "GaleEste_Terrain.mat", "Assets/Gale/Textures/GaleEste_Albedo.png"),
+        // Franja oeste con el cráter Robert Sharp (sector 9 a ~400 m + MOLA al sur).
+        ("GaleOeste_TIN", "Assets/Gale/Models/GaleOeste_TIN.fbx", "GaleOeste_Terrain.mat", "Assets/Gale/Textures/GaleOeste_Albedo.png"),
     };
 
     // 1 m Unity = 50 m reales. Escala uniforme: las pendientes son las reales.
@@ -131,7 +133,15 @@ public static class GaleSceneBuilder
             chase.offsetX = OffsetX;
             chase.offsetY = OffsetY;
             chase.marsRadius = MarsRadius;
-            if (!cam.GetComponent<MinimapHUD>()) cam.gameObject.AddComponent<MinimapHUD>();
+            // Límites de la vista aérea = extensión del mosaico (u Unity desde el centro de Gale).
+            chase.aerialNorthLimit = 3000f;
+            chase.aerialSouthLimit = 2150f;
+            chase.aerialEastLimit = 5000f;
+            chase.aerialWestLimit = 6800f;
+            // Se recrea para que tome los valores del código (p. ej. rótulos nuevos) y no los guardados en la escena.
+            var oldMap = cam.GetComponent<MinimapHUD>();
+            if (oldMap) Object.DestroyImmediate(oldMap);
+            cam.gameObject.AddComponent<MinimapHUD>();
             cam.transform.position = spawn + new Vector3(0f, 6f, 10f);
             cam.transform.LookAt(spawn);
         }

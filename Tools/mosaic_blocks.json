@@ -15,6 +15,11 @@
       "dxf": "7.Gale_franja_este_noreste_Civil3D.dxf",
       "step": 2,
       "name": "Franja este-noreste (diezmado a ~400 m)"
+    },
+    "9": {
+      "dxf": "9. Gale_franja_oeste_Robert_Sharp_Civil3D.dxf",
+      "step": 2,
+      "name": "Franja oeste / Robert Sharp (diezmado a ~400 m)"
     }
   },
   "blocks": {
@@ -63,6 +68,18 @@
       "base": "mola",
       "sectors": [
         "7"
+      ]
+    },
+    "GaleOeste": {
+      "rect": [
+        7830680.24084566,
+        8068247.227661,
+        -426740.6985382556,
+        -172039.2506859632
+      ],
+      "base": "mola",
+      "sectors": [
+        "9"
       ]
     }
   }

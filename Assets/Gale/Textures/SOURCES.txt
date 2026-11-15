@@ -23,6 +23,9 @@ Terrain blocks (Assets/Gale/Models, Tools/build_mosaic_block.py + Tools/blender_
     build_mosaic_block.py (base "points:") so its east/west edges are straight and shared with the side blocks.
   GaleEste_TIN.fbx: east block, Gale east rim -> end of "7.Gale_franja_este_noreste_Civil3D.dxf", from the south band
     to the north band. Sector 7 decimated to ~400 m (every 2nd node); MOLA 463 m south of it; 2 km blend.
+  GaleOeste_TIN.fbx: west block, end of "9. Gale_franja_oeste_Robert_Sharp_Civil3D.dxf" -> Gale west rim, from the
+    south band to the north band (crater Robert Sharp, 133.59 E 4.12 S). Sector 9 decimated to ~400 m; MOLA 463 m south
+    of it; 2 km blend. The ~6 km of sector 9 north of the north band are not used.
   Civil 3D sectors 6, 7, 9 share one local system: equirectangular with standard parallel phi0 = -4.59 deg, i.e.
     X = X0 + x_local / cos(phi0), Y = Y0 + y_local (Tools/fit_sectors_georef.py -> Models/Sectores_georef.json).
   Shared block edges carry the same vertices on both sides; vertex normals are computed with the neighbours' points
