@@ -42,6 +42,15 @@
                     "initialStateCheck": false
                 },
                 {
+                    "name": "CycleLayer",
+                    "type": "Button",
+                    "id": "55b08189-5684-5316-99a0-44c7adf4d815",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
                     "name": "MinimapZoom",
                     "type": "Value",
                     "id": "aad7ce9f-f72f-51d6-a876-2ea458142911",
@@ -137,6 +146,28 @@
                     "processors": "",
                     "groups": "Gamepad",
                     "action": "Help",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "482e687e-9a7f-5765-840f-bd35271b2579",
+                    "path": "<Keyboard>/l",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Keyboard&Mouse",
+                    "action": "CycleLayer",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "27bc5e12-1c1e-50cd-8882-30264e1db0f1",
+                    "path": "<Gamepad>/dpad/left",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Gamepad",
+                    "action": "CycleLayer",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },

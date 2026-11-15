@@ -1,0 +1,634 @@
+{
+ "fuente": "gale_ARES_v3_zonas (Salomonsters): NASA Mars Trek (THEMIS, TES, MOLA) y USGS SIM 3292",
+ "region": {
+  "lonOeste": 131.50085,
+  "lonEste": 141.00128,
+  "latSur": -8.00079,
+  "latNorte": -2.49939,
+  "ancho": 3459,
+  "alto": 2003,
+  "metrosPorPixel": 162.8
+ },
+ "capas": [
+  {
+   "id": "geologia",
+   "nombre": "Geología",
+   "titulo": "Unidades geológicas",
+   "fuente": "USGS SIM 3292 (Tanaka et al. 2014), escala 1:20 000 000",
+   "aviso": "Mapa global: vale para la escala regional, no para detalle de metros.",
+   "textura": "Geo_GeologiaIndice.png",
+   "contactos": true,
+   "clases": [
+    {
+     "indice": 1,
+     "codigo": "mNh",
+     "nombre": "Tierras altas del Noeico medio",
+     "nombreLargo": "Unidad de tierras altas del Noeico medio",
+     "descripcion": "Material de tierras altas antiguas: brechas de impacto, volcánico, fluvial y de cuenca; muy degradado. Roca antigua, superficie rugosa.",
+     "nota": "",
+     "color": "#C78C5A",
+     "grupo": "Highland Units",
+     "nombreEn": "Middle Noachian highland unit",
+     "caracteristicasEn": "Uneven to rolling topography; high-relief outcrops that extend hundreds to thousands of kilometers. Commonly layered in crater walls. May be hundreds of meters to more than a kilometer thick. (lat –47.17° N., long 349.33° E.; localities 7, 14, 19, 20, 22, 23, 31)",
+     "interpretacionEn": "Undifferentiated impact, volcanic, fluvial, and basin materials. Moderately to heavily degraded"
+    },
+    {
+     "indice": 2,
+     "codigo": "lNh",
+     "nombre": "Tierras altas del Noeico tardío",
+     "nombreLargo": "Unidad de tierras altas del Noeico tardío",
+     "descripcion": "Llanuras en depresiones de tierras altas: material de impacto, volcánico, fluvial y de cuenca, degradado.",
+     "nota": "",
+     "color": "#DEB478",
+     "grupo": "Highland Units",
+     "nombreEn": "Late Noachian highland unit",
+     "caracteristicasEn": "Mostly plains forming, rugged in places. May be hundreds of meters thick. (lat –20.74° N., long 354.35° E.; localities 13, 34, 35)",
+     "interpretacionEn": "Undifferentiated impact, volcanic, fluvial, and basin material. Lightly to heavily degraded and (or) deformed"
+    },
+    {
+     "indice": 3,
+     "codigo": "HNt",
+     "nombre": "Transición Hespérico-Noeico",
+     "nombreLargo": "Unidad de transición Hespérico-Noeico",
+     "descripcion": "Lomas y mesas con delantales y llanuras; brechas de impacto, sedimentos y depósitos volcánicos noeicos con material de remoción en masa hespérico.",
+     "nota": "",
+     "color": "#A6AC8C",
+     "grupo": "Transition Units",
+     "nombreEn": "Hesperian and Noachian transition unit",
+     "caracteristicasEn": "Knobs, mesas, and intervening aprons and plains. May be tens to hundreds of meters thick. (lat 10.96° N., long 111.71° E.; locality 18)",
+     "interpretacionEn": "Noachian impact breccias, sediments, and volcanic deposits with intervening aprons of Hesperian mass-wasted materials. Tectonically contracted"
+    },
+    {
+     "indice": 4,
+     "codigo": "eHt",
+     "nombre": "Transición del Hespérico temprano",
+     "nombreLargo": "Unidad de transición del Hespérico temprano",
+     "descripcion": "Llanuras onduladas a algo rugosas: depósitos de remoción en masa, fluviales/lacustres y otros sedimentarios, posible volcánico.",
+     "nota": "",
+     "color": "#96BEAA",
+     "grupo": "Transition Units",
+     "nombreEn": "Early Hesperian transition unit",
+     "caracteristicasEn": "Plains-forming deposits, undulating to moderately rugged; includes scattered low knobs and mesas of Noachian highland material. May be tens to hundreds of meters thick. (lat 13.38° N., long 116.70° E.; localities 2, 16)",
+     "interpretacionEn": "Mass-wasting, fluvial/lacustrine, and other sedimentary materials and possibly volcanic rocks in places. Tectonically contracted"
+    },
+    {
+     "indice": 5,
+     "codigo": "Htu",
+     "nombre": "Hespérico indiferenciado (monte Sharp)",
+     "nombreLargo": "Unidad de transición hespérica indiferenciada (incluye Aeolis Mons / monte Sharp)",
+     "descripcion": "Mesetas estratificadas de cientos de m a km de espesor: sedimentos eólicos finos y/o ceniza volcánica; disección fluvial, yardangs; firmas de sulfatos hidratados; alteración ácida local.",
+     "nota": "",
+     "color": "#F0D678",
+     "grupo": "Transition Units",
+     "nombreEn": "Hesperian transition undivided unit",
+     "caracteristicasEn": "Irregular plateaus hundreds of kilometers across. Layered. Hundreds of meters to kilometers thick. (lat –6.41° N., long 156.42° E; lat –6.17° N., long 286.05° E.; localities 26, 28)",
+     "interpretacionEn": "Fine-grained eolian sediments and (or) pyroclastic air-fall deposits. Modified by fluvial dissection and eolian erosion. Linear ridges and grooves form yardangs. Tectonically contracted. Channels mostly inverted. Altered by acidic weathering in places"
+    },
+    {
+     "indice": 6,
+     "codigo": "AHi",
+     "nombre": "Impacto Amazónico-Hespérico (cráteres)",
+     "nombreLargo": "Unidad de impacto Amazónico-Hespérico (cráteres, incluye el interior de Gale)",
+     "descripcion": "Bordes y mantos de eyecta: rocas y sedimentos levantados, eyectados y brechificados; relleno posterior fluvial-lacustre y eólico de los cráteres.",
+     "nota": "",
+     "color": "#C878A0",
+     "grupo": "Impact Unit",
+     "nombreEn": "Amazonian and Hesperian impact unit",
+     "caracteristicasEn": "Craters with rims and surrounding blankets; some include single to multi-lobed blanket forms, dense secondary crater chains, and (or) central peak or pit. Blanket thicknesses of meters to a few hundred meters. (lat 23.17° N., long 207.77° E.",
+     "interpretacionEn": "Upturned, ejected, and brecciated target rocks and sediments, with local areas of impact melt. Post-impact mass-wasting and fluvial-lacustrine and eolian infill of craters common"
+    }
+   ]
+  },
+  {
+   "id": "suelo",
+   "nombre": "Material del suelo",
+   "titulo": "Material del suelo",
+   "fuente": "THEMIS infrarrojo día y noche (Mars Odyssey), ~163 m/px",
+   "aviso": "Clases relativas dentro de la región (percentiles), no inercia térmica calibrada.",
+   "textura": "Geo_SueloIndice.png",
+   "contactos": false,
+   "clases": [
+    {
+     "indice": 1,
+     "codigo": "",
+     "nombre": "Polvo / arena fina",
+     "nombreLargo": "Polvo / arena fina (inercia termica baja)",
+     "descripcion": "",
+     "nota": "Inercia térmica baja: terreno blando.",
+     "color": "#EBD98A",
+     "grupo": "",
+     "nombreEn": "",
+     "caracteristicasEn": "",
+     "interpretacionEn": ""
+    },
+    {
+     "indice": 2,
+     "codigo": "",
+     "nombre": "Regolito / arena mezclada",
+     "nombreLargo": "Regolito / arena mezclada",
+     "descripcion": "",
+     "nota": "",
+     "color": "#D99A4E",
+     "grupo": "",
+     "nombreEn": "",
+     "caracteristicasEn": "",
+     "interpretacionEn": ""
+    },
+    {
+     "indice": 3,
+     "codigo": "",
+     "nombre": "Superficie consolidada / costra / grava",
+     "nombreLargo": "Superficie consolidada / costra / grava",
+     "descripcion": "",
+     "nota": "",
+     "color": "#A8503C",
+     "grupo": "",
+     "nombreEn": "",
+     "caracteristicasEn": "",
+     "interpretacionEn": ""
+    },
+    {
+     "indice": 4,
+     "codigo": "",
+     "nombre": "Roca expuesta / afloramiento",
+     "nombreLargo": "Roca expuesta / afloramiento (inercia alta)",
+     "descripcion": "",
+     "nota": "Inercia térmica alta.",
+     "color": "#3F4A66",
+     "grupo": "",
+     "nombreEn": "",
+     "caracteristicasEn": "",
+     "interpretacionEn": ""
+    }
+   ]
+  }
+ ],
+ "termofisico": "Geo_Termofisico16.png",
+ "zonas": [
+  {
+   "id": "zona_0_regional_completa",
+   "nombre": "Región completa",
+   "lonOeste": 131.50085,
+   "lonEste": 141.00128,
+   "latSur": -8.00079,
+   "latNorte": -2.49939,
+   "anchoKm": 561.3,
+   "altoKm": 326.1,
+   "sueloPct": [
+    14.7,
+    40.4,
+    30.2,
+    14.7
+   ],
+   "geologiaPct": [
+    25.6,
+    4.1,
+    24.4,
+    1.3,
+    2.4,
+    42.1
+   ],
+   "tes": [
+    {
+     "nombre": "Inercia térmica TES",
+     "valor": 0.5
+    },
+    {
+     "nombre": "Índice de polvo TES",
+     "valor": 0.26
+    },
+    {
+     "nombre": "Plagioclasa TES",
+     "valor": 0.17
+    },
+    {
+     "nombre": "Piroxeno alto-Ca TES",
+     "valor": 0.15
+    },
+    {
+     "nombre": "Vidrio / arcillas (filosilicatos) TES",
+     "valor": 0.18
+    },
+    {
+     "nombre": "Rugosidad MOLA",
+     "valor": 0.47
+    }
+   ]
+  },
+  {
+   "id": "zona_1_bradbury",
+   "nombre": "Bradbury Landing",
+   "lonOeste": 137.29889,
+   "lonEste": 137.60101,
+   "latSur": -4.74884,
+   "latNorte": -4.44946,
+   "anchoKm": 17.9,
+   "altoKm": 17.7,
+   "sueloPct": [
+    2.4,
+    8.4,
+    10.9,
+    78.3
+   ],
+   "geologiaPct": [
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    46.4,
+    53.6
+   ],
+   "tes": [
+    {
+     "nombre": "Inercia térmica TES",
+     "valor": 0.77
+    },
+    {
+     "nombre": "Índice de polvo TES",
+     "valor": 0.13
+    },
+    {
+     "nombre": "Plagioclasa TES",
+     "valor": 0.08
+    },
+    {
+     "nombre": "Piroxeno alto-Ca TES",
+     "valor": 0.06
+    },
+    {
+     "nombre": "Vidrio / arcillas (filosilicatos) TES",
+     "valor": 0.15
+    },
+    {
+     "nombre": "Rugosidad MOLA",
+     "valor": 0.01
+    }
+   ]
+  },
+  {
+   "id": "zona_2_gale_completo",
+   "nombre": "Gale completo",
+   "lonOeste": 135.59875,
+   "lonEste": 139.99878,
+   "latSur": -7.59979,
+   "latNorte": -3.19977,
+   "anchoKm": 260.0,
+   "altoKm": 260.8,
+   "sueloPct": [
+    15.9,
+    39.6,
+    29.8,
+    14.7
+   ],
+   "geologiaPct": [
+    0.0,
+    0.0,
+    7.2,
+    0.1,
+    6.6,
+    86.1
+   ],
+   "tes": [
+    {
+     "nombre": "Inercia térmica TES",
+     "valor": 0.53
+    },
+    {
+     "nombre": "Índice de polvo TES",
+     "valor": 0.22
+    },
+    {
+     "nombre": "Plagioclasa TES",
+     "valor": 0.2
+    },
+    {
+     "nombre": "Piroxeno alto-Ca TES",
+     "valor": 0.18
+    },
+    {
+     "nombre": "Vidrio / arcillas (filosilicatos) TES",
+     "valor": 0.18
+    },
+    {
+     "nombre": "Rugosidad MOLA",
+     "valor": 0.48
+    }
+   ]
+  },
+  {
+   "id": "zona_4_babati_norte",
+   "nombre": "Babati – sector norte",
+   "lonOeste": 136.60126,
+   "lonEste": 139.19952,
+   "latSur": -4.60052,
+   "latNorte": -2.49939,
+   "anchoKm": 153.5,
+   "altoKm": 124.5,
+   "sueloPct": [
+    15.8,
+    39.6,
+    30.2,
+    14.3
+   ],
+   "geologiaPct": [
+    0.0,
+    0.0,
+    13.1,
+    3.6,
+    1.4,
+    81.8
+   ],
+   "tes": [
+    {
+     "nombre": "Inercia térmica TES",
+     "valor": 0.59
+    },
+    {
+     "nombre": "Índice de polvo TES",
+     "valor": 0.32
+    },
+    {
+     "nombre": "Plagioclasa TES",
+     "valor": 0.07
+    },
+    {
+     "nombre": "Piroxeno alto-Ca TES",
+     "valor": 0.06
+    },
+    {
+     "nombre": "Vidrio / arcillas (filosilicatos) TES",
+     "valor": 0.14
+    },
+    {
+     "nombre": "Rugosidad MOLA",
+     "valor": 0.61
+    }
+   ]
+  },
+  {
+   "id": "zona_6_sur_farah_vallis",
+   "nombre": "Sector sur – Farah Vallis",
+   "lonOeste": 135.49988,
+   "lonEste": 139.40002,
+   "latSur": -8.00079,
+   "latNorte": -4.99878,
+   "anchoKm": 230.4,
+   "altoKm": 177.9,
+   "sueloPct": [
+    14.7,
+    40.0,
+    32.0,
+    13.3
+   ],
+   "geologiaPct": [
+    1.8,
+    0.0,
+    0.1,
+    0.0,
+    6.5,
+    91.6
+   ],
+   "tes": [
+    {
+     "nombre": "Inercia térmica TES",
+     "valor": 0.48
+    },
+    {
+     "nombre": "Índice de polvo TES",
+     "valor": 0.16
+    },
+    {
+     "nombre": "Plagioclasa TES",
+     "valor": 0.32
+    },
+    {
+     "nombre": "Piroxeno alto-Ca TES",
+     "valor": 0.29
+    },
+    {
+     "nombre": "Vidrio / arcillas (filosilicatos) TES",
+     "valor": 0.23
+    },
+    {
+     "nombre": "Rugosidad MOLA",
+     "valor": 0.4
+    }
+   ]
+  },
+  {
+   "id": "zona_7_este_noreste",
+   "nombre": "Franja este-noreste",
+   "lonOeste": 138.60077,
+   "lonEste": 141.00128,
+   "latSur": -6.80054,
+   "latNorte": -2.49939,
+   "anchoKm": 141.8,
+   "altoKm": 254.9,
+   "sueloPct": [
+    12.8,
+    46.2,
+    29.6,
+    11.4
+   ],
+   "geologiaPct": [
+    0.0,
+    0.0,
+    55.5,
+    0.9,
+    0.1,
+    43.6
+   ],
+   "tes": [
+    {
+     "nombre": "Inercia térmica TES",
+     "valor": 0.44
+    },
+    {
+     "nombre": "Índice de polvo TES",
+     "valor": 0.32
+    },
+    {
+     "nombre": "Plagioclasa TES",
+     "valor": 0.09
+    },
+    {
+     "nombre": "Piroxeno alto-Ca TES",
+     "valor": 0.09
+    },
+    {
+     "nombre": "Vidrio / arcillas (filosilicatos) TES",
+     "valor": 0.13
+    },
+    {
+     "nombre": "Rugosidad MOLA",
+     "valor": 0.66
+    }
+   ]
+  },
+  {
+   "id": "zona_9_oeste_robert_sharp",
+   "nombre": "Franja oeste – Robert Sharp",
+   "lonOeste": 131.50085,
+   "lonEste": 136.79901,
+   "latSur": -6.19904,
+   "latNorte": -2.49939,
+   "anchoKm": 313.0,
+   "altoKm": 219.3,
+   "sueloPct": [
+    16.6,
+    40.4,
+    27.7,
+    15.2
+   ],
+   "geologiaPct": [
+    35.7,
+    3.3,
+    34.6,
+    2.7,
+    0.0,
+    23.7
+   ],
+   "tes": [
+    {
+     "nombre": "Inercia térmica TES",
+     "valor": 0.53
+    },
+    {
+     "nombre": "Índice de polvo TES",
+     "valor": 0.29
+    },
+    {
+     "nombre": "Plagioclasa TES",
+     "valor": 0.14
+    },
+    {
+     "nombre": "Piroxeno alto-Ca TES",
+     "valor": 0.12
+    },
+    {
+     "nombre": "Vidrio / arcillas (filosilicatos) TES",
+     "valor": 0.16
+    },
+    {
+     "nombre": "Rugosidad MOLA",
+     "valor": 0.44
+    }
+   ]
+  }
+ ],
+ "mineralogia": [
+  {
+   "zonas": [
+    "zona_1_bradbury"
+   ],
+   "sitio": "Rocknest (arena eólica inactiva, cerca de Bradbury)",
+   "tipo": "Arena basáltica con costra de polvo",
+   "mineralogia": "~55% cristalino basáltico + ~45% amorfo (fracción <150 µm); plagioclasa, olivino, piroxenos bajos y altos en Ca, magnetita, ilmenita",
+   "notas": "Suelo suelto con costra de 1-2 granos; sin arcillas: poca interacción con agua",
+   "instrumento": "Curiosity CheMin/APXS (in situ)",
+   "fuente": "Blake et al. 2013, Science 341; Treiman et al. 2013, LPSC 44"
+  },
+  {
+   "zonas": [
+    "zona_1_bradbury",
+    "zona_2_gale_completo"
+   ],
+   "sitio": "Grupo Bradbury (Aeolis Palus, piso norte de Gale)",
+   "tipo": "Lutitas, areniscas y conglomerados fluvio-lacustres",
+   "mineralogia": "Composición basáltica con alteración química mínima",
+   "notas": "Clima árido en la fuente (borde norte); sedimentos de ríos y lagos efímeros",
+   "instrumento": "Curiosity APXS/CheMin (in situ)",
+   "fuente": "Rampe et al. 2017, EPSL; Siebach 2016 (tesis Caltech); APXS Bradbury-Vera Rubin (ESSOAr 2020)"
+  },
+  {
+   "zonas": [
+    "zona_2_gale_completo",
+    "zona_4_babati_norte"
+   ],
+   "sitio": "Abanico de Peace Vallis (sale del borde norte de Gale)",
+   "tipo": "Abanico aluvial",
+   "mineralogia": "Sedimento transportado por agua desde el borde norte",
+   "notas": "Material más fino y liso; canales invertidos de varios metros",
+   "instrumento": "Orbital (HiRISE/CTX) + Curiosity",
+   "fuente": "Palucis et al. 2014, JGR Planets 119"
+  },
+  {
+   "zonas": [
+    "zona_2_gale_completo"
+   ],
+   "sitio": "Formación Murray (base del monte Sharp)",
+   "tipo": "Lutita lacustre finamente laminada",
+   "mineralogia": "Arcillas (filosilicatos), sílice cristalina y amorfa, hematita, magnetita, jarosita; más arriba: arcillas, hematita y sulfato de calcio",
+   "notas": "Antiguo lago con condiciones redox variables; roca de grano fino, se fractura en placas",
+   "instrumento": "Curiosity CheMin (in situ)",
+   "fuente": "Rampe et al. 2017, EPSL; resumen EGU2017-10808; NTRS 20170003812"
+  },
+  {
+   "zonas": [
+    "zona_2_gale_completo"
+   ],
+   "sitio": "Formación Stimson (sobre Murray)",
+   "tipo": "Arenisca eólica con estratificación cruzada (dunas antiguas litificadas)",
+   "mineralogia": "Basáltica, composición similar a la arena y el suelo actuales",
+   "notas": "Roca dura; halos de alteración junto a fracturas",
+   "instrumento": "Curiosity (in situ)",
+   "fuente": "Bedford et al. 2020, Icarus 341; Rampe et al. 2020 (revisión)"
+  },
+  {
+   "zonas": [
+    "zona_2_gale_completo"
+   ],
+   "sitio": "Dunas Bagnold (dunas activas al pie NO del monte Sharp)",
+   "tipo": "Arena basáltica activa",
+   "mineralogia": "Plagioclasa, olivino y piroxenos >90% de la fase cristalina; amorfo 35% ± 15%; enriquecida en olivino en la fracción gruesa",
+   "notas": "Granos de ~45-500 µm, redondeados, sin cohesión: terreno blando, peligro de hundimiento para rover/astronauta",
+   "instrumento": "Curiosity CheMin/APXS/ChemCam + CRISM",
+   "fuente": "Ehlmann et al. 2017, JGR Planets; Rampe et al. 2018, GRL 45"
+  },
+  {
+   "zonas": [
+    "zona_2_gale_completo"
+   ],
+   "sitio": "Glen Torridon y transición arcilla-sulfato (monte Sharp medio)",
+   "tipo": "Roca sedimentaria con arcillas",
+   "mineralogia": "Esmectita férrica (nontronita) abundante; hacia arriba se pierden arcillas y carbonato, aumenta hematita; sulfato de Ca; trazas de goetita y halita",
+   "notas": "Cambio de ambiente húmedo a más salino/seco",
+   "instrumento": "Curiosity CheMin/SAM (in situ)",
+   "fuente": "Rampe et al. 2022, LPSC (NTRS 20210026241)"
+  },
+  {
+   "zonas": [
+    "zona_2_gale_completo",
+    "zona_6_sur_farah_vallis"
+   ],
+   "sitio": "Unidad estratificada con sulfatos (monte Sharp alto, unidad Htu)",
+   "tipo": "Estratos con sulfatos hidratados",
+   "mineralogia": "Firmas orbitales de sulfato de Mg hidratado sobre capas con esmectita",
+   "notas": "Alternancia de ambientes secos (eólicos) y húmedos",
+   "instrumento": "Orbital CRISM + Curiosity ChemCam",
+   "fuente": "Rapin et al. 2021, Geology 49; Rapin et al. EPSC2022-1112; Milliken et al. 2010"
+  },
+  {
+   "zonas": [
+    "zona_6_sur_farah_vallis"
+   ],
+   "sitio": "Farah Vallis y su delta (borde SO/S de Gale)",
+   "tipo": "Valle fluvial y delta",
+   "mineralogia": "Material oscuro depositado desde el gran canal que cruza el borde SO (THEMIS)",
+   "notas": "Registro de niveles del antiguo lago",
+   "instrumento": "Orbital (THEMIS/HiRISE)",
+   "fuente": "JPL PIA16978; lista de deltas de Gale (Wikipedia/Gale)"
+  },
+  {
+   "zonas": [
+    "zona_9_oeste_robert_sharp"
+   ],
+   "sitio": "Cráter Robert Sharp (vecino oeste de Gale, 152 km)",
+   "tipo": "Relleno de cráter con minerales acuosos",
+   "mineralogia": "Mineralogía similar a Gale; posible depósito de carbonato (HiRISE)",
+   "notas": "Fases acuosas posiblemente hasta ~2 Ga después del lago de Gale",
+   "instrumento": "Orbital (CRISM/HiRISE)",
+   "fuente": "Reconstructing the infilling history within Robert Sharp crater, Mars, Icarus 358 (2021), ADS 2021Icar..35814223B; HiRISE ESP_040823_1755"
+  }
+ ]
+}
