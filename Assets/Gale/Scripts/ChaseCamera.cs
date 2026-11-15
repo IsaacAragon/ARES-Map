@@ -25,6 +25,8 @@ public class ChaseCamera : MonoBehaviour
     [Range(20f, 90f)] public float aerialPitch = 75f;
     public float aerialYaw = 0f;                  // 0 = norte arriba
     public float transitionSpeed = 4f;
+    [Tooltip("Hasta dónde puede desplazarse la vista aérea hacia el norte (u Unity desde el centro de Gale).")]
+    public float aerialNorthLimit = 3000f;
 
     [Header("Atmósfera (polvo en suspensión)")]
     public float chaseFogDensity = 0.0005f;
@@ -37,6 +39,9 @@ public class ChaseCamera : MonoBehaviour
     public double marsRadius = 3396190.0;
 
     public bool Aerial { get; private set; }
+
+    // Lo activa el minimapa interactivo: la cámara no lee teclado ni ratón mientras tanto.
+    [HideInInspector] public bool inputBlocked;
 
     Vector3 aerialFocus;
     bool prevToggle, prevF, prevC;
@@ -61,7 +66,7 @@ public class ChaseCamera : MonoBehaviour
 
     void LateUpdate()
     {
-        var kb = Keyboard.current;
+        var kb = inputBlocked ? null : Keyboard.current;
         // Flanco de subida comparando con el frame anterior (fiable también con el Input System en FixedUpdate).
         bool toggle = kb != null && kb[toggleKey].isPressed;
         if (toggle && !prevToggle) SetAerial(!Aerial);
@@ -74,7 +79,7 @@ public class ChaseCamera : MonoBehaviour
     void UpdateChase()
     {
         if (!target) return;
-        var mouse = Mouse.current;
+        var mouse = inputBlocked ? null : Mouse.current;
         if (mouse != null)
             distance = Mathf.Clamp(distance - mouse.scroll.ReadValue().y * 0.01f, 4f, 200f);
 
@@ -100,7 +105,7 @@ public class ChaseCamera : MonoBehaviour
     void UpdateAerial(Keyboard kb)
     {
         float dt = Time.unscaledDeltaTime;
-        var mouse = Mouse.current;
+        var mouse = inputBlocked ? null : Mouse.current;
 
         if (kb != null)
         {
@@ -112,8 +117,9 @@ public class ChaseCamera : MonoBehaviour
             if (kb.aKey.isPressed || kb.leftArrowKey.isPressed) move += Vector3.left;
             float speed = aerialHeight * 0.6f * (kb.leftShiftKey.isPressed ? 3f : 1f);
             aerialFocus += yawRot * move.normalized * speed * dt;
+            // Gale ±2000 u (200 km) y hacia el norte hasta el sector de Babati (borde norte ≈ +2954 u).
             aerialFocus.x = Mathf.Clamp(aerialFocus.x, craterCenter.x - 2000f, craterCenter.x + 2000f);
-            aerialFocus.z = Mathf.Clamp(aerialFocus.z, craterCenter.z - 2000f, craterCenter.z + 2000f);
+            aerialFocus.z = Mathf.Clamp(aerialFocus.z, craterCenter.z - 2000f, craterCenter.z + aerialNorthLimit);
 
             if (kb.qKey.isPressed) aerialYaw -= 60f * dt;
             if (kb.eKey.isPressed) aerialYaw += 60f * dt;
@@ -153,8 +159,8 @@ public class ChaseCamera : MonoBehaviour
         double lat = y / marsRadius * 180.0 / System.Math.PI;
         GUI.Box(new Rect(10, 10, 360, 146), GUIContent.none);
         string controls = Aerial
-            ? "VISTA AÉREA · WASD mover · Q/E girar · rueda altura\nclic dcho+arrastrar inclinar · F rover · C cráter · Tab volver"
-            : "WASD mover · Shift rápido · Espacio freno · R enderezar\nTab vista aérea";
+            ? "VISTA AÉREA · WASD mover · Q/E girar · rueda altura\nclic dcho+arrastrar inclinar · F rover · C cráter · Tab volver · M mapa"
+            : "WASD mover · Shift rápido · Espacio freno · R enderezar\nTab vista aérea · M mapa";
         GUI.Label(new Rect(20, 16, 350, 140),
             $"Gale (MOLA 463 m) — escala 1:{1f / worldScale:0}\n" +
             $"Velocidad: {target.Speed:0.0} m/s (Unity)\n" +

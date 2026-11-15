@@ -18,7 +18,21 @@ import sys, os
 import numpy as np
 from PIL import Image, ImageFilter
 
-wms, acg, out = sys.argv[1:4]
+import argparse
+ap = argparse.ArgumentParser()
+ap.add_argument("wms"); ap.add_argument("acg", help="ambientCG dir, or - to skip the detail maps and SOURCES.txt")
+ap.add_argument("out")
+ap.add_argument("--name", default="Gale_Albedo.png")
+ap.add_argument("--match", nargs=5, metavar=("ALBEDO", "U0", "U1", "V0", "V1"),
+                help="Colour-match the edge strip of this texture to a region (UV 0..1, v=0 south) of ALBEDO, "
+                     "so two adjoining terrain blocks show no seam.")
+ap.add_argument("--match-edge", choices=["south", "north"], default="south",
+                help="Which edge of the new texture touches the matched region.")
+ap.add_argument("--split-bottom", nargs=2, metavar=("ROWS", "BOTTOM_NAME"),
+                help="Process one joint image (e.g. Gale + north band) and save its bottom ROWS rows as "
+                     "BOTTOM_NAME and the rest as --name, so both blocks share colour normalisation.")
+args = ap.parse_args()
+wms, acg, out = args.wms, args.acg, args.out
 os.makedirs(out, exist_ok=True)
 
 
@@ -69,9 +83,35 @@ detail = np.clip(themis / np.maximum(th_low, 1e-3), 0.3, 2.5) ** 0.55
 th_reg = th_low / max(th_low.mean(), 1e-3)
 albedo = base * detail[..., None] * (0.85 + 0.15 * th_reg[..., None])
 
+if args.match:
+    # Per-channel gain (linear) so that this texture's edge strip has the same mean colour as the
+    # neighbouring texture's strip on the other side of the seam. Applied as a smooth ramp: full gain
+    # at the seam, fading to a global half-gain far from it, so the whole block stays consistent.
+    ref = to_linear(load(args.match[0], "RGB"))
+    u0, u1, v0, v1 = map(float, args.match[1:])
+    H, W = ref.shape[:2]
+    rs = ref[int((1 - v1) * H):max(int((1 - v0) * H), int((1 - v1) * H) + 1), int(u0 * W):max(int(u1 * W), int(u0 * W) + 1)]
+    strip = max(4, albedo.shape[0] // 40)
+    own = albedo[-strip:] if args.match_edge == "south" else albedo[:strip]
+    gain = rs.reshape(-1, 3).mean(0) / np.maximum(own.reshape(-1, 3).mean(0), 1e-4)
+    h = albedo.shape[0]
+    dist = (np.arange(h)[::-1] if args.match_edge == "south" else np.arange(h)) / max(h - 1, 1)
+    w = (1 - dist)[:, None, None]
+    albedo = albedo * (gain * w + (0.5 * gain + 0.5) * (1 - w))
+    print("[tex] colour match gain (linear RGB):", gain.round(3))
+
 img = Image.fromarray((to_srgb(albedo) * 255 + 0.5).astype(np.uint8), "RGB")
-img.save(os.path.join(out, "Gale_Albedo.png"))
-print("[tex] Gale_Albedo.png", img.size, "mean sRGB", np.asarray(img).reshape(-1, 3).mean(0).round(1))
+if args.split_bottom:
+    rows, bottom_name = int(args.split_bottom[0]), args.split_bottom[1]
+    H = img.size[1]
+    parts = ((args.name, img.crop((0, 0, img.size[0], H - rows))), (bottom_name, img.crop((0, H - rows, img.size[0], H))))
+else:
+    parts = ((args.name, img),)
+for nm, im in parts:
+    im.save(os.path.join(out, nm))
+    print("[tex]", nm, im.size, "mean sRGB", np.asarray(im).reshape(-1, 3).mean(0).round(1))
+if acg == "-":
+    sys.exit(0)
 
 # ---- detail map from ambientCG Rocks015 (CC0)
 name = "Rocks015_2K-JPG"
