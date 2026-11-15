@@ -82,6 +82,7 @@ public class PauseMenu : MonoBehaviour
         "<b>Ruta A→B (en el mapa)</b>\nClic destino · Mayús + clic parada · arrastrar un pin moverlo · Supr quitarlo\n" +
         "Intro iniciar el guiado · Retroceso cancelar · P perfil · V verla en vista aérea · Ctrl+Z / Ctrl+Y\n\n" +
         "<b>Capas del mapa</b>\nL cambia entre imagen real, geología, material del suelo y transitabilidad\n\n" +
+        "<b>Menú de exploración (G)</b>\nCapas, geodesia, rocas, radiación y ajustes (mostrar u ocultar el minimapa)\n\n" +
         "<b>Esc</b> pausa";
 
     const string GamepadHelp =
