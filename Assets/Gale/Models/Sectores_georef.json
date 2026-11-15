@@ -1,0 +1,69 @@
+{
+  "model": "X = X0 + x_local / cos(phi0); Y = Y0 + y_local; Z_mola = z_local - dz",
+  "X0": 8147151.661715715,
+  "Y0": -272214.5037171259,
+  "phi0_deg": -4.592423328859567,
+  "x_scale": 1.0032208655943704,
+  "rms_all": 53.98044122086628,
+  "sectors": {
+    "6": {
+      "dxf": "6. Gale_sector_sur_Farah_Vallis_Civil3D.dxf",
+      "points": 491597,
+      "local_min": [
+        -61360.183,
+        -154737.714,
+        -4306.0
+      ],
+      "local_max": [
+        103708.831,
+        -36337.719,
+        1464.0
+      ],
+      "dz": 0.9222006438139942,
+      "rms": 59.84285101290976,
+      "mae": 38.33046535567266,
+      "rms_with_babati_offset_no_scale": 62.3567097145647
+    },
+    "7": {
+      "dxf": "7.Gale_franja_este_noreste_Civil3D.dxf",
+      "points": 610749,
+      "local_min": [
+        98126.787,
+        -41937.719,
+        -3170.0
+      ],
+      "local_max": [
+        269176.562,
+        100062.275,
+        -145.0
+      ],
+      "dz": 0.12101088885538047,
+      "rms": 30.663523347328344,
+      "mae": 14.361615711615148,
+      "rms_with_babati_offset_no_scale": 60.17865638980542
+    },
+    "9": {
+      "dxf": "9. Gale_franja_oeste_Robert_Sharp_Civil3D.dxf",
+      "points": 1099435,
+      "local_min": [
+        -315542.542,
+        -56737.718,
+        -3178.0
+      ],
+      "local_max": [
+        -46806.997,
+        106062.275,
+        1448.0
+      ],
+      "dz": 0.34261723785652975,
+      "rms": 60.925378195135124,
+      "mae": 28.829687287302,
+      "rms_with_babati_offset_no_scale": 100.60198934218946
+    }
+  },
+  "init_offset": [
+    8147221.974215715,
+    -272175.4412171259
+  ],
+  "mola": "Mars_MGS_MOLA_DEM_mosaic_global_463m.tif"
+}
