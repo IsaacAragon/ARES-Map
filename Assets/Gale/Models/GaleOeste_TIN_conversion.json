@@ -1,0 +1,35 @@
+{
+  "input": "C:\\Users\\isaac\\AppData\\Local\\Temp/mosaic/s9/GaleOeste_points.dxf",
+  "points": 346257,
+  "layers": {
+    "BASE": 111416,
+    "SECTOR_9": 231863,
+    "BORDE": 2978
+  },
+  "other_entities": {},
+  "vertices": 346257,
+  "duplicates_merged": 0,
+  "triangles": 689534,
+  "flipped": 0,
+  "removed_xy_offset": [
+    8168043.8858655,
+    -319997.63721099996
+  ],
+  "scale": 1.0,
+  "bounds_min": [
+    -337363.65625,
+    -106743.0625,
+    -3059.3426065406584
+  ],
+  "bounds_max": [
+    -99796.65625,
+    147958.390625,
+    1689.0
+  ],
+  "highest_vertex": [
+    -320229.1875,
+    -101185.9375,
+    1689.0
+  ],
+  "fbx_bytes": 19074748
+}
