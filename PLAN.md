@@ -379,7 +379,7 @@ Cambios respecto al diseño, con su motivo:
 - Se quitó un `MinimapHUD` **duplicado** que ya había en la escena de `dev` (M abría dos mapas y el segundo
   tapaba la ruta); `GaleSceneBuilder` borraba solo uno de los antiguos.
 
-### Tiempos medidos (perfil Equilibrada, editor, i.e. el peor caso; memoria de búsqueda ~110–120 MB)
+### Tiempos medidos (perfil Equilibrada, medidos en el editor; memoria de búsqueda ~110–120 MB)
 
 | Ruta | Distancia | Exacto (1,0) | Ponderado (1,3) |
 |---|---|---|---|
