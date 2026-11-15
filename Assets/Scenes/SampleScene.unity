@@ -171,6 +171,10 @@ PrefabInstance:
       propertyPath: 'm_Materials.Array.data[0]'
       value: 
       objectReference: {fileID: 2100000, guid: 0d95ff9d493f8a9468b529aaa7d01931, type: 2}
+    - target: {fileID: -5754084199372789682, guid: 87e24be6f6ad22e45a344552d6de55bd, type: 3}
+      propertyPath: m_Mesh
+      value: 
+      objectReference: {fileID: 6875241759843154254, guid: 87e24be6f6ad22e45a344552d6de55bd, type: 3}
     - target: {fileID: 919132149155446097, guid: 87e24be6f6ad22e45a344552d6de55bd, type: 3}
       propertyPath: m_Name
       value: Gale_TIN
@@ -253,6 +257,7 @@ GameObject:
   - component: {fileID: 330585544}
   - component: {fileID: 330585547}
   - component: {fileID: 330585548}
+  - component: {fileID: 330585549}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -408,6 +413,26 @@ MonoBehaviour:
   offsetX: 8168043.885866
   offsetY: -319997.637211
   marsRadius: 3396190
+--- !u!114 &330585549
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 330585543}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fce5340473496184a831662771b72304, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MinimapHUD
+  show: 1
+  sizePixels: 260
+  margin: 12
+  radiusMeters: 10000
+  minRadiusMeters: 500
+  maxRadiusMeters: 60000
+  rotateWithRover: 0
+  disableFog: 1
 --- !u!1 &410087039
 GameObject:
   m_ObjectHideFlags: 0
@@ -785,6 +810,9 @@ MonoBehaviour:
   springDamper: 700
   autoRestLength: 1
   centerOfMass: {x: 0, y: 0.7, z: 0}
+  centerMassOverWheels: 1
+  rayHeadroom: 1.5
+  bumpStopStrength: 40000
   motorForce: 5000
   maxSpeed: 12
   boostMultiplier: 3

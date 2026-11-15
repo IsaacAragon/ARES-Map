@@ -151,13 +151,14 @@ public class ChaseCamera : MonoBehaviour
         double z = p.y / worldScale;
         double lon = x / marsRadius * 180.0 / System.Math.PI;
         double lat = y / marsRadius * 180.0 / System.Math.PI;
-        GUI.Box(new Rect(10, 10, 360, 128), GUIContent.none);
+        GUI.Box(new Rect(10, 10, 360, 146), GUIContent.none);
         string controls = Aerial
             ? "VISTA AÉREA · WASD mover · Q/E girar · rueda altura\nclic dcho+arrastrar inclinar · F rover · C cráter · Tab volver"
             : "WASD mover · Shift rápido · Espacio freno · R enderezar\nTab vista aérea";
-        GUI.Label(new Rect(20, 16, 350, 120),
+        GUI.Label(new Rect(20, 16, 350, 140),
             $"Gale (MOLA 463 m) — escala 1:{1f / worldScale:0}\n" +
             $"Velocidad: {target.Speed:0.0} m/s (Unity)\n" +
+            $"Gravedad: g = {target.gravity:0.00} m/s² (Marte)\n" +
             $"Lon {lon:0.0000}° E   Lat {lat:0.0000}°\n" +
             $"X {x:0} m   Y {y:0} m   Elev. {z:0} m\n" + controls);
 

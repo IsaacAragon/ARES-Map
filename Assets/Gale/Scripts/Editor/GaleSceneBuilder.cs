@@ -102,6 +102,7 @@ public static class GaleSceneBuilder
             chase.offsetX = OffsetX;
             chase.offsetY = OffsetY;
             chase.marsRadius = MarsRadius;
+            if (!cam.GetComponent<MinimapHUD>()) cam.gameObject.AddComponent<MinimapHUD>();
             cam.transform.position = spawn + new Vector3(0f, 6f, 10f);
             cam.transform.LookAt(spawn);
         }
