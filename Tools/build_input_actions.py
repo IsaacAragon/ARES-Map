@@ -7,6 +7,7 @@ ejecutarlo no cambia el asset si no cambian las acciones.
 
 Reparto del mando (resuelve los choques de la propuesta original):
   Global : Start pausa · Select vista aérea · R3 mapa · cruceta → ayuda · cruceta ← capa del mapa
+           G (teclado) menú de exploración
   Rover  : stick izq. X girar · RT/LT acelerar/retroceder · A rápido · B freno · Y enderezar
   Camera : cruceta ↑/↓ zoom de la cámara de seguimiento
   Aerial : stick izq. mover · LB/RB girar · stick dcho. Y altura · stick dcho. X + cruceta ↑/↓ mirar
@@ -75,6 +76,8 @@ def build():
     g.action("Help", "button"); g.bind("Help", "<Keyboard>/h", KM); g.bind("Help", "<Gamepad>/dpad/right", GP)
     # Capas del mapa (geología, material del suelo): pasa a la siguiente.
     g.action("CycleLayer", "button"); g.bind("CycleLayer", "<Keyboard>/l", KM); g.bind("CycleLayer", "<Gamepad>/dpad/left", GP)
+    # Menú de exploración (barra lateral flotante): lo abre y libera el cursor para usarlo.
+    g.action("ExplorerMenu", "button"); g.bind("ExplorerMenu", "<Keyboard>/g", KM)
     g.action("MinimapZoom", "axis")   # pasos −/+ del minimapa fuera del modo mapa
     g.axis_keys("MinimapZoom", "<Keyboard>/minus", "<Keyboard>/equals", name="MenosMas")
     g.axis_keys("MinimapZoom", "<Keyboard>/numpadMinus", "<Keyboard>/numpadPlus", name="Numpad")

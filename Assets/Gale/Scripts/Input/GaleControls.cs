@@ -143,6 +143,16 @@ public partial class @GaleControls: IInputActionCollection2, IDisposable
                     ""priority"": 0
                 },
                 {
+                    ""name"": ""ExplorerMenu"",
+                    ""type"": ""Button"",
+                    ""id"": ""7a3637db-16ea-5032-927f-8b10cb452727"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false,
+                    ""priority"": 0
+                },
+                {
                     ""name"": ""MinimapZoom"",
                     ""type"": ""Value"",
                     ""id"": ""aad7ce9f-f72f-51d6-a876-2ea458142911"",
@@ -261,6 +271,17 @@ public partial class @GaleControls: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""groups"": ""Gamepad"",
                     ""action"": ""CycleLayer"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""e0bfc0c4-0afc-5e0c-a6c7-b95f3f92ed85"",
+                    ""path"": ""<Keyboard>/g"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard&Mouse"",
+                    ""action"": ""ExplorerMenu"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 },
@@ -2556,6 +2577,7 @@ public partial class @GaleControls: IInputActionCollection2, IDisposable
         m_Global_ToggleMap = m_Global.FindAction("ToggleMap", throwIfNotFound: true);
         m_Global_Help = m_Global.FindAction("Help", throwIfNotFound: true);
         m_Global_CycleLayer = m_Global.FindAction("CycleLayer", throwIfNotFound: true);
+        m_Global_ExplorerMenu = m_Global.FindAction("ExplorerMenu", throwIfNotFound: true);
         m_Global_MinimapZoom = m_Global.FindAction("MinimapZoom", throwIfNotFound: true);
         // Rover
         m_Rover = asset.FindActionMap("Rover", throwIfNotFound: true);
@@ -2700,6 +2722,7 @@ public partial class @GaleControls: IInputActionCollection2, IDisposable
     private readonly InputAction m_Global_ToggleMap;
     private readonly InputAction m_Global_Help;
     private readonly InputAction m_Global_CycleLayer;
+    private readonly InputAction m_Global_ExplorerMenu;
     private readonly InputAction m_Global_MinimapZoom;
     /// <summary>
     /// Provides access to input actions defined in input action map "Global".
@@ -2732,6 +2755,10 @@ public partial class @GaleControls: IInputActionCollection2, IDisposable
         /// Provides access to the underlying input action "Global/CycleLayer".
         /// </summary>
         public InputAction @CycleLayer => m_Wrapper.m_Global_CycleLayer;
+        /// <summary>
+        /// Provides access to the underlying input action "Global/ExplorerMenu".
+        /// </summary>
+        public InputAction @ExplorerMenu => m_Wrapper.m_Global_ExplorerMenu;
         /// <summary>
         /// Provides access to the underlying input action "Global/MinimapZoom".
         /// </summary>
@@ -2777,6 +2804,9 @@ public partial class @GaleControls: IInputActionCollection2, IDisposable
             @CycleLayer.started += instance.OnCycleLayer;
             @CycleLayer.performed += instance.OnCycleLayer;
             @CycleLayer.canceled += instance.OnCycleLayer;
+            @ExplorerMenu.started += instance.OnExplorerMenu;
+            @ExplorerMenu.performed += instance.OnExplorerMenu;
+            @ExplorerMenu.canceled += instance.OnExplorerMenu;
             @MinimapZoom.started += instance.OnMinimapZoom;
             @MinimapZoom.performed += instance.OnMinimapZoom;
             @MinimapZoom.canceled += instance.OnMinimapZoom;
@@ -2806,6 +2836,9 @@ public partial class @GaleControls: IInputActionCollection2, IDisposable
             @CycleLayer.started -= instance.OnCycleLayer;
             @CycleLayer.performed -= instance.OnCycleLayer;
             @CycleLayer.canceled -= instance.OnCycleLayer;
+            @ExplorerMenu.started -= instance.OnExplorerMenu;
+            @ExplorerMenu.performed -= instance.OnExplorerMenu;
+            @ExplorerMenu.canceled -= instance.OnExplorerMenu;
             @MinimapZoom.started -= instance.OnMinimapZoom;
             @MinimapZoom.performed -= instance.OnMinimapZoom;
             @MinimapZoom.canceled -= instance.OnMinimapZoom;
@@ -3847,6 +3880,13 @@ public partial class @GaleControls: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnCycleLayer(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "ExplorerMenu" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnExplorerMenu(InputAction.CallbackContext context);
         /// <summary>
         /// Method invoked when associated input action "MinimapZoom" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
         /// </summary>

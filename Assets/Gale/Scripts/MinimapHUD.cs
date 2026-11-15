@@ -20,6 +20,9 @@ public class MinimapHUD : MonoBehaviour
 {
     [Header("Minimapa (círculo arriba a la derecha)")]
     public bool show = true;
+    [Tooltip("Ver el minimapa circular. Oculto, el resto sigue igual (M abre el mapa, los datos van a la barra inferior). " +
+             "Lo cambia el menú de exploración (Ajustes).")]
+    public bool circleVisible = true;
     [Tooltip("Diámetro del minimapa en píxeles a 1080 p (escala con el alto de la pantalla).")]
     public float diameterAt1080 = 236f;
     [Tooltip("Espacio a la derecha y arriba del círculo para los datos del borde (px a 1080 p).")]
@@ -162,7 +165,7 @@ public class MinimapHUD : MonoBehaviour
     /// <summary>Cursor libre en el mapa interactivo (o en pausa); oculto y bloqueado en la simulación.</summary>
     public void ApplyCursor()
     {
-        bool free = Interactive || !hideCursorInSimulation || SimPause.IsPaused;
+        bool free = Interactive || !hideCursorInSimulation || SimPause.IsPaused || ExplorerMenu.WantsCursor;
         Cursor.lockState = free ? CursorLockMode.None : CursorLockMode.Locked;
         Cursor.visible = free;
     }
@@ -320,7 +323,7 @@ public class MinimapHUD : MonoBehaviour
     void LateUpdate()
     {
         if (!mapCam) return;
-        mapCam.enabled = show && chase && chase.target;
+        mapCam.enabled = show && chase && chase.target && (Interactive || circleVisible);
         if (!mapCam.enabled) return;
         Vector3 c = MapCenter;
         // Por encima del punto más alto del terreno (Z máx. 1347 m → ~27 u a 1:50).
@@ -335,6 +338,7 @@ public class MinimapHUD : MonoBehaviour
         markerStyle ??= new GUIStyle(GUI.skin.label) { alignment = TextAnchor.MiddleCenter, fontSize = 16, padding = new RectOffset() };
         hintStyle ??= new GUIStyle(GUI.skin.label) { alignment = TextAnchor.UpperCenter, wordWrap = true };
 
+        if (!Interactive && !circleVisible) return;   // minimapa oculto desde el menú de exploración
         Rect r = MapRect();
         var old = GUI.color;
         if (Interactive)

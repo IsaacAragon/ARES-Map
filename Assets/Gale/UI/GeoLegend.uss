@@ -1,6 +1,6 @@
 .legend {
     position: absolute;
-    left: 16px;
+    left: 92px;   /* a la derecha de la barra del menú de exploración */
     top: 16px;
     width: 440px;
     padding: 14px 16px 12px 16px;
