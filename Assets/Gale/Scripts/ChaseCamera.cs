@@ -6,7 +6,7 @@ using UnityEngine.InputSystem;
 //  - Vista aérea (Tab): sobre el cráter. WASD desplaza, Q/E gira, rueda = altura,
 //    botón derecho + arrastrar = inclinación y giro, F = centrar en el rover, C = centrar en el cráter.
 //    Mientras está activa, el rover no recibe teclas (se queda frenado).
-// HUD con velocidad y posición en coordenadas reales del DXF (Equirectangular Marte).
+// Los datos del rover se muestran en NavInstrumentHUD (alrededor del minimapa).
 public class ChaseCamera : MonoBehaviour
 {
     public RoverController target;
@@ -155,23 +155,10 @@ public class ChaseCamera : MonoBehaviour
 
     void OnGUI()
     {
+        // Los datos (velocidad, rumbo, elevación, coordenadas, g) y las ayudas los muestra
+        // NavInstrumentHUD alrededor del minimapa.
         if (!target || SimPause.IsPaused) return;
         Vector3 p = target.transform.position;
-        double x = offsetX + p.x / worldScale;
-        double y = offsetY + p.z / worldScale;
-        double z = p.y / worldScale;
-        double lon = x / marsRadius * 180.0 / System.Math.PI;
-        double lat = y / marsRadius * 180.0 / System.Math.PI;
-        GUI.Box(new Rect(10, 10, 360, 146), GUIContent.none);
-        string controls = Aerial
-            ? "VISTA AÉREA · WASD mover · Q/E girar · rueda altura\nclic dcho+arrastrar inclinar · F rover · C cráter · Tab volver · M mapa · Esc pausa"
-            : "WASD mover · Shift rápido · Espacio freno · R enderezar\nTab vista aérea · M mapa";
-        GUI.Label(new Rect(20, 16, 350, 140),
-            $"Gale (MOLA 463 m) — escala 1:{1f / worldScale:0}\n" +
-            $"Velocidad: {target.Speed:0.0} m/s (Unity)\n" +
-            $"Gravedad: g = {target.gravity:0.00} m/s² (Marte)\n" +
-            $"Lon {lon:0.0000}° E   Lat {lat:0.0000}°\n" +
-            $"X {x:0} m   Y {y:0} m   Elev. {z:0} m\n" + controls);
 
         // En vista aérea el rover es diminuto: marcador sobre su posición en pantalla.
         if (Aerial && cam)

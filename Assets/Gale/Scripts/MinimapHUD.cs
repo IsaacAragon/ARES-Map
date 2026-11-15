@@ -3,7 +3,8 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.Rendering;
 
-// Minimapa abajo a la derecha: vista cenital centrada en el rover. Una cámara ortográfica
+// Minimapa circular arriba a la derecha: vista cenital centrada en el rover (el aro y los datos
+// del borde los dibuja NavInstrumentHUD). Una cámara ortográfica
 // propia, creada en ejecución y sin guardarse en la escena, pinta a una RenderTexture que
 // se dibuja con IMGUI.
 //
@@ -16,11 +17,15 @@ using UnityEngine.Rendering;
 [RequireComponent(typeof(ChaseCamera))]
 public class MinimapHUD : MonoBehaviour
 {
-    [Header("Minimapa")]
+    [Header("Minimapa (círculo arriba a la derecha)")]
     public bool show = true;
-    [Tooltip("Lado del minimapa en píxeles de pantalla.")]
-    public int sizePixels = 260;
+    [Tooltip("Diámetro del minimapa en píxeles a 1080 p (escala con el alto de la pantalla).")]
+    public float diameterAt1080 = 236f;
+    [Tooltip("Espacio a la derecha y arriba del círculo para los datos del borde (px a 1080 p).")]
+    public float rightSpace = 128f, topSpace = 48f;
     public int margin = 12;
+    [Tooltip("Material con Hidden/Gale/CircleMask (lo asigna el builder; si falta se crea en ejecución).")]
+    public Material circleMaterial;
     [Tooltip("Mitad del lado visible, en metros reales.")]
     public float radiusMeters = 10000f;
     public float minRadiusMeters = 500f;
@@ -206,7 +211,7 @@ public class MinimapHUD : MonoBehaviour
         {
             Vector2 sp = mouse.position.ReadValue();
             Vector2 gui = new Vector2(sp.x, Screen.height - sp.y);
-            bool inside = r.Contains(gui);
+            bool inside = InMap(gui, r);
 
             // Rueda: zoom manteniendo fijo el punto del terreno bajo el cursor.
             float scroll = mouse.scroll.ReadValue().y;
@@ -244,13 +249,27 @@ public class MinimapHUD : MonoBehaviour
 
     // ---------- Conversiones mapa <-> mundo ----------
 
-    /// <summary>Rectángulo del mapa en coordenadas de GUI (origen arriba a la izquierda).</summary>
+    /// <summary>Escala de la UI respecto a 1080 p.</summary>
+    public static float UiScale => Mathf.Max(0.6f, Screen.height / 1080f);
+
+    /// <summary>Rectángulo del mapa en coordenadas de GUI (origen arriba a la izquierda).
+    /// Fuera del modo interactivo es el cuadrado que circunscribe el círculo.</summary>
     public Rect MapRect()
     {
-        float s = Interactive
-            ? Mathf.Min(Screen.height * interactiveFraction, Screen.width - 2f * margin)
-            : sizePixels;
-        return new Rect(Screen.width - s - margin, Screen.height - s - margin, s, s);
+        if (Interactive)
+        {
+            float s = Mathf.Min(Screen.height * interactiveFraction, Screen.width - 2f * margin);
+            return new Rect((Screen.width - s) * 0.5f, (Screen.height - s) * 0.5f - 20f * UiScale, s, s);
+        }
+        float d = diameterAt1080 * UiScale;
+        return new Rect(Screen.width - d - rightSpace * UiScale, topSpace * UiScale, d, d);
+    }
+
+    /// <summary>¿Cae un punto de GUI dentro del mapa visible? (círculo, o cuadrado en modo interactivo).</summary>
+    public bool InMap(Vector2 gui, Rect r, float inset = 0f)
+    {
+        if (Interactive) return r.Contains(gui);
+        return (gui - r.center).magnitude <= r.width * 0.5f - inset;
     }
 
     public Vector2 WorldToMap(Vector3 world) => WorldToMap(world, MapRect());
@@ -294,16 +313,31 @@ public class MinimapHUD : MonoBehaviour
 
     void OnGUI()
     {
+        GUI.depth = 10;  // debajo del aro y los datos de NavInstrumentHUD
         if (!show || !mapCam || !mapCam.enabled || !rt || SimPause.IsPaused) return;
         markerStyle ??= new GUIStyle(GUI.skin.label) { alignment = TextAnchor.MiddleCenter, fontSize = 16, padding = new RectOffset() };
         hintStyle ??= new GUIStyle(GUI.skin.label) { alignment = TextAnchor.UpperCenter, wordWrap = true };
 
         Rect r = MapRect();
         var old = GUI.color;
-        GUI.color = new Color(0f, 0f, 0f, 0.6f);
-        GUI.DrawTexture(new Rect(r.x - 3, r.y - 3, r.width + 6, r.height + 6), Texture2D.whiteTexture);
-        GUI.color = old;
-        GUI.DrawTexture(r, rt, ScaleMode.StretchToFill, false);
+        if (Interactive)
+        {
+            GUI.color = new Color(0f, 0f, 0f, 0.6f);
+            GUI.DrawTexture(new Rect(r.x - 3, r.y - 3, r.width + 6, r.height + 6), Texture2D.whiteTexture);
+            GUI.color = old;
+            GUI.DrawTexture(r, rt, ScaleMode.StretchToFill, false);
+        }
+        else if (Event.current.type == EventType.Repaint)
+        {
+            // Círculo: la RenderTexture con máscara circular (el aro lo dibuja NavInstrumentHUD).
+            if (!circleMaterial)
+            {
+                var sh = Shader.Find("Hidden/Gale/CircleMask");
+                if (sh) circleMaterial = new Material(sh) { hideFlags = HideFlags.DontSave };
+            }
+            if (circleMaterial) Graphics.DrawTexture(r, rt, circleMaterial);
+            else GUI.DrawTexture(r, rt, ScaleMode.StretchToFill, false);
+        }
 
         Transform t = chase.target.transform;
         float yaw = MapYaw;
@@ -312,7 +346,7 @@ public class MinimapHUD : MonoBehaviour
         if (chase.Aerial)
         {
             Vector2 fp = WorldToMap(AerialFocusOnGround(), r);
-            if (r.Contains(fp)) Marker(fp, "✚", Color.yellow, 0f);
+            if (InMap(fp, r, 8f)) Marker(fp, "✚", Color.yellow, 0f);
         }
 
         // Lugares con nombre.
@@ -320,7 +354,7 @@ public class MinimapHUD : MonoBehaviour
             foreach (var pl in places)
             {
                 Vector2 pp = WorldToMap(MarsGeo.LonLatToUnity(pl.lon, pl.lat), r);
-                if (!r.Contains(pp)) continue;
+                if (!InMap(pp, r, 8f)) continue;
                 Marker(pp, "•", new Color(1f, 0.85f, 0.55f), 0f);
                 var oldc = GUI.color;
                 GUI.color = Color.black; GUI.Label(new Rect(pp.x + 7, pp.y - 9, 120, 20), pl.name);
@@ -330,27 +364,33 @@ public class MinimapHUD : MonoBehaviour
 
         // Rover con flecha de rumbo (en el centro salvo que el mapa interactivo se haya desplazado).
         Vector2 rp = WorldToMap(t.position, r);
-        if (r.Contains(rp)) Marker(rp, "▲", Color.cyan, t.eulerAngles.y - yaw);
+        if (InMap(rp, r, 6f)) Marker(rp, "▲", Color.cyan, t.eulerAngles.y - yaw);
 
-        // Norte: en el borde, en la dirección real del norte.
-        Vector2 dirN = new Vector2(Mathf.Sin(-yaw * Mathf.Deg2Rad), -Mathf.Cos(-yaw * Mathf.Deg2Rad));
-        Marker(r.center + dirN * (r.width * 0.5f - 12f), "N", Color.white, 0f);
-
-        // Escala.
-        float bar = r.width * 0.25f;
-        float barMeters = radiusMeters * 2f * 0.25f;
-        GUI.color = Color.white;
-        GUI.DrawTexture(new Rect(r.x + 8, r.yMax - 10, bar, 3), Texture2D.whiteTexture);
-        GUI.Label(new Rect(r.x + 8, r.yMax - 30, 200, 20),
-            barMeters >= 1000f ? $"{barMeters / 1000f:0.#} km" : $"{barMeters:0} m");
-
+        // En el modo interactivo (cuadrado) se dibujan aquí el norte, la escala y la ayuda;
+        // en el círculo lo hace NavInstrumentHUD sobre el aro.
         if (Interactive)
+        {
+            Vector2 dirN = new Vector2(Mathf.Sin(-yaw * Mathf.Deg2Rad), -Mathf.Cos(-yaw * Mathf.Deg2Rad));
+            Marker(r.center + dirN * (r.width * 0.5f - 12f), "N", Color.white, 0f);
+
+            float bar = r.width * 0.25f;
+            GUI.color = Color.white;
+            GUI.DrawTexture(new Rect(r.x + 8, r.yMax - 10, bar, 3), Texture2D.whiteTexture);
+            GUI.Label(new Rect(r.x + 8, r.yMax - 30, 200, 20), ScaleText(r));
             GUI.Label(new Rect(r.x + 8, r.y + 22, r.width - 16, 40),
                 "MAPA · clic dcho+arrastrar mover · rueda zoom · WASD · Q/E girar · F rover · C cráter · M/Esc salir",
                 hintStyle);
-        else
-            GUI.Label(new Rect(r.xMax - 90, r.yMax - 22, 90, 20), "M mapa · − / +");
+        }
         GUI.color = old;
+    }
+
+    /// <summary>Distancia real que abarca un cuarto del ancho del mapa (la barra de escala).</summary>
+    public float ScaleBarMeters => radiusMeters * 2f * 0.25f;
+
+    public string ScaleText(Rect r)
+    {
+        float m = ScaleBarMeters;
+        return m >= 1000f ? $"{m / 1000f:0.#} km" : $"{m:0} m";
     }
 
     Vector3 AerialFocusOnGround()
